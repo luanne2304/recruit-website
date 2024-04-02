@@ -10,6 +10,7 @@ import PlaceIcon from "@mui/icons-material/Place";
 import SendIcon from "@mui/icons-material/Send";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+import FlagIcon from '@mui/icons-material/Flag';
 import Logocty from "../../assets/images/logocty.jpg";
 import COjob from "../../components/COjob/COjob";
 import "./DetailJob.css";
@@ -124,15 +125,28 @@ const DetailJob = () => {
                         Dolores, repellat.
                       </Typography>
                     </Box>
-                    <Button
-                      sx={{ width: "70%", margin: "auto" }}
-                      variant="contained"
-                      color="success"
-                      endIcon={<SendIcon />}
-                    >
-                      Ứng tuyển
-                    </Button>
-                    <Typography variant="h6">Các công việc liên quan</Typography>
+                    <Box sx={{display:"flex", justifyContent:"space-between"}}>
+                      <Button
+                        sx={{ width: "20%" }}
+                        variant="contained"
+                        color="error"
+                        endIcon={<FlagIcon />}
+                      >
+                        Báo cáo
+                      </Button>
+                      <Button
+                        sx={{ width: "70%" }}
+                        variant="contained"
+                        color="success"
+                        endIcon={<SendIcon />}
+                      >
+                        Ứng tuyển
+                      </Button>
+                    </Box>
+
+                    <Typography variant="h6">
+                      Các công việc liên quan
+                    </Typography>
                     <COjob></COjob>
                   </CardContent>
                 </Card>

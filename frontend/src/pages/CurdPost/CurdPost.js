@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
@@ -25,14 +25,24 @@ import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import EditorField from "../../components/EditorField/EditorField";
 import CO from "../../components/CO/CO";
-import "./CurdPost.css"
+import "./CurdPost.css";
+
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-
-
 const CurdPost = () => {
+
+  const [content, setContent] = useState('');
+  const handleContentChange = (html) => {
+    setContent(html); // Cập nhật trạng thái `content`
+  };
+
+const check =()=>{
+  console.log(content)
+}
+
   const levelskill = [
     { title: "Intern" },
     { title: "Fresher" },
@@ -77,26 +87,38 @@ const CurdPost = () => {
         <Box className="icontainer" sx={{ width: "1170px", mt: 8 }}>
           <CO></CO>
           <Box>
-            <Card sx={{ width: "100%", mt: 5  }}>
-              <CardContent sx={{ display:"flex", flexDirection:"column" , gap:3 , pl:10,pr:10}}>
-                <Typography sx={{ textAlign:"center"}} gutterBottom variant="h4" component="div">
+            <Card sx={{ width: "100%", mt: 5 }}>
+              <CardContent
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 3,
+                  pl: 10,
+                  pr: 10,
+                }}
+              >
+                <Typography
+                  sx={{ textAlign: "center" }}
+                  gutterBottom
+                  variant="h4"
+                  component="div"
+                >
                   Tạo bài đăng
                 </Typography>
                 <Typography className="form-item">
-                <Typography className="label-form" component="div">
-                  Tiêu đề:
+                  <Typography className="label-form" component="div">
+                    Tiêu đề:
                   </Typography>
                   <TextField
-                    sx={{ width:"700px"}}
+                    sx={{ width: "700px" }}
                     id="outlined-basic"
                     label="Nhập tiêu đề"
                     variant="outlined"
                   />
-               
                 </Typography>
                 <Typography className="form-item">
-                <Typography className="label-form" component="div">
-                Lương
+                  <Typography className="label-form" component="div">
+                    Lương
                   </Typography>
                   <FormControl>
                     <RadioGroup
@@ -141,8 +163,8 @@ const CurdPost = () => {
                   </FormControl>
                 </Typography>
                 <Typography className="form-item">
-                <Typography className="label-form" component="div">
-                  Hình thức:
+                  <Typography className="label-form" component="div">
+                    Hình thức:
                   </Typography>
                   <FormControl>
                     <RadioGroup
@@ -169,8 +191,8 @@ const CurdPost = () => {
                   </FormControl>
                 </Typography>
                 <Typography className="form-item">
-                <Typography className="label-form" component="div">
-                  Kỹ năng:
+                  <Typography className="label-form" component="div">
+                    Kỹ năng:
                   </Typography>
                   <Autocomplete
                     multiple
@@ -200,8 +222,8 @@ const CurdPost = () => {
                   />
                 </Typography>
                 <Typography className="form-item">
-                <Typography className="label-form" component="div">
-                  Trình độ:
+                  <Typography className="label-form" component="div">
+                    Trình độ:
                   </Typography>
                   <Autocomplete
                     multiple
@@ -231,47 +253,39 @@ const CurdPost = () => {
                   />
                 </Typography>
                 <Typography className="form-item">
-                <Typography className="label-form" component="div">
-                 Mô tả:
+                  <Typography className="label-form" component="div">
+                    Mô tả:
                   </Typography>
-                  <TextField
+                  {/* <TextField
                    sx={{ width:"700px"}}
                     id="outlined-multiline-flexible"
                     label="Nhập thông tin mô tả công việc"
                     multiline
                     minRows={3}
-                  />
+                  /> */}
+                  <EditorField onContentChange={handleContentChange} />
                 </Typography>
                 <Typography className="form-item">
-                <Typography className="label-form" component="div">
-                  Yêu cầu:
+                  <Typography className="label-form" component="div">
+                    Yêu cầu:
                   </Typography>
-                  <TextField
-                   sx={{ width:"700px"}}
-                    id="outlined-multiline-flexible"
-                    label="Nhập yêu cầu của công việc"
-                    multiline
-                    minRows={3}
-                  />
+                  <EditorField/>
                 </Typography>
                 <Typography className="form-item">
-                <Typography className="label-form" component="div">
-                  Quyền lợi:
+                  <Typography className="label-form" component="div">
+                    Quyền lợi:
                   </Typography>
-                  <TextField
-                   sx={{ width:"700px"}}
-                    id="outlined-multiline-flexible"
-                    label="Nhập quyền lợi khi tham gia"
-                    multiline
-                    minRows={3}
-                  />
+                  <EditorField/>
                 </Typography>
                 <Typography className="form-item">
-                <Typography className="label-form" component="div">
-                 Thời hạn:
+                  <Typography className="label-form" component="div">
+                    Thời hạn:
                   </Typography>
-                  <LocalizationProvider  dateAdapter={AdapterDayjs}>
-                    <DemoContainer sx={{padding:0}} components={["DateTimePicker"]}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer
+                      sx={{ padding: 0 }}
+                      components={["DateTimePicker"]}
+                    >
                       <DemoItem>
                         <DateTimePicker />
                       </DemoItem>
@@ -279,13 +293,17 @@ const CurdPost = () => {
                   </LocalizationProvider>
                 </Typography>
               </CardContent>
-              <Stack direction="row" spacing={2} sx={{mb:3, mr:3 , float: "right"}}>
-              <Button variant="outlined" color="error">
-                Xóa bài
-              </Button>
-              <Button variant="contained" color="success">
-                Lưu
-              </Button>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{ mb: 3, mr: 3, float: "right" }}
+              >
+                <Button variant="outlined" color="error">
+                  Xóa bài
+                </Button>
+                <Button onClick={check} variant="contained" color="success">
+                  Lưu
+                </Button>
               </Stack>
             </Card>
           </Box>
