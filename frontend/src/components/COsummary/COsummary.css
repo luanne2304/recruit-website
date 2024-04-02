@@ -1,0 +1,11 @@
+.logo-COsummary{
+    width: 70px;
+    position: absolute;
+    z-index: 1;
+    top:100px;
+    left: 20px;
+}
+
+.card-COsummary{
+    position: relative;
+}

@@ -1,0 +1,15 @@
+.main-container-wrap-detailjob{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 67%;
+    background-color: aquamarine;
+}
+
+.extra-container-wrap-detailjob{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 33%;
+    background-color: antiquewhite;
+}

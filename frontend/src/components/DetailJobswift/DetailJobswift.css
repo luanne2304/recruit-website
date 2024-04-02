@@ -1,0 +1,11 @@
+.swift-logoCO-recruitment{
+    width: 100px;
+    margin-right: 20px;
+    height: 100px;
+    border-radius: 10px;
+}
+
+.preview-job-content{
+    overflow-y: scroll;
+    height: calc(100vh - 300px);
+}

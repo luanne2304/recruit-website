@@ -1,0 +1,16 @@
+.sidebarlog{
+    height: 100vh;
+    width: 530px;
+    right: 0;
+    background-image: url('../../assets/images/backgroundLog.jpg');
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    
+}
+
+.logo-sidebar{
+    width: 250px;
+    border-radius: 50px;
+}
+

@@ -1,0 +1,18 @@
+/* Banner.css */
+.banner {
+    overflow: hidden; /* Ẩn các phần tử nằm ngoài phạm vi của banner */
+    position: relative; /* Định vị tương đối để cho phép hiệu ứng chuyển động */
+    width: 600px; /* Độ rộng cố định của banner */
+    height: 300px; /* Độ cao cố định của banner */
+  }
+  
+  .banner-image-container {
+    display: flex; /* Hiển thị các hình ảnh theo hàng ngang */
+    transition: transform 0.5s ease; /* Hiệu ứng chuyển động */
+  }
+  
+  .banner-image {
+    width: 600px; /* Độ rộng của từng ảnh */
+    height: 300px; /* Độ cao của từng ảnh */
+  }
+  

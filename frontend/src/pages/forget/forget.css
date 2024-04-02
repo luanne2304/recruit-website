@@ -1,0 +1,11 @@
+.wrap-forget{
+    align-items: center;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+}
+
+.container{
+    width: 600px;
+}
+

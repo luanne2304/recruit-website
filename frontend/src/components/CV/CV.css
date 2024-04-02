@@ -1,0 +1,9 @@
+.CV-uploaded-file{
+    border: 1px solid;
+    border-radius: 5px;
+    height: 50px;
+    padding-left: 14px;
+    padding-right: 14px;
+    display: flex;
+    align-items: center; /* căn nội dung theo chiều dọc */
+}
