@@ -13,8 +13,8 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 
-const pages = ['Tìm việc', 'Nhà tuyển dụng', 'CV của tôi'];
-const settings = ['Hồ sơ', 'Đổi mật khẩu', 'Nhà tuyển dụng xem hồ sơ', 'Đăng xuất'];
+const pages = ['Tìm việc', 'Nhà tuyển dụng', 'Đã ứng tuyển'];
+const settings = ['Hồ sơ', 'Đổi mật khẩu', 'Đăng xuất'];
 
 function NavBarHome() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);

@@ -13,6 +13,7 @@ import DetailCO from "./pages/DetailCO/DetailCO";
 import CVreview from "./pages/CVreview/CVreview";
 import CurdPost from "./pages/CurdPost/CurdPost";
 import DetailJob from "./pages/DetailJob/DetailJob";
+import CVapplied from "./pages/CVapplied/CVapplied";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/home/Myprofile" element={<Myprofile />}/>
           <Route path="/home/DetailCO/" element={<DetailCO />}/>
           <Route path="/home/DetailJob/" element={<DetailJob />}/>
+          <Route path="/home/CVapplied/" element={<CVapplied />}/>
           <Route path="/home/DetailCO/CVreview" element={<CVreview />}/>
           <Route path="/home/DetailCO/CurdPost" element={<CurdPost />}/>
         </Route>
