@@ -14,15 +14,26 @@ import LockIcon from "@mui/icons-material/Lock";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import GoogleIcon from "@mui/icons-material/Google";
+import {auth,provider} from "../../config/index"
+import {signInWithPopup} from "firebase/auth"
 import "@fontsource/roboto/400.css";
 
 const Login = () => {
+  const [value, setValue]=useState('')
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+  const loginWithGG=()=>{
+    signInWithPopup(auth,provider).then((data)=>{
+      // setValue(data.user.email)
+      console.log(data)
+    })
+  }
+
   return (
     <Box className="wrap-login">
       <Box className="container">
@@ -43,8 +54,8 @@ const Login = () => {
 
         <FormControl sx={{ width: "100%" }} variant="outlined">
           <InputLabel htmlFor="outlined-adornment-password">
-          Mật khẩu
-            </InputLabel>
+            Mật khẩu
+          </InputLabel>
           <OutlinedInput
             id="outlined-adornment-password"
             type={showPassword ? "text" : "password"}
@@ -68,19 +79,30 @@ const Login = () => {
             label="Mật khẩu"
           />
         </FormControl>
-        <Box sx={{mt:"20px", width: "100%" }} textAlign="right">
+        <Box sx={{ mt: "20px", width: "100%" }} textAlign="right">
           <Link href="#" underline="none">
             {"Quên mật khẩu"}
           </Link>
         </Box>
-        <Button sx={{mt:"20px", width: "100%" }} variant="contained" color="success">
+        <Button
+          sx={{ mt: "20px", width: "100%" }}
+          variant="contained"
+          color="success"
+        >
           Đăng nhập
         </Button>
-        <Box sx={{mt:"20px", width: "100%" }} textAlign="center">Hoặc đăng nhập bằng</Box>
-        <Button variant="contained" color="error" sx={{mt:"20px", width: "100%" }}>
+        <Box sx={{ mt: "20px", width: "100%" }} textAlign="center">
+          Hoặc đăng nhập bằng
+        </Box>
+        <Button
+          onClick={loginWithGG}
+          variant="contained"
+          color="error"
+          sx={{width: "100%",mt:2}}
+        >
           <GoogleIcon></GoogleIcon>Google
         </Button>
-        <Box textAlign="center" sx={{mt:"20px", width: "100%" }}>
+        <Box textAlign="center" sx={{ mt: "20px", width: "100%" }}>
           <Box>
             Bạn chưa có tài khoản?
             <Link href="#" underline="none">
