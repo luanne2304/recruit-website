@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./login.css";
+import axios from "axios";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
@@ -17,6 +17,8 @@ import GoogleIcon from "@mui/icons-material/Google";
 import {auth,provider} from "../../config/index"
 import {signInWithPopup} from "firebase/auth"
 import "@fontsource/roboto/400.css";
+import "./login.css";
+
 
 const Login = () => {
   const [value, setValue]=useState('')
@@ -27,12 +29,33 @@ const Login = () => {
     event.preventDefault();
   };
 
-  const loginWithGG=()=>{
-    signInWithPopup(auth,provider).then((data)=>{
-      // setValue(data.user.email)
-      console.log(data)
+  const loginWithGG= async ()=>{
+    signInWithPopup(auth,provider).then(async (data)=>{
+      try{
+      await axios.post(`http://localhost:4000/api/user/signinnwithGmail`,{
+        displayName: data.user.displayName,
+        email: data.user.email,
+        photoURL: data.user.photoURL
+      })
+      window.location.href = '/home';
+      } catch(error){
+        console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+      }
     })
   }
+
+  // const login=async ()=>{
+  //   try{
+  //     await axios.post(`http://localhost:4000/api/user/signinnwithGmail`,{
+  //       displayName: data.user.displayName,
+  //       email: data.user.email,
+  //       photoURL: data.user.photoURL
+  //     })
+  //     window.location.href = '/home';
+  //     } catch(error){
+  //       console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+  //     }
+  // }
 
   return (
     <Box className="wrap-login">
