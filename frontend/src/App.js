@@ -14,6 +14,9 @@ import CVreview from "./pages/CVreview/CVreview";
 import CurdPost from "./pages/CurdPost/CurdPost";
 import DetailJob from "./pages/DetailJob/DetailJob";
 import CVapplied from "./pages/CVapplied/CVapplied";
+import UserManager from "./pages/AdminDashboard/UserManager";
+import ReportManager from "./pages/AdminDashboard/ReportManager";
+import AdminDashboard from "./layouts/admin";
 
 function App() {
   return (
@@ -37,6 +40,13 @@ function App() {
           <Route path="/log/Register" element={<Register />} />
           <Route path="/log/Forget" element={<Forget />} />
         </Route>
+        <Route path="/admin/" element={<AdminDashboard />}>
+          <Route index element={null} />
+          <Route path="/admin/Home" element={<AdminDashboard />} />
+          <Route path="/admin/ReportPosts" element={<ReportManager />} />
+          <Route path="/admin/UserManager" element={<UserManager />} />
+          <Route path="/admin/CompanyManager" element={<ReportManager />} />
+      </Route>
       </Routes>
       {/* <Routes>
           <Route path='/home/' element={<Homelayout />}>
