@@ -13,29 +13,29 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LogoCty from "../../assets/images/logocty.jpg";
 import "./DetailJobswift.css";
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(2)" }}
-  >
-    •
-  </Box>
-);
-const lorem = [
-  { content: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nobis, autem." },
-  { content: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nobis, autem." },
-  { content: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nobis, autem." },
-  { content: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nobis, autem." },
-  { content: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nobis, autem." },
-];
-const skillchips = [
-  { title: "Intern" },
-  { title: "Fresher" },
-  { title: "Juinor" },
-  { title: "Senior" },
-  { title: "Manager" },
-];
-const DetailJobswift = () => {
+
+const DetailJobswift = ({job}) => {
+
+  // console.log(job)
+  const timecalculator =()=>{
+    const currentDate = new Date(); // Lấy ngày và giờ hiện tại
+    const difference = (currentDate - new Date(job.createdAt))/1000; // Tính thời gian chênh lệch
+    switch (true) {
+      case difference <60:
+        return "Vừa xong";
+      case difference<3600:
+        return Math.floor(difference/60) +" phút trước";
+      case difference<86400:
+        return Math.floor(difference/3600) +" giờ trước";
+      case difference<604800:
+        return Math.floor(difference/86400) +" ngày trước";
+      case difference<4579200:
+        return Math.floor(difference/604800) +" tuần trước";
+        default:
+          return "Không xác định";
+    }
+  }
+  
   return (
     <Box sx={{ width: "100%", height: "100%", mr: 2 }}>
       <Card
@@ -52,13 +52,13 @@ const DetailJobswift = () => {
               <img className="swift-logoCO-recruitment" src={LogoCty}></img>
               <Box>
                 <Typography variant="h5" component="div">
-                  Juinor/ Senior Mobile Developer (React Native, Flutter)
+                  {job.title}
                 </Typography>
-                <Typography color="text.secondary">Công ty FPT</Typography>
+                <Typography color="text.secondary">{job.CO}</Typography>
                 <Box display="flex" alignItems="center" sx={{ mt: 1 }}>
                   <PaidIcon></PaidIcon>
                   <Typography variant="body2" sx={{ ml: 1, fontSize: 25 }}>
-                    700 - 1000 USD
+                    {job.salaryto} - {job.salaryfrom} USD
                   </Typography>
                 </Box>
               </Box>
@@ -74,29 +74,28 @@ const DetailJobswift = () => {
               <Box display="flex" alignItems="center" sx={{ mt: 2 }}>
                 <PlaceIcon></PlaceIcon>
                 <Typography variant="body2" sx={{ ml: 1 }}>
-                  Tầng 19, tòa nhà Peakview Tower, 36 Hoàng Cầu, Đống Đa, Hà
-                  Nội, Dong Da, Ha Noi
+                  {job.address}
                 </Typography>
               </Box>
               <Box display="flex" alignItems="center" sx={{ mt: 2 }}>
                 <WorkOutlineIcon></WorkOutlineIcon>
                 <Typography variant="body2" sx={{ ml: 1 }}>
-                  Tại văn phòng
+                  {job.form}
                 </Typography>
               </Box>
               <Box display="flex" alignItems="center" sx={{ mt: 2 }}>
                 <AccessTimeIcon></AccessTimeIcon>
                 <Typography variant="body2" sx={{ ml: 1 }}>
-                  1 ngày trước
+                  {timecalculator()}
                 </Typography>
               </Box>
               <Box sx={{ mt: 2 }}>
                 Kỹ năng:
-                {skillchips.map((skill, index) => (
+                {job.tag.skill.map((skill) => (
                   <Chip
                     sx={{ m: 0.5 }}
-                    key={index}
-                    label={skill.title}
+                    key={skill.id}
+                    label={skill}
                     variant="outlined"
                   />
                 ))}
@@ -105,25 +104,19 @@ const DetailJobswift = () => {
                 <Typography variant="h5" component="div" sx={{ mt: 2 }}>
                   Mô tả công việc
                 </Typography>
-                {lorem.map((item, index) => (
-                  <Typography sx={{ mt: 1 }} key={index}>{bull} {item.content}</Typography>
-                ))}
+                  {job.des}
               </Box>
               <Box sx={{ mt: 2}}>
                 <Typography variant="h5" component="div">
                   Yêu cầu công việc
                 </Typography>
-                {lorem.map((item, index) => (
-                  <Typography sx={{ mt: 1 }} key={index}>{bull} {item.content}</Typography>
-                ))}
+                {job.require}
               </Box>
               <Box sx={{ mt: 2}}>
                 <Typography variant="h5" component="div">
                   Quyền lợi
                 </Typography>
-                {lorem.map((item, index) => (
-                  <Typography sx={{ mt: 1 }} key={index}>{bull} {item.content}</Typography>
-                ))}
+                {job.benefit}
               </Box>
             </Box>
           </CardContent>

@@ -3,17 +3,46 @@ const postModel = require("../Models/postModel");
 const postController = {
     create: async  (req, res, next) => {
         try {
-          const { displayName, email, photoURL} = req.body;
-          const existingUser = await userModel.findOne({ email: email });
-          if(existingUser){
-            return res.status(200).json({
-                success: true,
-            });
-          }
-          const createuser = await userModel.create({ username: displayName,email: email,avatar:photoURL});
+          const { title, des, require,benefit,address,form,salaryto,salaryfrom,duration,skill,exp,CO} = req.body;
+          // const parsedSkill = JSON.parse(skill);
+          // const parsedExp = JSON.parse(exp);
+          const newPost = new postModel({
+            title: title,
+            des:des,
+            require:require,
+            benefit:benefit,
+            address:address,
+            form:form,
+            salaryto:salaryto,
+            salaryfrom:salaryfrom,
+            duration:duration,
+            tag: {
+              skill:skill,
+              exp:exp
+            },
+            CO:CO,
+          })
+          console.log(newPost)
+          const createPost = await postModel.create(newPost);
           return res.status(200).json({
             success: true,
-            data: createuser,
+            data: createPost,
+          });
+        } catch (error) {
+          return res.status(500).json({
+            success: false,
+            message: error.message,
+          });
+        }
+      },
+
+      getALLjob: async  (req, res, next) => {
+        try {
+          const currentDate =new Date() 
+          const getPost = await postModel.find({status:true, duration: { $gte: currentDate }}).sort({ createdAt: -1 });;
+          return res.status(200).json({
+            success: true,
+            data: getPost,
           });
         } catch (error) {
           return res.status(500).json({

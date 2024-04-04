@@ -5,6 +5,7 @@ const cors = require('cors');
 const dotenv = require("dotenv");
 
 const userRouter =require("./Routers/userRouter")
+const postRouter =require("./Routers/postRouter")
 
 
 dotenv.config();
@@ -23,6 +24,8 @@ const corsOption = {
 app.use(cors(corsOption))
 
 app.use(userRouter)
+app.use(postRouter)
+
 
 const url=process.env.URL_MONGO ;
 const port=process.env.PORT;

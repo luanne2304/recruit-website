@@ -10,25 +10,31 @@ import PlaceIcon from "@mui/icons-material/Place";
 import LogoCty from "../../assets/images/logocty.jpg";
 import "./JobSummary.css";
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-  >
-    •
-  </Box>
-);
 
-export default function JobSummary() {
-  const skillchips = [
-    { title: "Intern" },
-    { title: "Fresher"},
-    { title: "Juinor" },
-    { title: "Senior" },
-    { title: "Manager" },
-  ];
+export default function JobSummary({job}) {
+  
+    const timecalculator =()=>{
+      const currentDate = new Date(); // Lấy ngày và giờ hiện tại
+      const difference = (currentDate - new Date(job.createdAt))/1000; // Tính thời gian chênh lệch
+      switch (true) {
+        case difference <60:
+          return " Vừa xong";
+        case difference<3600:
+          return Math.floor(difference/60) +" phút trước";
+        case difference<86400:
+          return Math.floor(difference/3600) +" giờ trước";
+        case difference<604800:
+          return Math.floor(difference/86400) +" ngày trước";
+        case difference<4579200:
+          return Math.floor(difference/604800) +" tuần trước";
+          default:
+            return "Không xác định";
+      }
+    }
+
+
   return (
-    <Box sx={{ minWidth: 275 , mr: 2 }} >
+    <Box sx={{ minWidth: 275 , mr: 2,mb:2 }} on >
       <Card variant="outlined" style={{ position: 'relative',borderRadius: 16 }}>
         <Box position="absolute"  top={0} right={0} sx={{ margin: 2}}>HOT</Box>
         <React.Fragment>
@@ -38,30 +44,30 @@ export default function JobSummary() {
               color="text.secondary"
               gutterBottom
             >
-              Đăng 1 ngày trước
+              {timecalculator()}
             </Typography>
             <Typography variant="h5" component="div">
-              Juinor/ Senior Mobile Developer (React Native, Flutter)
+              {job.title}
             </Typography>
             <Box display="flex" alignItems="center">
               <img className="summary-logoCO-recruitment" src={LogoCty}></img>
-              <Typography color="text.secondary" sx={{ml: 1}}>Công ty FPT</Typography>
+              <Typography color="text.secondary" sx={{ml: 1}}>{job.CO}</Typography>
             </Box>
             <Box display="flex" alignItems="center" sx={{mt: 1}}>
               <PaidIcon></PaidIcon>
-              <Typography variant="body2" sx={{ml: 1, fontSize: 25}}>700 - 1000 USD</Typography>
+              <Typography variant="body2" sx={{ml: 1, fontSize: 25}}>{job.salaryto} - {job.salaryfrom} </Typography>
             </Box>
             <Box display="flex" alignItems="center"  sx={{mt: 1}}>
               <WorkOutlineIcon></WorkOutlineIcon>
-              <Typography variant="body2" sx={{ml: 1}}>Tại văn phòng</Typography>
+              <Typography variant="body2" sx={{ml: 1}}>{job.form}</Typography>
             </Box>
             <Box display="flex" alignItems="center"  sx={{mt: 1}}>
               <PlaceIcon></PlaceIcon>
               <Typography variant="body2" sx={{ml: 1}}>Hà nội</Typography>
             </Box>
             <Box  sx={{mt: 1}}>
-              {skillchips.map((skill, index) => (
-                <Chip  sx={{m: 0.5}} key={index} label={skill.title} variant="outlined" />
+              {job.tag.skill.map((skill) => (
+                <Chip  sx={{m: 0.5}} key={skill.id} label={skill} variant="outlined" />
               ))}
             </Box>
           </CardContent>

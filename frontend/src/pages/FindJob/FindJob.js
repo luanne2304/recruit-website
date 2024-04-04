@@ -1,4 +1,5 @@
-import React from "react";
+import React,{useEffect, useState} from "react";
+import axios from "axios";
 import ButtonDialogFilter from "../../components/ButtonDialogFilter/ButtonDialogFilter";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -9,11 +10,34 @@ import Banner from "../../components/Banner/Banner";
 import "./FindJob.css";
 
 const FindJob = () => {
+
+  const [listjobs, setListjobs] =useState([])
+  const [detailjob, setDetailjob] =useState([])
+  const [active,setActive] = useState(0)
+
+  useEffect(() => {
+    const getALLjob = async () => {
+      try {
+        const response  = await axios.get(`http://localhost:4000/api/post/getALLjob`);
+        setListjobs(response.data.data)
+        setDetailjob(response.data.data)
+      } catch(error) {
+        console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+      }
+    };
+  
+    getALLjob();
+  },[])
+
+  const showjobswift = (i)=>{
+    setActive(i)
+  }
+
   return (
-    <Box>
+    <Box sx={{ position: "relative"}}>
       <Box className="main">
         <Banner></Banner>
-        <Box className="icontainer" sx={{ mt: 5 }}>
+        <Box className="icontainer" sx={{ mt: 5}}>
           <Box
             display="flex"
             sx={{  display: "flex", justifyContent: "space-between" , alignItems:"center" }}
@@ -37,10 +61,20 @@ const FindJob = () => {
           </Box>
           <Box sx={{ mt: 3 }} display={"flex"}>
             <Box className="content-listjobs">
-              <JobSummary></JobSummary>
+              {Array.isArray(listjobs) &&  listjobs.map((item, i)=>(
+                <div key={i} onClick={()=>showjobswift(i)}>
+                  <JobSummary job={item} ></JobSummary>
+
+                </div>
+              ))}
             </Box>
-            <Box className="content-detailjob">
-              <DetailJobswift></DetailJobswift>
+            <Box className="content-detailjob" >
+              {/* { (detailjob!= null) &&
+                (<DetailJobswift job={detailjob}></DetailJobswift> )
+              } */}
+                {detailjob && detailjob.length > 0 && (
+                <DetailJobswift job={detailjob[active]}></DetailJobswift>
+              )}
             </Box>
           </Box>
         </Box>

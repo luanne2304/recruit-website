@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
@@ -34,14 +34,54 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const CurdPost = () => {
 
-  const [content, setContent] = useState('');
-  const handleContentChange = (html) => {
-    setContent(html); // Cập nhật trạng thái `content`
+  let des
+  let require
+  let benefit
+  let skill= []
+  let level=[]
+  
+  const handleDesChange = (html) => {
+    des=html
   };
 
-const check =()=>{
-  console.log(content)
-}
+  const handleRequireChange = (html) => {
+    require=html
+  };
+
+  const handleBenefitChange = (html) => {
+    benefit=html
+  };
+
+
+
+  const check = () => {
+    formData.skill=skill
+    formData.exp=level
+    formData.des=des
+    formData.require=require
+    formData.benefit=benefit
+    console.log(formData)
+  };
+
+  const [formData, setFormData] = useState({
+    title: "",
+    des: "",
+    require: "",
+    benefit: "",
+    address: "",
+    form: "",
+    salaryto: "",
+    salaryfrom: "",
+    duration: null,
+    skill: [],
+    exp: [],
+    CO: "",
+  });
+
+  const handleChange = (event) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
 
   const levelskill = [
     { title: "Intern" },
@@ -52,7 +92,7 @@ const check =()=>{
   ];
 
   const skills = [
-    { title: "HTML" },
+    { title: "HTML"  },
     { title: "CSS" },
     { title: "WORDPRESS" },
     { title: "C" },
@@ -81,6 +121,9 @@ const check =()=>{
     { title: "Fluter" },
     { title: "React Native" },
   ];
+
+
+  
   return (
     <Box>
       <Box className="main">
@@ -114,6 +157,9 @@ const check =()=>{
                     id="outlined-basic"
                     label="Nhập tiêu đề"
                     variant="outlined"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
                   />
                 </Typography>
                 <Typography className="form-item">
@@ -124,12 +170,11 @@ const check =()=>{
                     <RadioGroup
                       row
                       aria-labelledby="demo-row-radio-buttons-group-label"
-                      name="row-radio-buttons-group"
                     >
                       <FormControlLabel
                         value="Salary"
                         control={<Radio />}
-                        label="Lương"
+                        label="Lương"                      
                       />
                       <FormControlLabel
                         value="Unknow"
@@ -143,6 +188,9 @@ const check =()=>{
                       Từ
                     </InputLabel>
                     <FilledInput
+                      name="salaryto"
+                      value={formData.salaryto}
+                      onChange={handleChange}
                       id="filled-adornment-amount"
                       startAdornment={
                         <InputAdornment position="start">$</InputAdornment>
@@ -155,6 +203,9 @@ const check =()=>{
                       Đến
                     </InputLabel>
                     <FilledInput
+                      name="salaryfrom"
+                      value={formData.salaryfrom}
+                      onChange={handleChange}
                       id="filled-adornment-amount"
                       startAdornment={
                         <InputAdornment position="start">$</InputAdornment>
@@ -170,10 +221,12 @@ const check =()=>{
                     <RadioGroup
                       row
                       aria-labelledby="demo-row-radio-buttons-group-label"
-                      name="row-radio-buttons-group"
+                      name="form"
+                      value={formData.form}
+                      onChange={handleChange}
                     >
                       <FormControlLabel
-                        value="Home"
+                        value="home"
                         control={<Radio />}
                         label="Tại nhà"
                       />
@@ -199,6 +252,7 @@ const check =()=>{
                     id="checkboxes-tags-demo"
                     options={skills}
                     disableCloseOnSelect
+                    onChange={(event, value) => skill= value}
                     getOptionLabel={(option) => option.title}
                     renderOption={(props, option, { selected }) => (
                       <li {...props}>
@@ -231,6 +285,7 @@ const check =()=>{
                     options={levelskill}
                     disableCloseOnSelect
                     getOptionLabel={(option) => option.title}
+                    onChange={(event, value) => level= value}
                     renderOption={(props, option, { selected }) => (
                       <li {...props}>
                         <Checkbox
@@ -256,26 +311,19 @@ const check =()=>{
                   <Typography className="label-form" component="div">
                     Mô tả:
                   </Typography>
-                  {/* <TextField
-                   sx={{ width:"700px"}}
-                    id="outlined-multiline-flexible"
-                    label="Nhập thông tin mô tả công việc"
-                    multiline
-                    minRows={3}
-                  /> */}
-                  <EditorField onContentChange={handleContentChange} />
+                  <EditorField onContentChange={handleDesChange} />
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
                     Yêu cầu:
                   </Typography>
-                  <EditorField/>
+                  <EditorField onContentChange={handleRequireChange} />
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
-                    Quyền lợi:
+                    Quyền lợi:         
                   </Typography>
-                  <EditorField/>
+                  <EditorField onContentChange={handleBenefitChange}/>
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
@@ -287,7 +335,10 @@ const check =()=>{
                       components={["DateTimePicker"]}
                     >
                       <DemoItem>
-                        <DateTimePicker />
+                        <DateTimePicker 
+                        // value={formData.duration}
+                        // onChange={(event, value) => setFormData({...formData,duration:value})}
+                        />
                       </DemoItem>
                     </DemoContainer>
                   </LocalizationProvider>
