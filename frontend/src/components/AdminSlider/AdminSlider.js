@@ -87,7 +87,7 @@ export default function AdminSlider({open}) {
   const menu = [
     {name: "Report Posts", link: "/admin/ReportPosts"},
     {name: "User Manager", link: "/admin/UserManager"},
-    {name: "Company Manager", link: "/admin/CompanyManager"},
+    {name: "Company Manager", link: "/admin/COManager"},
   ]
 
 //= ==========================================================================
@@ -130,7 +130,6 @@ export default function AdminSlider({open}) {
             
           ))}
         </List>
-        
       </Drawer>
       <DrawerHeader />
     </Box>

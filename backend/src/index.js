@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const dotenv = require("dotenv");
+const fs = require('fs');
 
 const userRouter =require("./Routers/userRouter")
 const postRouter =require("./Routers/postRouter")
@@ -30,10 +31,17 @@ app.use(postRouter)
 const url=process.env.URL_MONGO ;
 const port=process.env.PORT;
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-  })
+app.get('/api/getTree', (req, res) => {
+  fs.readFile('./src/JsonTinhThanh/tree.json', 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
 
+    const jsonData = JSON.parse(data);
+    return res.json(jsonData);
+  });
+});
 
 mongoose.connect(url)
   .then(()=>{

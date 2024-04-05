@@ -75,6 +75,11 @@ const CurdPost = () => {
       }
   };
 
+  const [fetchTP, setFetchTP]=useState([])
+  const [fetchQH, setFetchQH]=useState([])
+  const [fetchPX, setFetchPX]=useState([])
+  const [tree,setTree]=useState()
+
   const [formData, setFormData] = useState({
     title: "",
     des: "",
@@ -135,7 +140,64 @@ const CurdPost = () => {
     { title: "React Native" },
   ];
 
+  const handleChangeTP = (event, value) => {
+    if (value) {
+      const provinceData = tree[value.code];
+      let tempQH =[]
+      for (const QHCode in provinceData["quan-huyen"]) {
+        if (provinceData["quan-huyen"].hasOwnProperty(QHCode)) {
+          const district = provinceData["quan-huyen"][QHCode];
+          // Lấy tên và mã của quận huyện và thêm vào biến districtData
+          const label = district.name;
+          const code = district.code;
+          const parent_code = district.parent_code;
+          tempQH.push({ label, code, parent_code });
+        }
+      }
+      setFetchQH(tempQH)
+      console.log(tempQH)
+    }
+  };
 
+  const handleChangeQH = (event, value) => {
+    if (value) {
+      const provinceData = tree[value.parent_code]["quan-huyen"][value.code];
+      let tempPX =[]
+      for (const PXCode in provinceData["xa-phuong"]) {
+        if (provinceData["xa-phuong"].hasOwnProperty(PXCode)) {
+          const px = provinceData["xa-phuong"][PXCode];
+          // Lấy tên và mã của quận huyện và thêm vào biến districtData
+          const label = px.name;
+          const code = px.code;
+          tempPX.push({ label, code });
+        }
+      }
+      setFetchPX(tempPX)
+      console.log(tempPX)
+    }
+  };
+
+
+  useEffect(()=>{
+    const calltp =async ()=>{
+      try{
+        let tempCity=[]
+        const res= await axios.get(`http://localhost:4000/api/getTree`)
+        setTree(res.data);
+        for (const key in res.data) {
+          if (res.data.hasOwnProperty(key)) {
+            const code = res.data[key].code;
+            const label = res.data[key].name;
+            tempCity.push({ label, code });
+          }
+        }
+        setFetchTP(tempCity)
+        } catch(error){
+          console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+      }
+    }
+    calltp()
+  },[])
   
   return (
     <Box>
@@ -160,6 +222,48 @@ const CurdPost = () => {
                   component="div"
                 >
                   Tạo bài đăng
+                </Typography>
+                <Typography className="form-item">
+                  <Typography className="label-form" component="div">
+                    TP
+                  </Typography>
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  options={fetchTP}
+                  onChange={handleChangeTP}
+                  sx={{ width: 300 }}
+                  renderInput={(params) => <TextField {...params} label="Tỉnh / TP" 
+                  />}
+                />
+                </Typography>
+                <Typography className="form-item">
+                  <Typography className="label-form" component="div">
+                    Q
+                  </Typography>
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  options={fetchQH}
+                  onChange={handleChangeQH}
+                  sx={{ width: 300 }}
+                  renderInput={(params) => <TextField {...params} label="Quận / Huyện" 
+                  />}
+                />
+                </Typography>
+                <Typography className="form-item">
+                  <Typography className="label-form" component="div">
+                    p
+                  </Typography>
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  options={fetchPX}
+                  onChange={(event, value) => {console.log(value)}}
+                  sx={{ width: 300 }}
+                  renderInput={(params) => <TextField {...params} label="Phường / Xã" 
+                  />}
+                />
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
