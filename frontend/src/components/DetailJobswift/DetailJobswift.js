@@ -104,19 +104,20 @@ const DetailJobswift = ({job}) => {
                 <Typography variant="h5" component="div" sx={{ mt: 2 }}>
                   Mô tả công việc
                 </Typography>
-                  {job.des}
+                <div dangerouslySetInnerHTML={{ __html: job.des }}></div>
+
               </Box>
               <Box sx={{ mt: 2}}>
                 <Typography variant="h5" component="div">
                   Yêu cầu công việc
                 </Typography>
-                {job.require}
+                <div dangerouslySetInnerHTML={{ __html: job.require }}></div>
               </Box>
               <Box sx={{ mt: 2}}>
                 <Typography variant="h5" component="div">
                   Quyền lợi
                 </Typography>
-                {job.benefit}
+                <div dangerouslySetInnerHTML={{ __html: job.benefit }}></div>
               </Box>
             </Box>
           </CardContent>

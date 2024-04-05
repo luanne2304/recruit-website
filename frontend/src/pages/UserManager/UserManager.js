@@ -1,5 +1,5 @@
 import React from "react";
-import TableUser from "./components/TableUser";
+import TableUser from "../../components/TableUser/TableUser";
 
 
 export default function UserManager() {

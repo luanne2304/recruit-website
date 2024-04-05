@@ -81,11 +81,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 //===========================================================================
-export default function Slider({open}) {
+export default function AdminSlider({open}) {
   const theme = useTheme();
   const navigate = useNavigate();
   const menu = [
-    {name: "Home", link: "/admin/Home"},
     {name: "Report Posts", link: "/admin/ReportPosts"},
     {name: "User Manager", link: "/admin/UserManager"},
     {name: "Company Manager", link: "/admin/CompanyManager"},

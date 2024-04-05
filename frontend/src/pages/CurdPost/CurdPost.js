@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios"
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
 import FilledInput from "@mui/material/FilledInput";
 import InputLabel from "@mui/material/InputLabel";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -12,14 +12,11 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
 import InputAdornment from "@mui/material/InputAdornment";
 import Checkbox from "@mui/material/Checkbox";
 import Autocomplete from "@mui/material/Autocomplete";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import { styled } from "@mui/material/styles";
-import Tooltip from "@mui/material/Tooltip";
 import Stack from "@mui/material/Stack";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -34,33 +31,48 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const CurdPost = () => {
 
-  let des
-  let require
-  let benefit
-  let skill= []
-  let level=[]
+  const isOptionEqualToValue = (option, value) => {
+    if (!value) {
+      return false;
+    }
+    return option.title === value.title;
+  };
+
+
   
   const handleDesChange = (html) => {
-    des=html
+    setFormData({ ...formData, des:html });
   };
 
   const handleRequireChange = (html) => {
-    require=html
+    setFormData({ ...formData, require:html });
   };
 
   const handleBenefitChange = (html) => {
-    benefit=html
+    setFormData({ ...formData, benefit:html });
   };
 
+  const handleChangeSkill = (event, newValue) => {
+    setFormData({ ...formData, skill: newValue});
+  };
 
+  const handleChangeLevel = (event, newValue) => {
+    setFormData({ ...formData, exp: newValue});
+  };
 
-  const check = () => {
-    formData.skill=skill
-    formData.exp=level
-    formData.des=des
-    formData.require=require
-    formData.benefit=benefit
+  const handleDateChange = (newDate) => {
+    setFormData({ ...formData, duration: newDate.$d})
+  };
+
+  const check =async () => {
+     formData.skill=await formData.skill.map(skill => skill.title)
+     formData.exp=await formData.exp.map(exp => exp.title)
     console.log(formData)
+    try{
+      await axios.post(`http://localhost:4000/api/post/create`,formData)
+      } catch(error){
+        console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+      }
   };
 
   const [formData, setFormData] = useState({
@@ -68,16 +80,17 @@ const CurdPost = () => {
     des: "",
     require: "",
     benefit: "",
-    address: "",
+    address: "Q6",
     form: "",
     salaryto: "",
     salaryfrom: "",
     duration: null,
     skill: [],
     exp: [],
-    CO: "",
+    CO: "Tập đoàn Hoa sen",
   });
 
+  
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
@@ -252,8 +265,9 @@ const CurdPost = () => {
                     id="checkboxes-tags-demo"
                     options={skills}
                     disableCloseOnSelect
-                    onChange={(event, value) => skill= value}
+                    onChange={handleChangeSkill}
                     getOptionLabel={(option) => option.title}
+                    isOptionEqualToValue={isOptionEqualToValue}
                     renderOption={(props, option, { selected }) => (
                       <li {...props}>
                         <Checkbox
@@ -285,7 +299,8 @@ const CurdPost = () => {
                     options={levelskill}
                     disableCloseOnSelect
                     getOptionLabel={(option) => option.title}
-                    onChange={(event, value) => level= value}
+                    onChange={handleChangeLevel}
+                    isOptionEqualToValue={isOptionEqualToValue}
                     renderOption={(props, option, { selected }) => (
                       <li {...props}>
                         <Checkbox
@@ -336,8 +351,8 @@ const CurdPost = () => {
                     >
                       <DemoItem>
                         <DateTimePicker 
-                        // value={formData.duration}
-                        // onChange={(event, value) => setFormData({...formData,duration:value})}
+                            name="duration"
+                            onChange={handleDateChange} 
                         />
                       </DemoItem>
                     </DemoContainer>

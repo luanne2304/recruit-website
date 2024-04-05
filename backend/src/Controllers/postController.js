@@ -13,8 +13,8 @@ const postController = {
             benefit:benefit,
             address:address,
             form:form,
-            salaryto:salaryto,
-            salaryfrom:salaryfrom,
+            salaryto:parseInt(salaryto),
+            salaryfrom:parseInt(salaryfrom),
             duration:duration,
             tag: {
               skill:skill,
@@ -22,7 +22,6 @@ const postController = {
             },
             CO:CO,
           })
-          console.log(newPost)
           const createPost = await postModel.create(newPost);
           return res.status(200).json({
             success: true,

@@ -1,6 +1,6 @@
 import React from "react";
 import { Stack } from "@mui/material";
-import ReportItem from "./components/ReportItem";
+import ReportItem from "../../components/ReportItem/ReportItem";
 
 export default function ReportManager() {
     return (
