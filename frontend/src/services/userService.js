@@ -13,8 +13,14 @@ const userService = {
         const res = await cf_axios.get("/users");
         return res.data;
     },
-    getUserById: async (id) => {
-        const res = await cf_axios.get(`/users/${id}`);
+    getUserById: async () => {
+        // get token from localStorage
+        const token = localStorage.getItem("token");
+        const res = await cf_axios.get("/user", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return res.data;
     },
     deleteUser: async (id) => {
@@ -25,8 +31,14 @@ const userService = {
         const res = await cf_axios.put(`/users/${id}`, { password });
         return res.data;
     },
-    updateUser: async (id, data) => {
-        const res = await cf_axios.put(`/users/${id}`, data);
+    updateUser: async (data) => {
+        const token = localStorage.getItem("token");
+        console.log(data);
+        const res = await cf_axios.put("/user", data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return res.data;
     },
     };

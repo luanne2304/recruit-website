@@ -1,6 +1,13 @@
+
 const userModel = require("../Models/userModel");
+const jwt = require('jsonwebtoken');
+
 
 const userController = {
+   generateAuthToken : async (id) => {
+    const token = jwt.sign({ _id: id }, process.env.JWT_KEY);
+    return token;
+  },
   login: async (req, res, next) => {
     try {
       const { email, password } = req.body;
@@ -13,9 +20,12 @@ const userController = {
         });
       }
 
+      
+      const token = await userController.generateAuthToken(user._id);
       return res.status(200).json({
         success: true,
         data: user,
+        token: token,
       });
     } catch (error) {
       return res.status(500).json({
@@ -91,7 +101,7 @@ const userController = {
 
   getAllUser: async (req, res, next) => {
     try {
-        const getUser = await UserModel.find({});
+        const getUser = await userModel.find({});
         return res.status(200).json({
             success: true,
             data: getUser,
@@ -106,17 +116,21 @@ const userController = {
 
 getUserById: async (req, res, next) => {
     try {
-        const { id } = req.params;
-        const getUser = await UserModel.findById(id);
+      const id = req.params;
+      const getUser = await userModel.findById(id);
+        
+
         return res.status(200).json({
             success: true,
             data: getUser,
         });
     } catch (error) {
+      console.log(error);
         return res.status(500).json({
             success: false,
             message: error.message,
         });
+        
     }
 },
 
@@ -124,7 +138,7 @@ getUserById: async (req, res, next) => {
 deleteUser: async (req, res, next) => {
     try {
         const { id } = req.params;
-        const deleteUser = await UserModel.findByIdAndUpdate(
+        const deleteUser = await userModel.findByIdAndUpdate(
             id,
             { status: 'disable' },
             { new: true }
@@ -145,7 +159,7 @@ resetPassword: async (req, res, next) => {
   try {
       const { id } = req.params;
       const newPassword = req.body.password;
-      const resetPassword = await UserModel.findByIdAndUpdate( id, { password : newPassword }, { new: true });
+      const resetPassword = await userModel.findByIdAndUpdate( id, { password : newPassword }, { new: true });
       return res.status(200).json({
           success: true,
           data: resetPassword,
@@ -157,6 +171,23 @@ resetPassword: async (req, res, next) => {
       });
   }
 },
+
+updateUser: async (req, res, next) => {
+  try {
+      const { id } = req.params;
+      const data = req.body;
+      const updateUser = await userModel.findByIdAndUpdate( id, data, { new: true });
+      return res.status(200).json({
+          success: true,
+          data: updateUser,
+      });
+  } catch (error) {
+      return res.status(500).json({
+          success: false,
+          message: error.message,
+      });
+  }
+}
 
 
 };

@@ -34,9 +34,11 @@ const Login = () => {
     event.preventDefault();
   };
 
+
   const loginByEmail = async () => {
     try {
       const res = await userService.login(email, password);
+      localStorage.setItem("token", res.token);
       if (res.success) {
         navigate("/home");
       } else {

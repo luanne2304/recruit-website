@@ -11,6 +11,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import "./Myprofile.css";
 import Avatar from "../../assets/images/logocty.jpg";
 import userService from "../../services/userService";
+import { storage } from "../../services/fire_base";
 
 
 const VisuallyHiddenInput = styled("input")({
@@ -37,23 +38,41 @@ const Myprofile = () => {
   const [fullName, setFullName] = React.useState("");
   const [phone, setPhone] = React.useState("");
   const [email, setEmail] = React.useState("");
-  const [avatar, setAvatar] = React.useState("");
+  const [avatar, setAvatar] = React.useState(null);
   const [cv, setCv] = React.useState([]);
+  
 
   React.useEffect(() => {
     fetchUser();
   }, []);
 
   const fetchUser = async () => {
-    const res = await userService.getUser();
+    const res = await userService.getUserById();
     if (res.success) {
       setFullName(res.data.username);
       setPhone(res.data.sdt);
       setEmail(res.data.email);
       setAvatar(res.data.avatar);
       setCv(res.data.cv);
+
     }
   };
+
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      const reader = new FileReader();
+
+      reader.addEventListener('load', () => {
+        setAvatar(reader.result);
+      });
+
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  const handleChange = () => {
+    
+  }
 
   return (
     <Box>
@@ -77,7 +96,7 @@ const Myprofile = () => {
                   startIcon={<CloudUploadIcon />}
                 >
                   Upload file
-                  <VisuallyHiddenInput type="file" />
+                  <VisuallyHiddenInput type="file" onChange={handleImageChange} />
                 </Button>
               </Box>
             </Box>
@@ -123,7 +142,7 @@ const Myprofile = () => {
             </Box>
           </Box>
 
-          <Button sx={{ mt: 3, float: "right" }} variant="contained">
+          <Button sx={{ mt: 3, float: "right" }} variant="contained" onClick={() => handleChange()}>
             Xác nhận
           </Button>
           <Box sx={{ mt: 7, display: "flex", gap: 4 }}>
