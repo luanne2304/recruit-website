@@ -18,16 +18,36 @@ import {auth,provider} from "../../config/index"
 import {signInWithPopup} from "firebase/auth"
 import "@fontsource/roboto/400.css";
 import "./login.css";
+import userService from "../../services/userService";
+import { useNavigate } from "react-router-dom";
 
 
 const Login = () => {
-  const [value, setValue]=useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+  const loginByEmail = async () => {
+    try {
+      const res = await userService.login(email, password);
+      if (res.success) {
+        navigate("/home");
+      } else {
+        alert("Đăng nhập thất bại");
+      }
+    } catch (error) {
+      console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
+    }
+  };
+
+
 
   const loginWithGG= async ()=>{
     signInWithPopup(auth,provider).then(async (data)=>{
@@ -37,7 +57,7 @@ const Login = () => {
         email: data.user.email,
         photoURL: data.user.photoURL
       })
-      window.location.href = '/home';
+      navigate("/home");
       } catch(error){
         console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
       }
@@ -65,6 +85,7 @@ const Login = () => {
           sx={{ mb: "20px", width: "100%" }}
           id="outlined-basic"
           label="Email"
+          onChange={(e) => setEmail(e.target.value)}
           variant="outlined"
           InputProps={{
             startAdornment: (
@@ -81,6 +102,7 @@ const Login = () => {
           </InputLabel>
           <OutlinedInput
             id="outlined-adornment-password"
+            onChange={(e) => setPassword(e.target.value)}
             type={showPassword ? "text" : "password"}
             startAdornment={
               <InputAdornment position="start">
@@ -111,6 +133,7 @@ const Login = () => {
           sx={{ mt: "20px", width: "100%" }}
           variant="contained"
           color="success"
+          onClick={() => loginByEmail()}
         >
           Đăng nhập
         </Button>

@@ -10,6 +10,9 @@ import CV from "../../components/CV/CV";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import "./Myprofile.css";
 import Avatar from "../../assets/images/logocty.jpg";
+import userService from "../../services/userService";
+
+
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -31,6 +34,27 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const Myprofile = () => {
+  const [fullName, setFullName] = React.useState("");
+  const [phone, setPhone] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [avatar, setAvatar] = React.useState("");
+  const [cv, setCv] = React.useState([]);
+
+  React.useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const fetchUser = async () => {
+    const res = await userService.getUser();
+    if (res.success) {
+      setFullName(res.data.username);
+      setPhone(res.data.sdt);
+      setEmail(res.data.email);
+      setAvatar(res.data.avatar);
+      setCv(res.data.cv);
+    }
+  };
+
   return (
     <Box>
       <Box className="main" sx={{ mt: 10 }}>
@@ -43,7 +67,7 @@ const Myprofile = () => {
           </Box>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <img src={Avatar} style={{ width: 250 }} />
+              <img src={avatar || Avatar} style={{ width: 250 }} />
               <Box textAlign="center">
                 <Button
                   component="label"
@@ -69,6 +93,7 @@ const Myprofile = () => {
                   id="outlined-basic"
                   label="Nhập tên của bạn"
                   variant="outlined"
+                  value={fullName}
                 />
               </Box>
               <Box>
@@ -80,6 +105,7 @@ const Myprofile = () => {
                   id="outlined-basic"
                   label="Nhập SDT"
                   variant="outlined"
+                  value={phone}
                 />
               </Box>
               <Box>
@@ -91,6 +117,7 @@ const Myprofile = () => {
                   id="outlined-basic"
                   label="Nhập mail"
                   variant="outlined"
+                  value={email}
                 />
               </Box>
             </Box>
