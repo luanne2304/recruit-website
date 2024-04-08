@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const userRouter =require("./Routers/userRouter")
 const postRouter =require("./Routers/postRouter")
-
+const CORouter =require("./Routers/CORouter")
 
 dotenv.config();
 
@@ -26,22 +26,23 @@ app.use(cors(corsOption))
 
 app.use(userRouter)
 app.use(postRouter)
+app.use(CORouter)
 
 
 const url=process.env.URL_MONGO ;
 const port=process.env.PORT;
 
-// app.get('/api/getTree', (req, res) => {
-//   fs.readFile('./src/JsonTinhThanh/tree.json', 'utf8', (err, data) => {
-//     if (err) {
-//       console.error(err);
-//       return res.status(500).json({ error: 'Internal server error' });
-//     }
+app.get('/api/getTree', (req, res) => {
+  fs.readFile('./src/JsonTinhThanh/tree.json', 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
 
-//     const jsonData = JSON.parse(data);
-//     return res.json(jsonData);
-//   });
-// });
+    const jsonData = JSON.parse(data);
+    return res.json(jsonData);
+  });
+});
 
 mongoose.connect(url)
   .then(()=>{

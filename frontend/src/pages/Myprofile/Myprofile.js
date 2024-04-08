@@ -11,7 +11,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import "./Myprofile.css";
 import Avatar from "../../assets/images/logocty.jpg";
 import userService from "../../services/userService";
-import { storage } from "../../services/fire_base";
+// import { storage } from "../../services/fire_base";
 
 
 const VisuallyHiddenInput = styled("input")({
@@ -42,9 +42,9 @@ const Myprofile = () => {
   const [cv, setCv] = React.useState([]);
   
 
-  React.useEffect(() => {
-    fetchUser();
-  }, []);
+  // React.useEffect(() => {
+  //   fetchUser();
+  // }, []);
 
   const fetchUser = async () => {
     const res = await userService.getUserById();

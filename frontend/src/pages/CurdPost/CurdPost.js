@@ -81,6 +81,9 @@ const CurdPost = () => {
   const [tree,setTree]=useState()
 
   const [formData, setFormData] = useState({
+    city:null,
+    district:null,
+    ward:null,
     title: "",
     des: "",
     require: "",
@@ -154,6 +157,7 @@ const CurdPost = () => {
           tempQH.push({ label, code, parent_code });
         }
       }
+      setFormData({...formData,district:null,ward:null,city:value})
       setFetchQH(tempQH)
       console.log(tempQH)
     }
@@ -172,6 +176,7 @@ const CurdPost = () => {
           tempPX.push({ label, code });
         }
       }
+      setFormData({...formData,ward:null,district: value})
       setFetchPX(tempPX)
       console.log(tempPX)
     }
@@ -230,6 +235,7 @@ const CurdPost = () => {
                 <Autocomplete
                   disablePortal
                   id="combo-box-demo"
+                  value={formData.city}
                   options={fetchTP}
                   onChange={handleChangeTP}
                   sx={{ width: 300 }}
@@ -245,6 +251,7 @@ const CurdPost = () => {
                   disablePortal
                   id="combo-box-demo"
                   options={fetchQH}
+                  value={formData.district}
                   onChange={handleChangeQH}
                   sx={{ width: 300 }}
                   renderInput={(params) => <TextField {...params} label="Quận / Huyện" 
@@ -259,7 +266,8 @@ const CurdPost = () => {
                   disablePortal
                   id="combo-box-demo"
                   options={fetchPX}
-                  onChange={(event, value) => {console.log(value)}}
+                  value={formData.ward}
+                  onChange={(event, value) => {setFormData({...formData,ward:value})}}
                   sx={{ width: 300 }}
                   renderInput={(params) => <TextField {...params} label="Phường / Xã" 
                   />}
