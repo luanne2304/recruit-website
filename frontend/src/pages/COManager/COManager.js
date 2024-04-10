@@ -19,6 +19,7 @@ import { styled } from '@mui/material/styles';
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import CloudUploadIcon  from "@mui/icons-material/CloudUpload";
 import axios from "axios"
+import CropEasy from "../../components/Crop/CropEasy";
 import { FamilyRestroomTwoTone } from "@mui/icons-material";
 // import CropEasy from "../../components/Crop/CropEasy";
 
@@ -36,11 +37,23 @@ const VisuallyHiddenInput = styled('input')({
 
 const COManager = () => {
 
-  const [openCrop,setOpenCrop]=useState(false)
+  const [file, setFile] = useState(null);
+  const [photoURL, setPhotoURL] = useState(null);
+  const [openCrop, setOpenCrop] = useState(false);
+
   const [imgfile,setImgfile]= useState(null)
 
-  const test=async ()=> {
+  const handleChangeIMG = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFile(file);
+      setPhotoURL(URL.createObjectURL(file));
+      setOpenCrop(true);
+    }
+  };
 
+
+  const test=async ()=> {
 
     console.log(imgfile)
     const formData = new FormData();
@@ -57,7 +70,6 @@ const COManager = () => {
   }
 
   return (
-    // !openCrop ? (
     <Box>
       <Box className="main">
         <Box className="icontainer" sx={{ width: "1170px", mt: 8 }}>
@@ -197,7 +209,7 @@ const COManager = () => {
                   // onChange={(e)=>setImgfile(e.target.files[0])}
                 >
                   Upload file
-                  <VisuallyHiddenInput type="file" onChange={(e)=>setImgfile(e.target.files[0])}/>
+                  <VisuallyHiddenInput type="file" onChange={handleChangeIMG}/>
                 </Button>
               </Typography>
             </CardContent>
@@ -216,10 +228,8 @@ const COManager = () => {
           </Card>
         </Box>
       </Box>
-    </Box>
-    // ) : (
-    //   <CropEasy {...{ photoURL, setOpenCrop, setPhotoURL, setFile }} />
-    // )
+      {openCrop && <CropEasy {...{ photoURL, setOpenCrop, setPhotoURL, setFile }} />}
+    </Box> 
   );
 };
 

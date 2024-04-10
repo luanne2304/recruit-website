@@ -11,7 +11,7 @@ import {
 import React, { useState } from 'react';
 import Cropper from 'react-easy-crop';
 import { useAuth } from '../../context/AuthContext';
-import getCroppedImg from './utils/cropImage';
+import getCroppedImg from './CropImg';
 
 const CropEasy = ({ photoURL, setOpenCrop, setPhotoURL, setFile }) => {
   const { setAlert, setLoading } = useAuth();
