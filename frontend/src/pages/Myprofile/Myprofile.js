@@ -42,12 +42,13 @@ const Myprofile = () => {
   const [cv, setCv] = React.useState([]);
   
 
-  // React.useEffect(() => {
-  //   fetchUser();
-  // }, []);
+  React.useEffect(() => {
+    getUserData();
+  }, []);
 
-  const fetchUser = async () => {
+  const getUserData = async () => {
     const res = await userService.getUserById();
+    console.log(res);
     if (res.success) {
       setFullName(res.data.username);
       setPhone(res.data.sdt);
@@ -71,6 +72,12 @@ const Myprofile = () => {
   };
 
   const handleChange = () => {
+    const data = {
+      fullName: fullName,
+      sdt: phone,
+      avatar: avatar,
+    };
+    userService.updateUser(data);
     
   }
 
@@ -113,6 +120,7 @@ const Myprofile = () => {
                   label="Nhập tên của bạn"
                   variant="outlined"
                   value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                 />
               </Box>
               <Box>
@@ -125,6 +133,7 @@ const Myprofile = () => {
                   label="Nhập SDT"
                   variant="outlined"
                   value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
               </Box>
               <Box>

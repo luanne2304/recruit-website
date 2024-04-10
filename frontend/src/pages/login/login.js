@@ -19,7 +19,8 @@ import {signInWithPopup} from "firebase/auth"
 import "@fontsource/roboto/400.css";
 import "./login.css";
 import userService from "../../services/userService";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+
 
 
 const Login = () => {
@@ -39,6 +40,8 @@ const Login = () => {
     try {
       const res = await userService.login(email, password);
       localStorage.setItem("token", res.token);
+      console.log(res);
+      console.log(localStorage.getItem("token"));
       if (res.success) {
         navigate("/home");
       } else {
@@ -153,9 +156,9 @@ const Login = () => {
         <Box textAlign="center" sx={{ mt: "20px", width: "100%" }}>
           <Box>
             Bạn chưa có tài khoản?
-            <Link href="#" underline="none">
-              {" Đăng kí ngay"}
-            </Link>
+            <NavLink to="/register" underline="none">
+              Đăng ký
+            </NavLink>
           </Box>
         </Box>
       </Box>

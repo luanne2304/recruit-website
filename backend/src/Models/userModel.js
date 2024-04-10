@@ -4,9 +4,9 @@ const userSchema = new mongoose.Schema(
     {
     fullName: { type: String, required: true },
     email: { type: String, required: true },
-    password: { type: String},
-    sdt: { type: String },
-    avatar: { type: String },
+    password: { type: String, required: true},
+    sdt: { type: String, required: true, default: ''},
+    avatar: { type: String , required: true, default: ''},
     isAdmin:  { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
     status: { type: String, required: true, default: 'enable' }

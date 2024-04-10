@@ -34,11 +34,12 @@ const userService = {
     updateUser: async (data) => {
         const token = localStorage.getItem("token");
         console.log(data);
-        const res = await cf_axios.put("/user", data, {
+        const res = await cf_axios.patch("/user", data, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
+        console.log(res);
         return res.data;
     },
     };
