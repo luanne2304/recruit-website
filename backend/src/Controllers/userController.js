@@ -176,7 +176,6 @@ updateUser: async (req, res, next) => {
   try {
       const id = req.params;
       const data = req.body;
-      console.log(data);  
       const updateUser = await userModel.findByIdAndUpdate( id, data, { new: true });
       return res.status(200).json({
           success: true,

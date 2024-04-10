@@ -48,14 +48,12 @@ const Myprofile = () => {
 
   const getUserData = async () => {
     const res = await userService.getUserById();
-    console.log(res);
-    if (res.success) {
-      setFullName(res.data.username);
+    if(res.data) {
+      setFullName(res.data.fullName);
       setPhone(res.data.sdt);
       setEmail(res.data.email);
       setAvatar(res.data.avatar);
       setCv(res.data.cv);
-
     }
   };
 
@@ -77,8 +75,27 @@ const Myprofile = () => {
       sdt: phone,
       avatar: avatar,
     };
-    userService.updateUser(data);
-    
+    userService.updateUser(data).then((res) => {
+      if (res.success) {
+        alert("Cập nhật thành công");
+      }
+    });
+  }
+
+  const addNewCV = (e) => {
+    // open file selector select only pdf file
+    if(e.target.files.length === 0) return;
+
+    if(e.target.files[0].type !== "application/pdf") {
+      alert("Vui lòng chọn file pdf");
+      return;
+    }
+
+    // upload file to firebase
+    //get url
+
+    // save to database
+    // alter success
   }
 
   return (
@@ -158,7 +175,16 @@ const Myprofile = () => {
             <Typography variant="h5" component="div">
               CV đã lưu:
             </Typography>
-            <Button variant="contained">Thêm CV</Button>
+            <Button
+                  component="label"
+                  role={undefined}
+                  variant="contained"
+                  tabIndex={-1}
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload file
+                  <VisuallyHiddenInput type="file" onChange={addNewCV} />
+                </Button>
           </Box>
           <Box sx={{mt:2, width:"100%"}}>
             <Grid

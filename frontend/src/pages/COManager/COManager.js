@@ -19,7 +19,7 @@ import { styled } from '@mui/material/styles';
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import CloudUploadIcon  from "@mui/icons-material/CloudUpload";
 import axios from "axios"
-import CropEasy from "../../components/Crop/CropEasy";
+// import CropEasy from "../../components/Crop/CropEasy";
 import { FamilyRestroomTwoTone } from "@mui/icons-material";
 // import CropEasy from "../../components/Crop/CropEasy";
 
@@ -228,9 +228,9 @@ const COManager = () => {
           </Card>
         </Box>
       </Box>
-      {openCrop && <CropEasy {...{ photoURL, setOpenCrop, setPhotoURL, setFile }} />}
+      {/* {openCrop && <CropEasy {...{ photoURL, setOpenCrop, setPhotoURL, setFile }} />} */}
     </Box> 
   );
 };
-
+// /
 export default COManager;
