@@ -17,6 +17,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app)
 const provider= new GoogleAuthProvider()
-const logoDB = getStorage(app)
+const uploadimage = getStorage(app)
 
-module.exports = {auth, provider,logoDB}
+module.exports = {auth, provider,uploadimage}

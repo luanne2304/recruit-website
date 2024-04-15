@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Typography,
   TextField,
@@ -6,22 +6,19 @@ import {
   Card,
   Box,
   FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   InputLabel,
   FilledInput,
   InputAdornment,
   Button,
   Stack,
+  Autocomplete,
+
 } from "@mui/material/";
 import { styled } from '@mui/material/styles';
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import CloudUploadIcon  from "@mui/icons-material/CloudUpload";
 import axios from "axios"
-// import CropEasy from "../../components/Crop/CropEasy";
-import { FamilyRestroomTwoTone } from "@mui/icons-material";
-// import CropEasy from "../../components/Crop/CropEasy";
+import CropEasy from "../../components/Crop/CropEasy";
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -37,27 +34,56 @@ const VisuallyHiddenInput = styled('input')({
 
 const COManager = () => {
 
-  const [file, setFile] = useState(null);
-  const [photoURL, setPhotoURL] = useState(null);
-  const [openCrop, setOpenCrop] = useState(false);
+  const [fileLOGO, setFileLOGO] = useState(null);
+  const [photoURL, setPhotoURL] = useState("");
+  const [openCropLOGO, setOpenCropLOGO] = useState(false);
+  const [aspect,setAspect]=useState();
 
-  const [imgfile,setImgfile]= useState(null)
+  const [fetchTP, setFetchTP]=useState([])
+  const [fetchQH, setFetchQH]=useState([])
+  const [fetchPX, setFetchPX]=useState([])
+  const [tree,setTree]=useState()
 
-  const handleChangeIMG = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFile(file);
-      setPhotoURL(URL.createObjectURL(file));
-      setOpenCrop(true);
+  const [nameCO,setNameCO]=useState()
+  const [address,setAddress]=useState([{
+    city:"",
+    district:"",
+    ward:"",
+    address:"",
+  }])
+  const [desCO,setDesCO]=useState()
+  const [linkCO,setLinkCO]=useState()
+  const [staffto,setStaffto]=useState()
+  const [stafffrom,setStafffrom]=useState()
+  const [taxcode,setTaxcode]=useState()
+  const [iDusermanager,setIDusermanager]=useState()
+
+  const handleChangeLOGO = (e) => {
+    const fileLOGO = e.target.files[0];
+    if (fileLOGO) {
+      setFileLOGO(fileLOGO);
+      setPhotoURL(URL.createObjectURL(fileLOGO));
+      setOpenCropLOGO(true);
+      setAspect(1)
     }
   };
 
 
-  const test=async ()=> {
 
-    console.log(imgfile)
+
+  const test=async ()=> {
+    console.log(fileLOGO)
     const formData = new FormData();
-    formData.append('image', imgfile);
+    formData.append('image', fileLOGO);
+    formData.append('nameCO', nameCO);
+    formData.append('desCO', desCO);
+    formData.append('linkCO', linkCO);
+    formData.append('staffto', staffto);
+    formData.append('stafffrom', stafffrom);
+    formData.append('taxcode', taxcode);
+    formData.append('iDusermanager', iDusermanager);
+    
+
     try{
     await axios.post("http://localhost:4000/api/CO/create",formData,{
       headers: {
@@ -68,6 +94,29 @@ const COManager = () => {
       console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
     } 
   }
+
+  
+
+  useEffect(()=>{
+    const calltp =async ()=>{
+      try{
+        let tempCity=[]
+        const res= await axios.get(`http://localhost:4000/api/getTree`)
+        setTree(res.data);
+        for (const key in res.data) {
+          if (res.data.hasOwnProperty(key)) {
+            const code = res.data[key].code;
+            const label = res.data[key].name;
+            tempCity.push({ label, code });
+          }
+        }
+        setFetchTP(tempCity)
+        } catch(error){
+          console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+      }
+    }
+    calltp()
+  },[])
 
   return (
     <Box>
@@ -93,17 +142,6 @@ const COManager = () => {
               </Typography>
               <Typography className="form-item">
                 <Typography className="label-form" component="div">
-                  Tên công ty:
-                </Typography>
-                <TextField
-                  sx={{ width: "700px" }}
-                  id="outlined-basic"
-                  label="Nhập tên công ty"
-                  variant="outlined"
-                />
-              </Typography>
-              <Typography className="form-item">
-                <Typography className="label-form" component="div">
                   Mô tả:
                 </Typography>
                 <TextField
@@ -113,6 +151,7 @@ const COManager = () => {
                   variant="outlined"
                   multiline
                   minRows={3}
+                  onChange={(e)=> setDesCO(e.target.value)}
                 />
               </Typography>
               <Typography className="form-item">
@@ -124,6 +163,7 @@ const COManager = () => {
                   id="outlined-basic"
                   label="Nhập link"
                   variant="outlined"
+                  onChange={(e)=> setLinkCO(e.target.value)}
                 />
               </Typography>
               <Typography className="form-item">
@@ -132,10 +172,11 @@ const COManager = () => {
                 </Typography>
                 <FormControl sx={{ m: 1 }} variant="filled">
                   <InputLabel htmlFor="filled-adornment-amount">Từ</InputLabel>
-                  <FilledInput
+                  <FilledInput  
                     name="salaryto"
                     value={null}
                     id="filled-adornment-amount"
+                    onChange={(e)=> setStafffrom(e.target.value)}
                     startAdornment={
                       <InputAdornment position="start">
                         <SupervisedUserCircleIcon />
@@ -150,6 +191,7 @@ const COManager = () => {
                     name="salaryfrom"
                     value={null}
                     id="filled-adornment-amount"
+                    onChange={(e)=> setStaffto(e.target.value)}
                     startAdornment={
                       <InputAdornment position="start">
                         <SupervisedUserCircleIcon />
@@ -167,6 +209,7 @@ const COManager = () => {
                   id="outlined-basic"
                   label="Nhập Mã số thuế"
                   variant="outlined"
+                  onChange={(e)=> setTaxcode(e.target.value)}
                 />
               </Typography>
               <Typography className="form-item">
@@ -178,6 +221,7 @@ const COManager = () => {
                   id="outlined-basic"
                   label="Nhập tài khoản quản lý"
                   variant="outlined"
+                  // onChange={(e)=> setNameCO(e.target.value)}
                 />
               </Typography>
               <Typography className="form-item">
@@ -192,24 +236,7 @@ const COManager = () => {
                   startIcon={<CloudUploadIcon />}
                 >
                   Upload file
-                  <VisuallyHiddenInput type="file" />
-                </Button>
-              </Typography>
-              <Typography className="form-item">
-                <Typography className="label-form" component="div">
-                  Ảnh bìa công ty:
-                </Typography>
-                <Button
-                  component="label"
-                  role={undefined}
-                  variant="contained"
-                  tabIndex={-1}
-                  startIcon={<CloudUploadIcon />}
-                  // type="file"
-                  // onChange={(e)=>setImgfile(e.target.files[0])}
-                >
-                  Upload file
-                  <VisuallyHiddenInput type="file" onChange={handleChangeIMG}/>
+                  <VisuallyHiddenInput type="file"   onChange={handleChangeLOGO} />
                 </Button>
               </Typography>
             </CardContent>
@@ -228,7 +255,15 @@ const COManager = () => {
           </Card>
         </Box>
       </Box>
-      {/* {openCrop && <CropEasy {...{ photoURL, setOpenCrop, setPhotoURL, setFile }} />} */}
+      {openCropLOGO && (
+        <CropEasy
+          photoURL={photoURL}
+          setOpenCrop={setOpenCropLOGO}
+          setPhotoURL={setPhotoURL}
+          setFile={setFileLOGO}
+          aspect={aspect}
+        />
+      )}
     </Box> 
   );
 };

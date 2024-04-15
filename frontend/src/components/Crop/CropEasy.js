@@ -7,17 +7,15 @@ import {
   DialogContent,
   Slider,
   Typography,
+  Dialog 
 } from '@mui/material';
 import React, { useState } from 'react';
 import Cropper from 'react-easy-crop';
-import { useAuth } from '../../context/AuthContext';
 import getCroppedImg from './CropImg';
 
-const CropEasy = ({ photoURL, setOpenCrop, setPhotoURL, setFile }) => {
-  const { setAlert, setLoading } = useAuth();
+const CropEasy = ({ photoURL, setOpenCrop, setPhotoURL, setFile ,aspect}) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   const cropComplete = (croppedArea, croppedAreaPixels) => {
@@ -25,31 +23,39 @@ const CropEasy = ({ photoURL, setOpenCrop, setPhotoURL, setFile }) => {
   };
 
   const cropImage = async () => {
-    setLoading(true);
     try {
       const { file, url } = await getCroppedImg(
         photoURL,
         croppedAreaPixels,
-        rotation
       );
       setPhotoURL(url);
       setFile(file);
       setOpenCrop(false);
     } catch (error) {
-      setAlert({
-        isAlert: true,
-        severity: 'error',
-        message: error.message,
-        timeout: 5000,
-        location: 'modal',
-      });
+      alert("ngu1")
       console.log(error);
     }
-
-    setLoading(false);
+  };
+  const handleClose = () => {
+    setOpenCrop(false);
   };
   return (
     <>
+      <Dialog
+        open={true}
+        onClose={handleClose}
+        PaperProps={{
+          component: 'form',
+          onSubmit: (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            const formJson = Object.fromEntries(formData.entries());
+            const email = formJson.email;
+            console.log(email);
+            handleClose();
+          },
+        }}
+      >
       <DialogContent
         dividers
         sx={{
@@ -64,10 +70,8 @@ const CropEasy = ({ photoURL, setOpenCrop, setPhotoURL, setFile }) => {
           image={photoURL}
           crop={crop}
           zoom={zoom}
-          rotation={rotation}
-          aspect={1}
+          aspect={aspect}
           onZoomChange={setZoom}
-          onRotationChange={setRotation}
           onCropChange={setCrop}
           onCropComplete={cropComplete}
         />
@@ -84,16 +88,6 @@ const CropEasy = ({ photoURL, setOpenCrop, setPhotoURL, setFile }) => {
               step={0.1}
               value={zoom}
               onChange={(e, zoom) => setZoom(zoom)}
-            />
-          </Box>
-          <Box>
-            <Typography>Rotation: {rotation + '°'}</Typography>
-            <Slider
-              valueLabelDisplay="auto"
-              min={0}
-              max={360}
-              value={rotation}
-              onChange={(e, rotation) => setRotation(rotation)}
             />
           </Box>
         </Box>
@@ -120,6 +114,7 @@ const CropEasy = ({ photoURL, setOpenCrop, setPhotoURL, setFile }) => {
           </Button>
         </Box>
       </DialogActions>
+      </Dialog>
     </>
   );
 };

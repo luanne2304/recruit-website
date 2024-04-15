@@ -8,7 +8,7 @@ const COSchema = new mongoose.Schema(
     des: { type: String, required: true },
     scaleto: { type: Number , required: true},
     scalefrom: { type: Number , required: true},
-    address: [{ type: String , required: true}],
+    address: [{ type: String }],
     link: { type: String , required: true},
     taxcode: { type: Number, required: true },
     // idaccount_manager:  { type: Schema.Types.ObjectId, ref: 'users', required: true },
