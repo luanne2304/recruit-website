@@ -19,6 +19,7 @@ import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import CloudUploadIcon  from "@mui/icons-material/CloudUpload";
 import axios from "axios"
 import CropEasy from "../../components/Crop/CropEasy";
+import FormAddress from "../../components/FormAddress/FormAddress";
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -139,6 +140,18 @@ const COManager = () => {
                 component="div"
               >
                 Thêm Công ty
+              </Typography>
+              <Typography className="form-item">
+                <Typography className="label-form" component="div">
+                  Tên công ty:
+                </Typography>
+                <TextField
+                  sx={{ width: "700px" }}
+                  id="outlined-basic"
+                  label="Nhập tên công ty"
+                  variant="outlined"
+                  onChange={(e)=> setNameCO(e.target.value)}
+                />
               </Typography>
               <Typography className="form-item">
                 <Typography className="label-form" component="div">
