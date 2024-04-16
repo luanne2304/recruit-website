@@ -11,15 +11,16 @@ import {
   InputAdornment,
   Button,
   Stack,
-  Autocomplete,
+  Chip,
+
 
 } from "@mui/material/";
 import { styled } from '@mui/material/styles';
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import CloudUploadIcon  from "@mui/icons-material/CloudUpload";
-import axios from "axios"
 import CropEasy from "../../components/Crop/CropEasy";
 import FormAddress from "../../components/FormAddress/FormAddress";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -40,18 +41,17 @@ const COManager = () => {
   const [openCropLOGO, setOpenCropLOGO] = useState(false);
   const [aspect,setAspect]=useState();
 
-  const [fetchTP, setFetchTP]=useState([])
-  const [fetchQH, setFetchQH]=useState([])
-  const [fetchPX, setFetchPX]=useState([])
-  const [tree,setTree]=useState()
 
   const [nameCO,setNameCO]=useState()
-  const [address,setAddress]=useState([{
-    city:"",
-    district:"",
-    ward:"",
-    address:"",
-  }])
+  const [listaddress,setListaddress]=useState([])
+  const [address, setAddress] = useState(
+    {
+      city: null,
+      district: null,
+      ward: null,
+      streetnumber: "",
+    }
+  );
   const [desCO,setDesCO]=useState()
   const [linkCO,setLinkCO]=useState()
   const [staffto,setStaffto]=useState()
@@ -69,55 +69,37 @@ const COManager = () => {
     }
   };
 
-
+  const addChip = () => {
+    setListaddress([...listaddress, <Chip key={listaddress.length} label="Custom delete icon"  onDelete={handleDelete} deleteIcon={<DeleteIcon />} variant="outlined" />]);
+  };
 
 
   const test=async ()=> {
-    console.log(fileLOGO)
-    const formData = new FormData();
-    formData.append('image', fileLOGO);
-    formData.append('nameCO', nameCO);
-    formData.append('desCO', desCO);
-    formData.append('linkCO', linkCO);
-    formData.append('staffto', staffto);
-    formData.append('stafffrom', stafffrom);
-    formData.append('taxcode', taxcode);
-    formData.append('iDusermanager', iDusermanager);
+    console.log(address.length)
+    // const formData = new FormData();
+    // formData.append('image', fileLOGO);
+    // formData.append('nameCO', nameCO);
+    // formData.append('desCO', desCO);
+    // formData.append('linkCO', linkCO);
+    // formData.append('staffto', staffto);
+    // formData.append('stafffrom', stafffrom);
+    // formData.append('taxcode', taxcode);
+    // formData.append('iDusermanager', iDusermanager);
     
 
-    try{
-    await axios.post("http://localhost:4000/api/CO/create",formData,{
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-    } catch(error){
-      console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
-    } 
+    // try{
+    // await axios.post("http://localhost:4000/api/CO/create",formData,{
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data'
+    //   }
+    // })
+    // } catch(error){
+    //   console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+    // } 
   }
-
-  
-
-  useEffect(()=>{
-    const calltp =async ()=>{
-      try{
-        let tempCity=[]
-        const res= await axios.get(`http://localhost:4000/api/getTree`)
-        setTree(res.data);
-        for (const key in res.data) {
-          if (res.data.hasOwnProperty(key)) {
-            const code = res.data[key].code;
-            const label = res.data[key].name;
-            tempCity.push({ label, code });
-          }
-        }
-        setFetchTP(tempCity)
-        } catch(error){
-          console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
-      }
-    }
-    calltp()
-  },[])
+  const handleDelete = () => {
+    console.info('You clicked the delete icon.');
+  };
 
   return (
     <Box>
@@ -139,7 +121,7 @@ const COManager = () => {
                 variant="h4"
                 component="div"
               >
-                Thêm Công ty
+                Thêm Công ty 
               </Typography>
               <Typography className="form-item">
                 <Typography className="label-form" component="div">
@@ -153,6 +135,12 @@ const COManager = () => {
                   onChange={(e)=> setNameCO(e.target.value)}
                 />
               </Typography>
+
+              <FormAddress onClickaddADDRESS={addChip}  setAddress={setAddress} address={address}/>
+              <Typography className="form-item">
+              {listaddress}
+              </Typography>
+
               <Typography className="form-item">
                 <Typography className="label-form" component="div">
                   Mô tả:
@@ -181,7 +169,7 @@ const COManager = () => {
               </Typography>
               <Typography className="form-item">
                 <Typography className="label-form" component="div">
-                  Quy mô
+                  Quy mô:
                 </Typography>
                 <FormControl sx={{ m: 1 }} variant="filled">
                   <InputLabel htmlFor="filled-adornment-amount">Từ</InputLabel>
