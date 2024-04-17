@@ -5,7 +5,6 @@ import {
   TextField,
   Autocomplete,
   Box,
-  Chip,
   Button,
   Paper,
   TableContainer,
@@ -16,12 +15,18 @@ import {
   TableRow,
 } from "@mui/material/";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { convertLength } from "@mui/material/styles/cssUtils";
 
-const FormAddress = ({ setAddress, address }) => {
+const FormAddress = ({ listaddress, setListaddress}) => {
 
-  const [loadListaddress, setLoadListaddress] = useState([]);
-  const [listaddress, setListaddress] = useState([]);
+
+  const [address, setAddress] = useState(
+    {
+      city: null,
+      district: null,
+      ward: null,
+      streetnumber: "",
+    }
+  );
 
   const [fetchTP, setFetchTP] = useState([]);
   const [fetchQH, setFetchQH] = useState([]);
@@ -30,20 +35,11 @@ const FormAddress = ({ setAddress, address }) => {
 
   const handleDeleteAddress = (id) => {
 
-    
-
-    const newLoadListAddress = [...loadListaddress];
-    // console.log(typeof(newLoadListAddress))
-    newLoadListAddress.splice(id, 1)
-    // console.log(newLoadListAddress)
-    // const newLoadListAddress = loadListaddress.filter((_, index) => index !== id);
-    // console.log(newLoadListAddress)
-    setLoadListaddress(newLoadListAddress);
-
     const newListAddress = [...listaddress];
-    newListAddress.splice(id, 1);
-    // const newListAddress = listaddress.filter((_, index) => index !== id);
+    newListAddress.splice(id, 1)
+    console.log(newListAddress)
     setListaddress(newListAddress);
+
   };
 
   const addChip = () => {
@@ -55,24 +51,7 @@ const FormAddress = ({ setAddress, address }) => {
     //   city: null,
     //   streetnumber: "",
     // })
-    setListaddress(prevList => [...prevList, address]);
-    setLoadListaddress([
-      ...loadListaddress,
-      <TableRow>
-        <TableCell component="th" scope="row">
-          Số: 
-          {address.streetnumber}, P/X:
-          {address.ward.label}, Q/H:
-          {address.district.label}, TP/Tỉnh:
-          {address.city.label}
-        </TableCell>
-        <TableCell align="right">
-          <Button variant="outlined" startIcon={<DeleteIcon />} onClick={()=>handleDeleteAddress(loadListaddress.length)}>
-            Xóa
-          </Button>
-        </TableCell>
-      </TableRow>
-    ]);
+    setListaddress([...listaddress, address]);
   };
 
   const handleChangeTP = (event, value) => {
@@ -133,6 +112,7 @@ const FormAddress = ({ setAddress, address }) => {
     calltp();
     console.log(address.streetnumber);
   }, []);
+
   return (
     <>
       <Typography className="form-item">
@@ -207,7 +187,28 @@ const FormAddress = ({ setAddress, address }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {loadListaddress}
+              {listaddress.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell component="th" scope="row">
+                    Số:
+                    {item.streetnumber}, P/X:
+                    {item.ward.label}, Q/H:
+                    {item.district.label}, TP/Tỉnh:
+                    {item.city.label}
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button
+                      variant="outlined"
+                      startIcon={<DeleteIcon />}
+                      onClick={() =>
+                        handleDeleteAddress(index)
+                      }
+                    >
+                      Xóa
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>

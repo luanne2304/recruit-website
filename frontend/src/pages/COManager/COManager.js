@@ -11,8 +11,6 @@ import {
   InputAdornment,
   Button,
   Stack,
-  Chip,
-
 
 } from "@mui/material/";
 import { styled } from '@mui/material/styles';
@@ -20,7 +18,6 @@ import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import CloudUploadIcon  from "@mui/icons-material/CloudUpload";
 import CropEasy from "../../components/Crop/CropEasy";
 import FormAddress from "../../components/FormAddress/FormAddress";
-import DeleteIcon from '@mui/icons-material/Delete';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -43,15 +40,8 @@ const COManager = () => {
 
 
   const [nameCO,setNameCO]=useState()
-  const [listaddress,setListaddress]=useState([])
-  const [address, setAddress] = useState(
-    {
-      city: null,
-      district: null,
-      ward: null,
-      streetnumber: "",
-    }
-  );
+  const [listaddress, setListaddress] = useState([]);
+
   const [desCO,setDesCO]=useState()
   const [linkCO,setLinkCO]=useState()
   const [staffto,setStaffto]=useState()
@@ -69,13 +59,9 @@ const COManager = () => {
     }
   };
 
-  const addChip = () => {
-    setListaddress([...listaddress, <Chip key={listaddress.length} label="Custom delete icon"  onDelete={handleDelete} deleteIcon={<DeleteIcon />} variant="outlined" />]);
-  };
 
 
   const test=async ()=> {
-    console.log(address.length)
     // const formData = new FormData();
     // formData.append('image', fileLOGO);
     // formData.append('nameCO', nameCO);
@@ -97,9 +83,7 @@ const COManager = () => {
     //   console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
     // } 
   }
-  const handleDelete = () => {
-    console.info('You clicked the delete icon.');
-  };
+
 
   return (
     <Box>
@@ -136,10 +120,7 @@ const COManager = () => {
                 />
               </Typography>
 
-              <FormAddress onClickaddADDRESS={addChip}  setAddress={setAddress} address={address}/>
-              <Typography className="form-item">
-              {listaddress}
-              </Typography>
+              <FormAddress setListaddress={setListaddress} listaddress={listaddress}/>
 
               <Typography className="form-item">
                 <Typography className="label-form" component="div">
@@ -247,7 +228,7 @@ const COManager = () => {
                 sx={{ mb: 3, mr: 3, float: "right" }}
               >
                 <Button variant="outlined" color="error">
-                  Xóa bài
+                  Hủy
                 </Button>
                 <Button variant="contained" color="success" onClick={test}>
                   Lưu

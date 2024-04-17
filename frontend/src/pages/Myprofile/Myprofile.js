@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
@@ -11,7 +12,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import "./Myprofile.css";
 import Avatar from "../../assets/images/logocty.jpg";
 import userService from "../../services/userService";
-// import { storage } from "../../services/fire_base";
+import ButtonDialogFormPDF from "../../components/ButtonDialogFormPDF/ButtonDialogFormPDF";
 
 
 const VisuallyHiddenInput = styled("input")({
@@ -43,19 +44,34 @@ const Myprofile = () => {
   
 
   React.useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const id="660cfd11a53d71f4940dcc55"
+        const temp = [];
+        const res = await axios.get(`http://localhost:4000/api/user/${id}`);
+        res.data.data.CV.map((item)=>(
+          temp.push({filetitle:item.filetitle,linkfile:item.linkfile,_id:item._id})
+        ));
+        console.log(temp)
+        setCv(temp)
+      } catch (error) {
+        console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
+      }
+    };
     getUserData();
+    // getUserData();
   }, []);
 
-  const getUserData = async () => {
-    const res = await userService.getUserById();
-    if(res.data) {
-      setFullName(res.data.fullName);
-      setPhone(res.data.sdt);
-      setEmail(res.data.email);
-      setAvatar(res.data.avatar);
-      setCv(res.data.cv);
-    }
-  };
+  // const getUserData = async () => {
+  //   const res = await userService.getUserById();
+  //   if(res.data) {
+  //     setFullName(res.data.fullName);
+  //     setPhone(res.data.sdt);
+  //     setEmail(res.data.email);
+  //     setAvatar(res.data.avatar);
+  //     setCv(res.data.cv);
+  //   }
+  // };
 
   const handleImageChange = (e) => {
     if (e.target.files[0]) {
@@ -80,22 +96,6 @@ const Myprofile = () => {
         alert("Cập nhật thành công");
       }
     });
-  }
-
-  const addNewCV = (e) => {
-    // open file selector select only pdf file
-    if(e.target.files.length === 0) return;
-
-    if(e.target.files[0].type !== "application/pdf") {
-      alert("Vui lòng chọn file pdf");
-      return;
-    }
-
-    // upload file to firebase
-    //get url
-
-    // save to database
-    // alter success
   }
 
   return (
@@ -175,16 +175,7 @@ const Myprofile = () => {
             <Typography variant="h5" component="div">
               CV đã lưu:
             </Typography>
-            <Button
-                  component="label"
-                  role={undefined}
-                  variant="contained"
-                  tabIndex={-1}
-                  startIcon={<CloudUploadIcon />}
-                >
-                  Upload file
-                  <VisuallyHiddenInput type="file" onChange={addNewCV} />
-                </Button>
+                <ButtonDialogFormPDF></ButtonDialogFormPDF>
           </Box>
           <Box sx={{mt:2, width:"100%"}}>
             <Grid
@@ -192,9 +183,9 @@ const Myprofile = () => {
               rowSpacing={2}
               columnSpacing={{ xs: 1, sm: 2, md: 3 }}
             >
-              {Array.from(Array(5)).map((_, index) => (
-                <Grid item xs={6}>
-                  <CV>1</CV>
+              {cv.map((item)=>(
+                <Grid item xs={6} >
+                  <CV title={item.filetitle} id={item._id} link={item.linkfile}></CV>
                 </Grid>
               ))}
             </Grid>

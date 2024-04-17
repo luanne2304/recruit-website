@@ -2,7 +2,7 @@
 const COModel = require("../Models/COModel");
 const {ref,uploadBytesResumable,getDownloadURL} =require("firebase/storage")
 const {v4} =require("uuid")
-const { auth,uploadimage } = require('../config/index')
+const { auth,storage } = require('../config/index')
 
 
 
@@ -25,7 +25,7 @@ const COController = {
         const metadata = {
           contentType: file.type,
         }
-        const imgref = await ref(uploadimage,`logos/${file.filename}.${v4()}`)
+        const imgref = await ref(storage,`logos/${file.filename}.${v4()}`)
         const snapshot =await uploadBytesResumable(imgref, file.buffer, metadata);
         const downloadURL = await getDownloadURL(snapshot.ref);
         const newCO = new COModel({
@@ -50,7 +50,6 @@ const COController = {
       });
     }
   },
-
 }
 
 module.exports = COController;

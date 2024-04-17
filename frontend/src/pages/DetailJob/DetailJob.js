@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
@@ -13,10 +13,21 @@ import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import FlagIcon from '@mui/icons-material/Flag';
 import Logocty from "../../assets/images/logocty.jpg";
 import COjob from "../../components/COjob/COjob";
+import DialogApplyCV from "../../components/DialogApplyCV/DialogApplyCV";
 import "./DetailJob.css";
 
+
 const DetailJob = () => {
+
+  const [openApply,setOpenApply]=useState(false)
+
+  const handleChangeApply=()=>{
+    setOpenApply(true)
+  }
+
   return (
+  <>
+    <DialogApplyCV setOpen={setOpenApply} open={openApply} ></DialogApplyCV>
     <Box>
       <Box className="main">
         <Box className="icontainer" sx={{ width: "1170px", mt: 8 }}>
@@ -73,6 +84,7 @@ const DetailJob = () => {
                         variant="contained"
                         color="success"
                         endIcon={<SendIcon />}
+                        onClick={handleChangeApply}
                       >
                         Ứng tuyển
                       </Button>
@@ -139,6 +151,7 @@ const DetailJob = () => {
                         variant="contained"
                         color="success"
                         endIcon={<SendIcon />}
+                        onClick={handleChangeApply}
                       >
                         Ứng tuyển
                       </Button>
@@ -215,6 +228,7 @@ const DetailJob = () => {
         </Box>
       </Box>
     </Box>
+    </>
   );
 };
 

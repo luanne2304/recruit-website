@@ -18,6 +18,7 @@ import UserManager from "./pages/UserManager/UserManager";
 import ReportManager from "./pages/ReportManager/ReportManager";
 import COManager from "./pages/COManager/COManager";
 import Adminlayout from "./layouts/adminlayout"
+import Test from "./pages/test";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
           <Route path="/admin/ReportPosts" element={<ReportManager />} />
           <Route path="/admin/UserManager" element={<UserManager />} />
           <Route path="/admin/COManager" element={<COManager />} />
+          <Route path="/admin/test" element={<Test />} />
       </Route>
       </Routes>
     </Router>

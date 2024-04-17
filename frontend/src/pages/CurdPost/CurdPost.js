@@ -159,7 +159,6 @@ const CurdPost = () => {
       }
       setFormData({...formData,district:null,ward:null,city:value})
       setFetchQH(tempQH)
-      console.log(tempQH)
     }
   };
 
@@ -178,7 +177,6 @@ const CurdPost = () => {
       }
       setFormData({...formData,ward:null,district: value})
       setFetchPX(tempPX)
-      console.log(tempPX)
     }
   };
 
