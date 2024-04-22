@@ -5,6 +5,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import "./CV.css";
 
 const CV = ({title,link,id}) => {
+
   const handleClick = (event) => {
     event.preventDefault();
     window.open(link, "_blank");

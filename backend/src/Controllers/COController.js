@@ -10,7 +10,7 @@ const COController = {
   
   create: async (req, res, next) => {
     try {
-      const {nameCO,desCO,linkCO,staffto,stafffrom,taxcode,iDusermanager }= req.body
+      const {nameCO,desCO,linkCO,scaleto,scalefrom,taxcode,iDusermanager,listaddress }= req.body
       if (!req.file) {
         return res.status(400).json({
           success: false,
@@ -25,6 +25,19 @@ const COController = {
         const metadata = {
           contentType: file.type,
         }
+        const formatListaddress=[]
+        const temp = JSON.parse(listaddress)
+        temp.map((i)=>{
+        formatListaddress.push({
+          city:i.city.label,
+          city_code:i.city.code,
+          district:i.district.label,
+          district_code:i.district.code,
+          ward:i.ward.label,
+          ward_code:i.ward.code,
+          streetnumber:i.streetnumber,
+        })
+      })
         const imgref = await ref(storage,`logos/${file.filename}.${v4()}`)
         const snapshot =await uploadBytesResumable(imgref, file.buffer, metadata);
         const downloadURL = await getDownloadURL(snapshot.ref);
@@ -32,10 +45,12 @@ const COController = {
           name: nameCO,
           logo: downloadURL,
           des: desCO,
-          scaleto: staffto,
-          scalefrom: stafffrom,
+          scaleto: scaleto,
+          scalefrom: scalefrom,
           link: linkCO,
           taxcode: taxcode,
+          idaccount_manager:iDusermanager,
+          address:formatListaddress
         })
         const createCO = await COModel.create(newCO);
       return res.status(200).json({

@@ -1,4 +1,5 @@
 const postModel = require("../Models/postModel");
+const COModel = require("../Models/COModel");
 
 const postController = {
     create: async  (req, res, next) => {
@@ -37,11 +38,41 @@ const postController = {
 
       getALLjob: async  (req, res, next) => {
         try {
-          const currentDate =new Date() 
-          const getPost = await postModel.find({status:true, duration: { $gte: currentDate }}).sort({ createdAt: -1 });;
+          const currentDate =new Date()           
+          const getPost = await postModel.find({status:true, duration: { $gte: currentDate }}).sort({ createdAt: -1 });
+          const temp=[]
+
+          await Promise.all(getPost.map(async (i) => {
+            const CO = await COModel.findById(i.CO);
+            var a = {};
+            a.nameCO = CO ? CO.name : null;
+            a.logoCO = CO ? CO.logo : null;
+            a= {...a,i}
+            temp.push(a);
+          }));
+
+          console.log(temp)
           return res.status(200).json({
             success: true,
-            data: getPost,
+            data: temp,
+          });
+        } catch (error) {
+          return res.status(500).json({
+            success: false,
+            message: error.message,
+          });
+        }
+      },
+
+      getDetailjob: async  (req, res, next) => {
+        try {
+          const id = req.params.id;
+          const getPostbyID = await postModel.findById(id)
+          const getCObyID = await COModel.findById(getPostbyID.CO)
+          return res.status(200).json({
+            success: true,
+            post: getPostbyID,
+            co: getCObyID
           });
         } catch (error) {
           return res.status(500).json({

@@ -16,7 +16,7 @@ const postSchema = new mongoose.Schema(
       exp: [{ type: String , required: true }]
     },
     status: { type: Boolean, default:true},
-    CO:{ type: String, required: true}
+    CO:{ type: mongoose.Schema.Types.ObjectId, ref:"cos"}
   },{
     timestamps: true,
   }

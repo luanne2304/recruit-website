@@ -12,7 +12,6 @@ import "./FindJob.css";
 const FindJob = () => {
 
   const [listjobs, setListjobs] =useState([])
-  const [detailjob, setDetailjob] =useState([])
   const [active,setActive] = useState(0)
 
   useEffect(() => {
@@ -20,12 +19,11 @@ const FindJob = () => {
       try {
         const response  = await axios.get(`http://localhost:4000/api/post/getALLjob`);
         setListjobs(response.data.data)
-        setDetailjob(response.data.data)
+        console.log(response.data.data)
       } catch(error) {
         console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
       }
     };
-  
     getALLjob();
   },[])
 
@@ -69,11 +67,8 @@ const FindJob = () => {
               ))}
             </Box>
             <Box className="content-detailjob" >
-              {/* { (detailjob!= null) &&
-                (<DetailJobswift job={detailjob}></DetailJobswift> )
-              } */}
-                {detailjob && detailjob.length > 0 && (
-                <DetailJobswift job={detailjob[active]}></DetailJobswift>
+                {listjobs && listjobs.length > 0 && (
+                <DetailJobswift job={listjobs[active]}></DetailJobswift>
               )}
             </Box>
           </Box>

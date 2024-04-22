@@ -312,7 +312,7 @@ const CurdPost = () => {
                     </InputLabel>
                     <FilledInput
                       name="salaryto"
-                      value={formData.salaryto}
+                      value={formData.salaryfrom}
                       onChange={handleChange}
                       id="filled-adornment-amount"
                       startAdornment={
@@ -327,7 +327,7 @@ const CurdPost = () => {
                     </InputLabel>
                     <FilledInput
                       name="salaryfrom"
-                      value={formData.salaryfrom}
+                      value={formData.salaryto}
                       onChange={handleChange}
                       id="filled-adornment-amount"
                       startAdornment={

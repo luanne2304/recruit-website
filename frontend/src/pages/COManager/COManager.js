@@ -1,4 +1,5 @@
 import React, { useState,useEffect } from "react";
+import axios from "axios";
 import {
   Typography,
   TextField,
@@ -44,8 +45,8 @@ const COManager = () => {
 
   const [desCO,setDesCO]=useState()
   const [linkCO,setLinkCO]=useState()
-  const [staffto,setStaffto]=useState()
-  const [stafffrom,setStafffrom]=useState()
+  const [scaleto,setStaffto]=useState()
+  const [scalefrom,setStafffrom]=useState()
   const [taxcode,setTaxcode]=useState()
   const [iDusermanager,setIDusermanager]=useState()
 
@@ -62,26 +63,28 @@ const COManager = () => {
 
 
   const test=async ()=> {
-    // const formData = new FormData();
-    // formData.append('image', fileLOGO);
-    // formData.append('nameCO', nameCO);
-    // formData.append('desCO', desCO);
-    // formData.append('linkCO', linkCO);
-    // formData.append('staffto', staffto);
-    // formData.append('stafffrom', stafffrom);
-    // formData.append('taxcode', taxcode);
-    // formData.append('iDusermanager', iDusermanager);
-    
+    console.log(listaddress)
+    const formData = new FormData();
+    formData.append('image', fileLOGO);
+    formData.append('nameCO', nameCO);
+    formData.append('desCO', desCO);
+    formData.append('linkCO', linkCO);
+    formData.append('scaleto', scaleto);
+    formData.append('scalefrom', scalefrom);
+    formData.append('taxcode', taxcode);
+    formData.append('iDusermanager', iDusermanager);
+    formData.append('listaddress', JSON.stringify(listaddress));
 
-    // try{
-    // await axios.post("http://localhost:4000/api/CO/create",formData,{
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data'
-    //   }
-    // })
-    // } catch(error){
-    //   console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
-    // } 
+    try{
+    const res =await axios.post("http://localhost:4000/api/CO/create",formData,{
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+  )
+    } catch(error){
+      console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+    } 
   }
 
 
@@ -155,7 +158,7 @@ const COManager = () => {
                 <FormControl sx={{ m: 1 }} variant="filled">
                   <InputLabel htmlFor="filled-adornment-amount">Từ</InputLabel>
                   <FilledInput  
-                    name="salaryto"
+                    name="salaryfrom"
                     value={null}
                     id="filled-adornment-amount"
                     onChange={(e)=> setStafffrom(e.target.value)}
@@ -170,7 +173,7 @@ const COManager = () => {
                 <FormControl sx={{ m: 1 }} variant="filled">
                   <InputLabel htmlFor="filled-adornment-amount">Đến</InputLabel>
                   <FilledInput
-                    name="salaryfrom"
+                    name="salaryto"
                     value={null}
                     id="filled-adornment-amount"
                     onChange={(e)=> setStaffto(e.target.value)}
@@ -203,7 +206,7 @@ const COManager = () => {
                   id="outlined-basic"
                   label="Nhập tài khoản quản lý"
                   variant="outlined"
-                  // onChange={(e)=> setNameCO(e.target.value)}
+                  onChange={(e)=> setIDusermanager(e.target.value)}
                 />
               </Typography>
               <Typography className="form-item">

@@ -3,6 +3,6 @@ const ApplicationsRouter = express.Router();
 const ApplicationsController = require("../Controllers/ApplicationsController");
 
 
-ApplicationsRouter.post("/api/Applications/create", ApplicationsController.apply);
+ApplicationsRouter.post("/api/Applications/apply", ApplicationsController.apply);
 
 module.exports = ApplicationsRouter;
