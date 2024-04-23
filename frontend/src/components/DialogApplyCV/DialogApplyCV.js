@@ -23,6 +23,8 @@ export default function DialogApplyCV({setOpen,open}) {
 
     const handleClose = () => {
         setOpen(false);
+        setError(false);
+        setHelperText("")
     };
 
     const handleSubmit = () => {
@@ -52,7 +54,6 @@ export default function DialogApplyCV({setOpen,open}) {
         res.data.data.CV.map((item)=>(
           temp.push({filetitle:item.filetitle,linkfile:item.linkfile,_id:item._id})
         ));
-        console.log(temp)
         setCVs(temp)
       } catch (error) {
         console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
@@ -83,9 +84,10 @@ export default function DialogApplyCV({setOpen,open}) {
                 name="radio-buttons-group"
                 onChange={handleRadioChange}
             >
-                {CVs.map((item)=>(
+                {CVs.map((item,i)=>(
+                  <div key={i}>
                     <FormControlLabel value={item._id} control={<Radio />} label={<CV title={item.filetitle} link={item.linkfile} id={item._id}></CV>} />
-                    
+                  </div>
                 ))}
 
             </RadioGroup>

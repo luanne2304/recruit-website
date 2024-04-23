@@ -6,7 +6,7 @@ const postSchema = new mongoose.Schema(
     des: { type: String, required: true },
     require: { type: String , required: true},
     benefit: { type: String , required: true},
-    address: { type: String , required: true},
+    address: { type: String, required: true},
     form: { type: String , required: true},
     salaryto: { type: Number},
     salaryfrom: { type: Number},
@@ -16,7 +16,7 @@ const postSchema = new mongoose.Schema(
       exp: [{ type: String , required: true }]
     },
     status: { type: Boolean, default:true},
-    CO:{ type: mongoose.Schema.Types.ObjectId, ref:"cos"}
+    CO:{ type: mongoose.Schema.Types.ObjectId, ref:"COs"}
   },{
     timestamps: true,
   }

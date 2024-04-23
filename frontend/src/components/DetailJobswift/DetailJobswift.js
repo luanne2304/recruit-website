@@ -11,12 +11,14 @@ import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import PlaceIcon from "@mui/icons-material/Place";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LogoCty from "../../assets/images/logocty.jpg";
+import DialogApplyCV from "../DialogApplyCV/DialogApplyCV";
 import "./DetailJobswift.css";
 
 
 const DetailJobswift = ({job}) => {
 
-  // console.log(job)
+  const [open, setOpen]=React.useState(false)
+
   const timecalculator =()=>{
     const currentDate = new Date(); // Lấy ngày và giờ hiện tại
     const difference = (currentDate - new Date(job.createdAt))/1000; // Tính thời gian chênh lệch
@@ -37,6 +39,8 @@ const DetailJobswift = ({job}) => {
   }
   
   return (
+  <>
+  <DialogApplyCV open={open} setOpen={setOpen}/>
     <Box sx={{ width: "100%", height: "100%", mr: 2 }}>
       <Card
         sx={{ p: 3 }}
@@ -49,16 +53,16 @@ const DetailJobswift = ({job}) => {
         <React.Fragment>
           <CardContent>
             <Box display="flex" alignItems="center">
-              <img className="swift-logoCO-recruitment" src={LogoCty}></img>
+              <img className="swift-logoCO-recruitment" src={job.logoCO? job.logoCO: LogoCty}></img>
               <Box>
                 <Typography variant="h5" component="div">
                   {job.title}
                 </Typography>
-                <Typography color="text.secondary">{job.CO}</Typography>
+                <Typography color="text.secondary">{job.nameCO? job.nameCO: job.CO}</Typography>
                 <Box display="flex" alignItems="center" sx={{ mt: 1 }}>
                   <PaidIcon></PaidIcon>
                   <Typography variant="body2" sx={{ ml: 1, fontSize: 25 }}>
-                    {job.salaryto} - {job.salaryfrom} USD
+                    {job.salaryfrom} - {job.salaryto} USD
                   </Typography>
                 </Box>
               </Box>
@@ -67,6 +71,7 @@ const DetailJobswift = ({job}) => {
               sx={{ mt: "20px", width: "100%" }}
               variant="contained"
               color="error"
+              onClick={()=> setOpen(true)}
             >
               Ứng tuyển
             </Button>
@@ -124,6 +129,7 @@ const DetailJobswift = ({job}) => {
         </React.Fragment>
       </Card>
     </Box>
+    </>
   );
 };
 

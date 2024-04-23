@@ -95,7 +95,7 @@ const CurdPost = () => {
     duration: null,
     skill: [],
     exp: [],
-    CO: "Tập đoàn Hoa sen",
+    CO: "661cead4df78725c5b387ac3",
   });
 
   

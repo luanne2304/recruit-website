@@ -13,13 +13,28 @@ const FindJob = () => {
 
   const [listjobs, setListjobs] =useState([])
   const [active,setActive] = useState(0)
+  
+  const showjobswift = (i)=>{
+    setActive(i)
+  }
+
+  const getFilterjob = async (filter) => {
+    try {
+      const response  = await axios.get(`http://localhost:4000/api/post/getFilterjob`,{
+        params:filter
+      });
+      setListjobs(response.data.data)
+    } catch(error) {
+      console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+    }
+  };
+
 
   useEffect(() => {
     const getALLjob = async () => {
       try {
         const response  = await axios.get(`http://localhost:4000/api/post/getALLjob`);
         setListjobs(response.data.data)
-        console.log(response.data.data)
       } catch(error) {
         console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
       }
@@ -27,9 +42,6 @@ const FindJob = () => {
     getALLjob();
   },[])
 
-  const showjobswift = (i)=>{
-    setActive(i)
-  }
 
   return (
     <Box sx={{ position: "relative"}}>
@@ -55,20 +67,19 @@ const FindJob = () => {
                 <SearchIcon></SearchIcon> Tìm kiếm
               </Button>
             </Box>
-            <ButtonDialogFilter></ButtonDialogFilter>
+            <ButtonDialogFilter setFilter={getFilterjob}></ButtonDialogFilter>
           </Box>
           <Box sx={{ mt: 3 }} display={"flex"}>
             <Box className="content-listjobs">
               {Array.isArray(listjobs) &&  listjobs.map((item, i)=>(
                 <div key={i} onClick={()=>showjobswift(i)}>
                   <JobSummary job={item} ></JobSummary>
-
                 </div>
               ))}
             </Box>
             <Box className="content-detailjob" >
                 {listjobs && listjobs.length > 0 && (
-                <DetailJobswift job={listjobs[active]}></DetailJobswift>
+                <DetailJobswift  job={listjobs[active]}></DetailJobswift>
               )}
             </Box>
           </Box>

@@ -21,8 +21,22 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const minDistance = 500;
 
-export default function ButtonDialogFilter() {
+export default function ButtonDialogFilter({setFilter}) {
+
   const [open, setOpen] = React.useState(false);
+
+  const [expObj, setExpObj]=React.useState([])
+  const [skillObj, setSkillObj]=React.useState([])
+  const [formObj, setFormObj]=React.useState([])
+
+  const [formData, setFormData] = React.useState({
+    city: "All",
+    salary:[0, 10000],
+    skill: [],
+    exp: [],
+    form: [],
+  });
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -34,7 +48,41 @@ export default function ButtonDialogFilter() {
     setOpen(false);
   };
 
-  const [valuewage, setvaluewage] = React.useState([0, 10000]);
+  const handleresetFilter=()=>{
+    setFormData({
+      city: "All",
+      salary:[0, 10000],
+      skill: [],
+      exp: [],
+      form: [],
+    })
+    setFormObj([])
+    setSkillObj([])
+    setExpObj([])
+  }
+
+  const isOptionEqualToValue = (option, value) => {
+    if (!value) {
+      return false;
+    }
+    return option.title === value.title;
+  };
+
+  const handleChangeFormData = (event) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
+  const handleChangeExp = (event, newValue) => {
+    setExpObj(newValue);
+  };
+
+  const handleChangeSkill = (event, newValue) => {
+    setSkillObj(newValue );
+  };
+
+  const handleChangeForm = (event, newValue) => {
+    setFormObj(newValue );
+  };
 
   const handleChangewage = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
@@ -42,15 +90,15 @@ export default function ButtonDialogFilter() {
     }
 
     if (activeThumb === 0) {
-      setvaluewage([
-        Math.min(newValue[0], valuewage[1] - minDistance),
-        valuewage[1],
-      ]);
+      setFormData({...formData,salary: [
+        Math.min(newValue[0], formData.salary[1] - minDistance),
+        formData.salary[1],
+      ]});
     } else {
-      setvaluewage([
-        valuewage[0],
-        Math.max(newValue[1], valuewage[0] + minDistance),
-      ]);
+      setFormData({...formData,salary:[
+        formData.salary[0],
+        Math.max(newValue[1], formData.salary[0] + minDistance),
+      ]});
     }
   };
 
@@ -119,6 +167,23 @@ export default function ButtonDialogFilter() {
     { title: "Fluter" },
     { title: "React Native" },
   ];
+  
+  const test =async()=>{
+    if(skillObj.length>0){
+      formData.skill=await skillObj.map(skill => skill.title)
+    }
+    else{formData.skill=[] }
+    if(expObj.length>0){
+      formData.exp=await expObj.map(exp => exp.title)
+    }
+    else{formData.exp=[] }
+    if(formObj.length>0){
+      formData.form=await formObj.map(form => form.title)
+    }
+    else{formData.form=[] }
+    setFilter(formData)
+  }
+
   return (
     <React.Fragment>
       <Button
@@ -143,13 +208,15 @@ export default function ButtonDialogFilter() {
               id="outlined-select-currency-native"
               select
               label="Native select"
-              defaultValue="EUR"
+              name="city"
+              value={formData.city}
+              onChange={handleChangeFormData}
               SelectProps={{
                 native: true,
               }}
             >
               {currencies.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option key={option.value} value={option.label}>
                   {option.label}
                 </option>
               ))}
@@ -161,6 +228,9 @@ export default function ButtonDialogFilter() {
               options={levelskill}
               disableCloseOnSelect
               getOptionLabel={(option) => option.title}
+              value={expObj}
+              onChange={handleChangeExp}
+              isOptionEqualToValue={isOptionEqualToValue}
               renderOption={(props, option, { selected }) => (
                 <li {...props}>
                   <Checkbox
@@ -187,7 +257,10 @@ export default function ButtonDialogFilter() {
               id="checkboxes-tags-demo"
               options={skills}
               disableCloseOnSelect
+              value={skillObj}
               getOptionLabel={(option) => option.title}
+              onChange={handleChangeSkill}
+              isOptionEqualToValue={isOptionEqualToValue}
               renderOption={(props, option, { selected }) => (
                 <li {...props}>
                   <Checkbox
@@ -210,11 +283,11 @@ export default function ButtonDialogFilter() {
             />
             <Box>Mức lương</Box>
             <Box>
-              {valuewage[0]}$ - {valuewage[1]}$
+              {formData.salary[0]}$ - {formData.salary[1]}$
             </Box>
             <Slider
               getAriaLabel={() => "Minimum distance"}
-              value={valuewage}
+              value={formData.salary}
               onChange={handleChangewage}
               min={0}
               max={10000}
@@ -228,6 +301,9 @@ export default function ButtonDialogFilter() {
               options={workingform}
               disableCloseOnSelect
               getOptionLabel={(option) => option.title}
+              value={formObj}
+              onChange={handleChangeForm}
+              isOptionEqualToValue={isOptionEqualToValue}
               renderOption={(props, option, { selected }) => (
                 <li {...props}>
                   <Checkbox
@@ -251,7 +327,10 @@ export default function ButtonDialogFilter() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} autoFocus>
+        <Button onClick={handleresetFilter} autoFocus>
+            Xóa bộ lọc
+          </Button>
+          <Button onClick={test} autoFocus>
             Áp dụng
           </Button>
         </DialogActions>
