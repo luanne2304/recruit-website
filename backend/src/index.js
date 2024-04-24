@@ -8,6 +8,7 @@ const fs = require('fs');
 const userRouter =require("./Routers/userRouter")
 const postRouter =require("./Routers/postRouter")
 const CORouter =require("./Routers/CORouter")
+const CVRouter =require("./Routers/CVRouter")
 const ApplicationsRouter =require("./Routers/ApplicationsRouter")
 
 dotenv.config();
@@ -28,6 +29,7 @@ app.use(cors(corsOption))
 app.use(userRouter)
 app.use(postRouter)
 app.use(CORouter)
+app.use(CVRouter)
 app.use(ApplicationsRouter)
 
 

@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const ApplicationsSchema = new mongoose.Schema(
     {
-    cvId: { type: String, required: true },
-    postId: { type: String, required: true },
+    cvId: { type: mongoose.Schema.Types.ObjectId, required: true,ref: "CVs" },
+    postId: { type: mongoose.Schema.Types.ObjectId, required: true ,ref: "posts",},
     status: { type: String, default:"pending"},
   },{
     timestamps: true,

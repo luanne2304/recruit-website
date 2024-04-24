@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import moment from "moment"
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
@@ -21,7 +22,6 @@ import "./DetailJob.css";
 const DetailJob = () => {
   const [openApply, setOpenApply] = useState(false);
   const [fetchpost, setFetchpost] = useState(null);
-  const [fetchco, setFetchco] = useState(null);
 
   const { idjob } = useParams();
 
@@ -35,8 +35,7 @@ const DetailJob = () => {
         const response = await axios.get(
           `http://localhost:4000/api/post/getDetailjob/${idjob}`
         );
-        setFetchpost(response.data.post);
-        setFetchco(response.data.co);
+        setFetchpost(response.data.data);
       } catch (error) {
         console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
       }
@@ -93,7 +92,7 @@ const DetailJob = () => {
                           ></PlaceIcon>
                           <Box>
                             <Typography variant="body2">Địa điểm</Typography>
-                            <Typography variant="body2">Hà Nội</Typography>
+                            <Typography variant="body2">{fetchpost && fetchpost.address.city}</Typography>
                           </Box>
                         </Box>
                       </Box>
@@ -118,7 +117,7 @@ const DetailJob = () => {
                           sx={{ display: "flex", alignItems: "center" }}
                         >
                           <AccessTimeIcon></AccessTimeIcon>Thời hạn nộp :
-                          01/04/2024
+                          {fetchpost && moment(fetchpost.duration).format('DD/MM/YYYY')}
                         </Typography>
                       </Box>
                     </CardContent>
@@ -173,7 +172,7 @@ const DetailJob = () => {
                       <Box>
                         <Typography variant="h6">Địa chỉ làm việc</Typography>
                         <Typography>
-                          {fetchpost && fetchpost.address}
+                          {fetchpost && fetchpost.address.streetnumber +", "+fetchpost.address.ward +", "+fetchpost.address.district +", "+fetchpost.address.city}
                         </Typography>
                       </Box>
                       <Box
@@ -204,7 +203,7 @@ const DetailJob = () => {
                       <Typography variant="h6">
                         Các công việc liên quan
                       </Typography>
-                      <COjob></COjob>
+                      {/* <COjob></COjob> */}
                     </CardContent>
                   </Card>
                 </Box>
@@ -222,13 +221,13 @@ const DetailJob = () => {
                       <Box
                         sx={{ display: "flex", alignItems: "center", gap: 1 }}
                       >
-                        <img src={fetchco && fetchco.logo} className="logoCO-DetailJob" />
-                        <Typography variant="h5">{fetchco && fetchco.name}</Typography>
+                        <img src={fetchpost && fetchpost.CO.logo} className="logoCO-DetailJob" />
+                        <Typography variant="h5">{fetchpost && fetchpost.CO.name}</Typography>
                       </Box>
                       <Box sx={{ display: "flex", gap: 1 }}>
                         <SupervisedUserCircleIcon></SupervisedUserCircleIcon>
                         <Typography > Quy mô:</Typography>
-                        <Typography>{fetchco && fetchco.scalefrom}-{fetchco && fetchco.scaleto} nhân viên</Typography>
+                        <Typography>{fetchpost && fetchpost.CO.scalefrom}-{fetchpost && fetchpost.CO.scaleto} nhân viên</Typography>
                       </Box>
                       <Box sx={{ display: "flex", gap: 1 }}>
                         <PlaceIcon></PlaceIcon>
@@ -236,7 +235,7 @@ const DetailJob = () => {
                           Địa chỉ:
                         </Typography>
                         <Typography>
-                          {fetchco && fetchco.address.map((i, index)=>(
+                          {fetchpost && fetchpost.CO.address.map((i, index)=>(
                             <Box key={index} sx={{mb:1}} >
                             Cơ sở {index+1}: {i.streetnumber}, {i.ward}, {i.district}, {i.city} 
                             </Box>

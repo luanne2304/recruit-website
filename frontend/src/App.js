@@ -30,10 +30,10 @@ function App() {
           <Route path="/home/ChangePass" element={<ChangePass />} />
           <Route path="/home/ListCO" element={<ListCO />}/>
           <Route path="/home/Myprofile" element={<Myprofile />}/>
-          <Route path="/home/DetailCO/" element={<DetailCO />}/>
+          <Route path="/home/DetailCO/:idCO" element={<DetailCO />}/>
           <Route path="/home/DetailJob/:idjob" element={<DetailJob />}/>
           <Route path="/home/CVapplied/" element={<CVapplied />}/>
-          <Route path="/home/DetailCO/CVreview" element={<CVreview />}/>
+          <Route path="/home/DetailCO/CVreview/:idjob" element={<CVreview />}/>
           <Route path="/home/DetailCO/CurdPost" element={<CurdPost />}/>
         </Route>
         <Route path="/log/" element={<Loglayout />}>

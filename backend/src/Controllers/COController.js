@@ -65,6 +65,37 @@ const COController = {
       });
     }
   },
+
+  getAll: async  (req, res, next) => {
+    try {
+      const getCO = await COModel.find({status:true})
+      return res.status(200).json({
+        success: true,
+        data: getCO,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  getCObyID: async  (req, res, next) => {
+    try {
+      const id =req.params.id
+      const getCO = await COModel.findById(id)
+      return res.status(200).json({
+        success: true,
+        data: getCO,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
 }
 
 module.exports = COController;

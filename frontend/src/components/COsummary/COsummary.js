@@ -1,35 +1,53 @@
-import * as React from 'react';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import thumbnail from '../../assets/images/logo.jpg'
-import logo from '../../assets/images/logocty.jpg'
-import { CardActionArea } from '@mui/material';
-import './COsummary.css'
+import * as React from "react";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Typography from "@mui/material/Typography";
+import thumbnail from "../../assets/images/logo.jpg";
+import { CardActionArea } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import "./COsummary.css";
 
-const COsummary = () => {
+const COsummary = ({ CO }) => {
+
+  const navigate = useNavigate();
+
+  const handleClick=()=>{
+    navigate(`/home/DetailCO/${CO._id}`)
+  }
+
   return (
-    <Card className='card-COsummary' sx={{ width: "100" }}>
-        <img src={logo} className='logo-COsummary'/>
-      <CardActionArea>
+    <Card  className="card-COsummary" sx={{ width: "100" }}>
+      <img src={CO.logo} className="logo-COsummary" />
+      <CardActionArea onClick={handleClick}>
         <CardMedia
           component="img"
           height="140"
-          image={thumbnail}
+          image={CO.coverimg ? CO.coverimg : thumbnail}
           alt="green iguana"
         />
-        <CardContent sx={{mt:4}}>
+        <CardContent sx={{ mt: 4 }}>
           <Typography gutterBottom variant="h5" component="div">
-          Công ty TNHH ITECHWX
+            {CO.name}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-          " Thừa hưởng năng lực mạnh mẽ từ hơn 20 năm hoạt động tại Trung Quốc và các nước lớn trên thế giới như Mỹ, Nhật Bản – iTechwx được thành lập tại Việt Nam vào giữa cuối năm 2022 để tiếp nối sứ mệnh là một Contact Center và IT Services Center cho một trong những tập đoàn công nghệ hàng đầu thế giới - Microsoft. iTechwx hỗ trợ khách..."
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              height:"6em",
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 4, // Số dòng tối đa trước khi tràn
+              overflow: "hidden",
+              width: "100%", // Đảm bảo văn bản không tràn ra khỏi phần tử cha
+            }}
+          >
+            {CO.des}
           </Typography>
         </CardContent>
       </CardActionArea>
     </Card>
-  )
-}
+  );
+};
 
-export default COsummary
+export default COsummary;

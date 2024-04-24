@@ -39,59 +39,7 @@ const postController = {
       getALLjob: async  (req, res, next) => {
         try {
           const currentDate =new Date()           
-          const getPost = await postModel.find({status:true, duration: { $gte: currentDate }}).sort({ createdAt: -1 });
-          const temp=[]
-
-          await Promise.all(getPost.map(async (i) => {
-            const CO = await COModel.findById(i.CO);
-            var a=i._doc
-            const nameCO = CO ? CO.name : null;
-            const logoCO = CO ? CO.logo : null;
-            a={...a,nameCO:nameCO,logoCO:logoCO}
-            temp.push(a);
-          }));
-
-          return res.status(200).json({
-            success: true,
-            data: temp,
-          });
-        } catch (error) {
-          return res.status(500).json({
-            success: false,
-            message: error.message,
-          });
-        }
-      },
-
-      getFilterjob: async  (req, res, next) => {
-        try {
-          const { city, salary, skill, exp, form } = req.query;
-          console.log(city,salary,skill,exp,form)
-
-          const currentDate =new Date()  
-
-          const getPost = await postModel.find({status:true, duration: { $gte: currentDate }}).sort({ createdAt: -1 });
-          const getPost2 = await postModel.find().populate('CO');
-          console.log(getPost2)
-          // const filteredPosts = getPost.filter(post => {
-            
-          //   // let cityFilter;
-          //   // if (city === "ALL") {
-          //   //   cityFilter = true; 
-          //   // } else if (city === "Others") {
-          //   //   cityFilter = !["Hồ Chí Minh", "Hà Nội","Đà Nẵng"].includes(post.city);
-          //   // } else {
-          //   //   cityFilter = post.city === city;
-          //   // }
-          
-          //   const salaryFilter = post.salaryfrom <= salary[1] && salary[0] <= post.salaryto 
-          //   const skillFilter = skill===undefined|| skill.some(s => post.tag.skill.includes(s)) 
-          //   const expFilter = exp===undefined|| exp.some(s => post.tag.exp.includes(s))
-          //   const formFilter = form===undefined|| form.some(f => post.form.includes(f))
-          //   return salaryFilter && skillFilter && expFilter && formFilter 
-          //   // &&cityFilter
-          // });
-
+          const getPost = await postModel.find({status:true, duration: { $gte: currentDate }}).populate('CO').sort({ createdAt: -1 });
           return res.status(200).json({
             success: true,
             data: getPost,
@@ -104,15 +52,65 @@ const postController = {
         }
       },
 
+      getALLJobbyCO: async  (req, res, next) => {
+        try {
+          const id = req.params.id
+          const currentDate =new Date()           
+          const getPost = await postModel.find({status:true, CO:id, duration: { $gte: currentDate }}).populate('CO').sort({ createdAt: -1 });
+          return res.status(200).json({
+            success: true,
+            data: getPost,
+          });
+        } catch (error) {
+          return res.status(500).json({
+            success: false,
+            message: error.message,
+          });
+        }
+      },
+
+      getFilterjob: async  (req, res, next) => {
+        try {
+          const { city, salary, skill, exp, form } = req.query;
+          const currentDate =new Date()  
+
+          const getPost = await postModel.find({status:true, duration: { $gte: currentDate }}).populate('CO').sort({ createdAt: -1 });
+          const filteredPosts = getPost.filter(post => { 
+            let cityFilter;
+            if (city === "Tất cả mọi nơi") {
+              cityFilter = true; 
+            } else if (city === "Khác") {
+              cityFilter = !["Hồ Chí Minh", "Hà Nội","Đà Nẵng"].includes(post.address.city);
+            } else {
+              cityFilter = post.address.city === city;
+            }         
+            const salaryFilter = post.salaryfrom <= salary[1] && salary[0] <= post.salaryto 
+            const skillFilter = skill===undefined|| skill.some(s => post.tag.skill.includes(s)) 
+            const expFilter = exp===undefined|| exp.some(s => post.tag.exp.includes(s))
+            const formFilter = form===undefined|| form.some(f => post.form.includes(f))
+            return salaryFilter && skillFilter && expFilter && formFilter  && cityFilter
+
+          });
+
+          return res.status(200).json({
+            success: true,
+            data: filteredPosts,
+          });
+        } catch (error) {
+          return res.status(500).json({
+            success: false,
+            message: error.message,
+          });
+        }
+      },
+
       getDetailjob: async  (req, res, next) => {
         try {
           const id = req.params.id;
-          const getPostbyID = await postModel.findById(id)
-          const getCObyID = await COModel.findById(getPostbyID.CO)
+          const getPostbyID = await postModel.findById(id).populate("CO")
           return res.status(200).json({
             success: true,
-            post: getPostbyID,
-            co: getCObyID
+            data: getPostbyID,
           });
         } catch (error) {
           return res.status(500).json({

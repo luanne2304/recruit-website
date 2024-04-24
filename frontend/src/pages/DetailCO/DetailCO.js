@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -9,16 +10,44 @@ import { CardActionArea } from '@mui/material';
 import PlaceIcon from "@mui/icons-material/Place";
 import MapIcon from '@mui/icons-material/Map';
 import media from '../../assets/images/backgroundLog.jpg'
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./DetailCO.css";
 import CO from "../../components/CO/CO";
 import COjob from "../../components/COjob/COjob";
 
 const DetailCO = () => {
+  const { idCO } = useParams();
+  const [fetchco,setFetchco] =useState()
+  const [fetchpost,setFetchpost] =useState()
+
+  const navigate = useNavigate();
+
+  const handleClick=()=>{
+    navigate(`/home/DetailCO/CURDpost`)
+  }
+
+
+  React.useEffect(() => {
+
+    const getALLjob = async () => {
+      try {
+        const response  = await axios.get(`http://localhost:4000/api/CO/getCObyID/${idCO}`);
+        setFetchco(response.data.data)
+        const response2  = await axios.get(`http://localhost:4000/api/post/getALLJobbyCO/${idCO}`);
+        setFetchpost(response2.data.data)
+      } catch(error) {
+        console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+      }
+    };
+    getALLjob();
+  },[])
+
   return (
     <Box>
       <Box className="main">
         <Box className="icontainer" sx={{ width: "1170px", mt: 8 }}>
-          <CO></CO>
+          <CO data={fetchco}></CO>
           <Box sx={{ display: "flex", justifyContent: "space-between" , mt:5 }}>
             <Box className="main-content-wrap-CO">
               <Card sx={{ width: "100%" }} className="card-desCO">
@@ -34,15 +63,7 @@ const DetailCO = () => {
                   />
                   <CardContent>
                     <Typography>
-                      Lizards are a widespread group of squamate reptiles, with
-                      over 6,000 species, ranging across all continents except
-                      Antarctica Lizards are a widespread group of squamate
-                      reptiles, with over 6,000 species, ranging across all
-                      continents except Antarctica Lizards are a widespread
-                      group of squamate reptiles, with over 6,000 species,
-                      ranging across all continents except AntarcticaLizards are
-                      a widespread group of squamate reptiles, with over 6,000
-                      species, ranging across all continents except Antarctica
+                      {fetchco && fetchco.des}
                     </Typography>
                   </CardContent>
                 </CardActionArea>
@@ -59,10 +80,14 @@ const DetailCO = () => {
                     alt="green iguana"
                   />
                   <CardContent>
-                  <Button sx={{mb:2}} variant="contained" color="success">
-                Tạo bài đăng
-              </Button>
-                    <COjob></COjob>
+                  <Button variant="contained" color="success" onClick={handleClick}>
+                    Tạo bài đăng
+                  </Button>
+                  {fetchpost && fetchpost.map((item, index)=>(
+                    <Box key={index} sx={{mt:2}} >
+                      <COjob data={item} ></COjob>
+                    </Box>
+                  ))}
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -85,7 +110,13 @@ const DetailCO = () => {
                         Địa chỉ công ty
                       </Typography>
                     </Typography>
-                    <Typography>toà nhà Youngjin E&C Hải Phòng, Hồng Phong, An Dương, Hải Phòng, Việt Nam </Typography>
+                    <Typography>
+                      {fetchco && fetchco.address.map((i, index)=>(
+                      <Box key={index} sx={{mt:1}} >
+                      Cơ sở {index+1}: {i.streetnumber}, {i.ward}, {i.district}, {i.city} 
+                      </Box>
+                      ))}
+                    </Typography>
                     <Typography sx={{display:"flex",alignItems:"center", mt:5}} component="div" >
                     <MapIcon></MapIcon>
                       <Typography  sx={{ ml: 1 }}>

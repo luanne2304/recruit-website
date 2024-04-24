@@ -58,8 +58,8 @@ export default function JobSummary({job}) {
               {job.title}
             </Typography>
             <Box display="flex" alignItems="center">
-              <img className="summary-logoCO-recruitment" src={job.logoCO ? job.logoCO: LogoCty}></img>
-              <Typography color="text.secondary" sx={{ml: 1}}>{job.nameCO ? job.nameCO: job.CO}</Typography>
+              <img className="summary-logoCO-recruitment" src={job.CO? job.CO.logo : LogoCty}></img>
+              <Typography color="text.secondary" sx={{ml: 1}}>{job.CO? job.CO.name : "ko co ten"}</Typography>
             </Box>
             <Box display="flex" alignItems="center" sx={{mt: 1}}>
               <PaidIcon></PaidIcon>

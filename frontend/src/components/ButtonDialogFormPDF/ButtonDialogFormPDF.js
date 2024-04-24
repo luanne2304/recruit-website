@@ -56,7 +56,7 @@ export default function ButtonDialogFormPDF() {
     formData.append('pdf', filepdf);
     formData.append('filetitle', filetitle);
     try{
-    await axios.post(`http://localhost:4000/api/user/uploadPDF/${temp}`,formData,{
+    await axios.post(`http://localhost:4000/api/CV/uploadCV/${temp}`,formData,{
       headers: {
         'Content-Type': 'multipart/form-data'
     }

@@ -14,7 +14,7 @@ import FormLabel from '@mui/material/FormLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import CV from "../../components/CV/CV";
 
-export default function DialogApplyCV({setOpen,open}) {
+export default function DialogApplyCV({setOpen,open,idpost}) {
   
     const [CVs, setCVs]= React.useState([])
     const [radioCV,setRadioCV]= React.useState("")  
@@ -22,12 +22,13 @@ export default function DialogApplyCV({setOpen,open}) {
     const [helperText, setHelperText] = React.useState('');
 
     const handleClose = () => {
+        setRadioCV("")
         setOpen(false);
         setError(false);
         setHelperText("")
     };
 
-    const handleSubmit = () => {
+    const handleSubmit =async () => {
       if(radioCV==""){
         setError(true)
         setHelperText('Vui lòng chọn CV để ứng tuyển !!!');
@@ -35,6 +36,12 @@ export default function DialogApplyCV({setOpen,open}) {
       else{
         setOpen(false);
         setRadioCV("")
+        try {
+          const res = await axios.post(`http://localhost:4000/api/Applications/apply`,{idCV:radioCV, idPost:idpost});
+          console.log(res)
+        } catch (error) {
+          console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
+        }
       }
     };
 

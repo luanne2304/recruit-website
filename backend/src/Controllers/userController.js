@@ -188,54 +188,6 @@ updateUser: async (req, res, next) => {
           message: error.message,
       });
   }
-},
-
-uploadCV:  async (req, res, next) => {
-  try {
-    const id = req.params.id;
-    const { filetitle } = req.body
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'No file uploaded.',
-      });
-    }
-    const file = {
-      type: req.file.mimetype,
-      buffer: req.file.buffer,
-      filename: req.file.originalname,
-    }  
-    const metadata = {
-      contentType: file.type,
-    }
-    const pdfref = await ref(storage,`CVs/${file.filename}.${v4()}`)
-    const snapshot =await uploadBytesResumable(pdfref, file.buffer, metadata);
-    const downloadURL = await getDownloadURL(snapshot.ref);
-    const newCV = {
-      linkfile: downloadURL,
-      filetitle: filetitle,
-    };
-    const updatedUser = await userModel.findByIdAndUpdate(
-      id,
-      { $push: { CV: newCV } },
-      { new: true } 
-    );
-    if (!updatedUser) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found',
-    });
-    }
-    return res.status(200).json({
-        success: true,
-        data: downloadURL,
-    });
-} catch (error) {
-    return res.status(500).json({
-        success: false,
-        message: error.message,
-    });
-}
 }
 
 };

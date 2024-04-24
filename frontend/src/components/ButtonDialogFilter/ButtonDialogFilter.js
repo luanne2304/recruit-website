@@ -30,7 +30,7 @@ export default function ButtonDialogFilter({setFilter}) {
   const [formObj, setFormObj]=React.useState([])
 
   const [formData, setFormData] = React.useState({
-    city: "All",
+    city: "Tất cả mọi nơi",
     salary:[0, 10000],
     skill: [],
     exp: [],

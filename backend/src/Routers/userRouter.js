@@ -5,7 +5,6 @@ const Authorization = require("../middleware/userAuth");
 const { uploadPDF } = require('../middleware/multer')
 
 
-userRouter.post("/api/user/uploadPDF/:id",uploadPDF, userController.uploadCV);
 userRouter.post("/api/user/login", userController.login);
 userRouter.post("/api/user/signup", userController.signup);
 userRouter.post("/api/user/signinnwithGmail", userController.signinnwithGmail);

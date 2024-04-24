@@ -10,10 +10,6 @@ const userSchema = new mongoose.Schema(
     isAdmin:  { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
     status: { type: String, required: true, default: 'enable' },
-    CV:[{
-      filetitle: { type: String },
-      linkfile:  { type: String },
-    }]
   }
 );
 const userModel = mongoose.model("users", userSchema);

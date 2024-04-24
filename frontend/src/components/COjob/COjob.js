@@ -11,14 +11,27 @@ import PlaceIcon from "@mui/icons-material/Place";
 import LogoCty from "../../assets/images/logocty.jpg";
 import "./COjob.css";
 
-const COjob = () => {
-  const skillchips = [
-    { title: "Intern" },
-    { title: "Fresher" },
-    { title: "Juinor" },
-    { title: "Senior" },
-    { title: "Manager" },
-  ];
+const COjob = ({data}) => {
+
+
+  const timecalculator =()=>{
+    const currentDate = new Date(); // Lấy ngày và giờ hiện tại
+    const difference = (currentDate - new Date(data.createdAt))/1000; // Tính thời gian chênh lệch
+    switch (true) {
+      case difference <60:
+        return " Vừa xong";
+      case difference<3600:
+        return Math.floor(difference/60) +" phút trước";
+      case difference<86400:
+        return Math.floor(difference/3600) +" giờ trước";
+      case difference<604800:
+        return Math.floor(difference/86400) +" ngày trước";
+      case difference<4579200:
+        return Math.floor(difference/604800) +" tuần trước";
+        default:
+          return "Không xác định";
+    }
+  }
 
   return (
     <Box sx={{ minWidth: 275, mr: 2 }}>
@@ -30,32 +43,32 @@ const COjob = () => {
               color="text.secondary"
               gutterBottom
             >
-              Đăng 1 ngày trước
+              {timecalculator()}
             </Typography>
             <Box display="flex" alignItems="center">
-              <img className="COjob-logo" src={LogoCty}></img>
+              <img className="COjob-logo" src={data.CO.logo}></img>
               <Box sx={{ ml: 3 }}>
                 <Typography variant="h5" component="div">
-                  Juinor/ Senior Mobile Developer (React Native, Flutter)
+                  {data.title}
                 </Typography>
-                <Typography color="text.secondary">Công ty FPT</Typography>
+                <Typography color="text.secondary">{data.CO.name}</Typography>
               </Box>
             </Box>
             <Box display="flex" alignItems="center" sx={{ mt: 1 }}>
               <PaidIcon></PaidIcon>
               <Typography variant="body2" sx={{ ml: 1, fontSize: 25 }}>
-                700 - 1000 USD
+              {data.salaryfrom} - {data.salaryto} USD
               </Typography>
             </Box>
             <Box sx={{display:"flex", alignItems:"center" , justifyContent:"space-between", mt: 1 }}>
               <Box sx={{display:"flex" ,alignItems:"center" }}>
                 <WorkOutlineIcon></WorkOutlineIcon>
                 <Typography variant="body2" sx={{ ml: 1 }}>
-                  Tại văn phòng
+                {data.form}
                 </Typography>
                 <PlaceIcon sx={{ ml: 5 }}></PlaceIcon>
                 <Typography variant="body2" sx={{ ml: 1 }}>
-                  Hà nội
+                {data.address.city}
                 </Typography>
               </Box>
               <Button variant="contained" color="success">
@@ -70,11 +83,11 @@ const COjob = () => {
             </Box>
             <Box display="flex" alignItems="center" sx={{ mt: 1 }}></Box>
             <Box sx={{ mt: 1 }}>
-              {skillchips.map((skill, index) => (
+              {data.tag.skill.map((skill, index) => (
                 <Chip
                   sx={{ m: 0.5 }}
                   key={index}
-                  label={skill.title}
+                  label={skill}
                   variant="outlined"
                 />
               ))}

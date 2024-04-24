@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
@@ -8,6 +9,22 @@ import COsummary from "../../components/COsummary/COsummary";
 import "./ListCO.css";
 
 const ListCO = () => {
+
+  const [fetchData,setFetchData]=React.useState([])
+
+  React.useEffect(() => {
+
+    const getALLjob = async () => {
+      try {
+        const response  = await axios.get(`http://localhost:4000/api/CO/getALL`);
+        setFetchData(response.data.data)
+      } catch(error) {
+        console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+      }
+    };
+    getALLjob();
+  },[])
+
   return (
     <Box>
       <Box className="main" sx={{ mt: 5 }}>
@@ -60,9 +77,9 @@ const ListCO = () => {
               spacing={{ xs: 2, md: 3 }}
               columns={{ xs: 4, sm: 8, md: 12 }}
             >
-              {Array.from(Array(6)).map((_, index) => (
+              {fetchData.map((item, index) => (
                 <Grid item xs={2} sm={4} md={4} key={index}>
-                  <COsummary></COsummary>
+                  <COsummary CO={item}></COsummary>
                 </Grid>
               ))}
             </Grid>

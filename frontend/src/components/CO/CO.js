@@ -5,13 +5,13 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
 import background from "../../assets/images/logo.jpg";
-import logo from "../../assets/images/logocty.jpg";
+import logocty from "../../assets/images/logocty.jpg";
 import "./CO.css";
 
-const CO = () => {
+const CO = ({data}) => {
   return (
     <Card className="card-CO" sx={{   borderRadius: "20px", width: "100%" }}>
-    <img className="logo-CO" src={logo} />
+    <img className="logo-CO" src={data? data.logo : logocty} />
     <CardActionArea>
       <CardMedia
         component="img"
@@ -21,14 +21,14 @@ const CO = () => {
       />
       <CardContent sx={{ ml: 30, pb: 4 }}>
         <Typography gutterBottom variant="h4" component="div">
-          Tập đoàn Hoa sen
+          {data? data.name: "Nan"}
         </Typography>
         <Typography component="div" sx={{ display: "flex" ,gap:10}}>
           <Typography component="div">
-            https://careers.lgcnsvn.com/
+          {data? data.link: "Nan"}
           </Typography>
-          <Typography component="div">100-499 nhân viên</Typography>
-          <Typography component="div">12 bài đăng tuyển dụng</Typography>
+          <Typography component="div">{data? data.scalefrom +" - "+ data.scaleto +" nhân viên":"Nan"}</Typography>
+          <Typography component="div">Nan bài đăng tuyển dụng</Typography>
         </Typography>
       </CardContent>
     </CardActionArea>
