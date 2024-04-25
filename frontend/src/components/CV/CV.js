@@ -10,9 +10,9 @@ const CV = ({title,link,id}) => {
     window.open(link, "_blank");
   };
   return (
-    <Box className="CV-uploaded-file" sx={{display:"flex", justifyContent: "space-between" }}>
+    <Box className="CV-uploaded-file">
       <Typography  component="div" onClick={handleClick} >
-        {title} {id}
+        {"Tên file: "+title}
       </Typography>
     </Box>
   );

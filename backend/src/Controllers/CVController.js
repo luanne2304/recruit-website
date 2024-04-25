@@ -43,7 +43,8 @@ const CVController = {
               message: error.message,
           });
       }
-      }
+    },
+
 }
 
 module.exports = CVController;

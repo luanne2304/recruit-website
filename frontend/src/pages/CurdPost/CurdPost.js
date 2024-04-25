@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import axios from "axios"
+import axios from "axios";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
@@ -8,6 +8,8 @@ import InputLabel from "@mui/material/InputLabel";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -23,6 +25,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import EditorField from "../../components/EditorField/EditorField";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CO from "../../components/CO/CO";
 import "./CurdPost.css";
 
@@ -30,65 +34,16 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const CurdPost = () => {
+  const { idCO } = useParams();
 
-  const isOptionEqualToValue = (option, value) => {
-    if (!value) {
-      return false;
-    }
-    return option.title === value.title;
-  };
-
-
-  
-  const handleDesChange = (html) => {
-    setFormData({ ...formData, des:html });
-  };
-
-  const handleRequireChange = (html) => {
-    setFormData({ ...formData, require:html });
-  };
-
-  const handleBenefitChange = (html) => {
-    setFormData({ ...formData, benefit:html });
-  };
-
-  const handleChangeSkill = (event, newValue) => {
-    setFormData({ ...formData, skill: newValue});
-  };
-
-  const handleChangeLevel = (event, newValue) => {
-    setFormData({ ...formData, exp: newValue});
-  };
-
-  const handleDateChange = (newDate) => {
-    setFormData({ ...formData, duration: newDate.$d})
-  };
-
-  const check =async () => {
-     formData.skill=await formData.skill.map(skill => skill.title)
-     formData.exp=await formData.exp.map(exp => exp.title)
-    console.log(formData)
-    try{
-      await axios.post(`http://localhost:4000/api/post/create`,formData)
-      } catch(error){
-        console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
-      }
-  };
-
-  const [fetchTP, setFetchTP]=useState([])
-  const [fetchQH, setFetchQH]=useState([])
-  const [fetchPX, setFetchPX]=useState([])
-  const [tree,setTree]=useState()
+  const [fetchco, setFetchco] = useState();
 
   const [formData, setFormData] = useState({
-    city:null,
-    district:null,
-    ward:null,
     title: "",
     des: "",
     require: "",
     benefit: "",
-    address: "Q6",
+    address: null,
     form: "",
     salaryto: "",
     salaryfrom: "",
@@ -98,11 +53,51 @@ const CurdPost = () => {
     CO: "661cead4df78725c5b387ac3",
   });
 
-  
+  const isOptionEqualToValue = (option, value) => {
+    if (!value) {
+      return false;
+    }
+    return option.title === value.title;
+  };
+
+  const handleDesChange = (html) => {
+    setFormData({ ...formData, des: html });
+  };
+
+  const handleRequireChange = (html) => {
+    setFormData({ ...formData, require: html });
+  };
+
+  const handleBenefitChange = (html) => {
+    setFormData({ ...formData, benefit: html });
+  };
+
+  const handleChangeSkill = (event, newValue) => {
+    setFormData({ ...formData, skill: newValue });
+  };
+
+  const handleChangeLevel = (event, newValue) => {
+    setFormData({ ...formData, exp: newValue });
+  };
+
+  const handleDateChange = (newDate) => {
+    setFormData({ ...formData, duration: newDate.$d });
+  };
+
+  const check = async () => {
+    formData.skill = await formData.skill.map((skill) => skill.title);
+    formData.exp = await formData.exp.map((exp) => exp.title);
+    console.log(formData);
+    try {
+      await axios.post(`http://localhost:4000/api/post/create`, formData);
+    } catch (error) {
+      console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
+    }
+  };
+
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
-
 
   const levelskill = [
     { title: "Intern" },
@@ -113,7 +108,7 @@ const CurdPost = () => {
   ];
 
   const skills = [
-    { title: "HTML"  },
+    { title: "HTML" },
     { title: "CSS" },
     { title: "WORDPRESS" },
     { title: "C" },
@@ -143,70 +138,28 @@ const CurdPost = () => {
     { title: "React Native" },
   ];
 
-  const handleChangeTP = (event, value) => {
-    if (value) {
-      const provinceData = tree[value.code];
-      let tempQH =[]
-      for (const QHCode in provinceData["quan-huyen"]) {
-        if (provinceData["quan-huyen"].hasOwnProperty(QHCode)) {
-          const district = provinceData["quan-huyen"][QHCode];
-          // Lấy tên và mã của quận huyện và thêm vào biến districtData
-          const label = district.name;
-          const code = district.code;
-          const parent_code = district.parent_code;
-          tempQH.push({ label, code, parent_code });
-        }
-      }
-      setFormData({...formData,district:null,ward:null,city:value})
-      setFetchQH(tempQH)
-    }
-  };
-
-  const handleChangeQH = (event, value) => {
-    if (value) {
-      const provinceData = tree[value.parent_code]["quan-huyen"][value.code];
-      let tempPX =[]
-      for (const PXCode in provinceData["xa-phuong"]) {
-        if (provinceData["xa-phuong"].hasOwnProperty(PXCode)) {
-          const px = provinceData["xa-phuong"][PXCode];
-          // Lấy tên và mã của quận huyện và thêm vào biến districtData
-          const label = px.name;
-          const code = px.code;
-          tempPX.push({ label, code });
-        }
-      }
-      setFormData({...formData,ward:null,district: value})
-      setFetchPX(tempPX)
-    }
-  };
+  const [age, setAge] = React.useState('');
 
 
-  useEffect(()=>{
-    const calltp =async ()=>{
-      try{
-        let tempCity=[]
-        const res= await axios.get(`http://localhost:4000/api/getTree`)
-        setTree(res.data);
-        for (const key in res.data) {
-          if (res.data.hasOwnProperty(key)) {
-            const code = res.data[key].code;
-            const label = res.data[key].name;
-            tempCity.push({ label, code });
-          }
-        }
-        setFetchTP(tempCity)
-        } catch(error){
-          console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+  useEffect(() => {
+    const getCO = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:4000/api/CO/getCObyID/${idCO}`
+        );
+        setFetchco(response.data.data);
+      } catch (error) {
+        console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
       }
-    }
-    calltp()
-  },[])
-  
+    };
+    getCO();
+  }, []);
+
   return (
     <Box>
       <Box className="main">
         <Box className="icontainer" sx={{ width: "1170px", mt: 8 }}>
-          <CO></CO>
+          <CO data={fetchco}></CO>
           <Box>
             <Card sx={{ width: "100%", mt: 5 }}>
               <CardContent
@@ -226,51 +179,7 @@ const CurdPost = () => {
                 >
                   Tạo bài đăng
                 </Typography>
-                <Typography className="form-item">
-                  <Typography className="label-form" component="div">
-                    TP
-                  </Typography>
-                <Autocomplete
-                  disablePortal
-                  id="combo-box-demo"
-                  value={formData.city}
-                  options={fetchTP}
-                  onChange={handleChangeTP}
-                  sx={{ width: 300 }}
-                  renderInput={(params) => <TextField {...params} label="Tỉnh / TP" 
-                  />}
-                />
-                </Typography>
-                <Typography className="form-item">
-                  <Typography className="label-form" component="div">
-                    Q
-                  </Typography>
-                <Autocomplete
-                  disablePortal
-                  id="combo-box-demo"
-                  options={fetchQH}
-                  value={formData.district}
-                  onChange={handleChangeQH}
-                  sx={{ width: 300 }}
-                  renderInput={(params) => <TextField {...params} label="Quận / Huyện" 
-                  />}
-                />
-                </Typography>
-                <Typography className="form-item">
-                  <Typography className="label-form" component="div">
-                    p
-                  </Typography>
-                <Autocomplete
-                  disablePortal
-                  id="combo-box-demo"
-                  options={fetchPX}
-                  value={formData.ward}
-                  onChange={(event, value) => {setFormData({...formData,ward:value})}}
-                  sx={{ width: 300 }}
-                  renderInput={(params) => <TextField {...params} label="Phường / Xã" 
-                  />}
-                />
-                </Typography>
+
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
                     Tiêu đề:
@@ -297,7 +206,7 @@ const CurdPost = () => {
                       <FormControlLabel
                         value="Salary"
                         control={<Radio />}
-                        label="Lương"                      
+                        label="Lương"
                       />
                       <FormControlLabel
                         value="Unknow"
@@ -364,6 +273,27 @@ const CurdPost = () => {
                         label="Linh hoạt"
                       />
                     </RadioGroup>
+                  </FormControl>
+                </Typography>
+                <Typography  className="form-item">
+                <Typography className="label-form" component="div">
+                    Địa chỉ:
+                  </Typography>
+                  <FormControl sx={{ minWidth: 80 }}>
+                    <InputLabel id="demo-simple-select-autowidth-label">
+                      Địa chỉ
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-autowidth-label"
+                      id="demo-simple-select-autowidth"
+                      value={age}
+                      autoWidth
+                      label="Địa chỉ"
+                    >
+                      <MenuItem value={10}>Twenty</MenuItem>
+                      <MenuItem value={21}>Twenty one</MenuItem>
+                      <MenuItem value={22}>Twenty one and a half</MenuItem>
+                    </Select>
                   </FormControl>
                 </Typography>
                 <Typography className="form-item">
@@ -446,9 +376,9 @@ const CurdPost = () => {
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
-                    Quyền lợi:         
+                    Quyền lợi:
                   </Typography>
-                  <EditorField onContentChange={handleBenefitChange}/>
+                  <EditorField onContentChange={handleBenefitChange} />
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
@@ -460,9 +390,9 @@ const CurdPost = () => {
                       components={["DateTimePicker"]}
                     >
                       <DemoItem>
-                        <DateTimePicker 
-                            name="duration"
-                            onChange={handleDateChange} 
+                        <DateTimePicker
+                          name="duration"
+                          onChange={handleDateChange}
                         />
                       </DemoItem>
                     </DemoContainer>

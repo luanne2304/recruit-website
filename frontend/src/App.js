@@ -29,12 +29,12 @@ function App() {
           <Route path="/home/FindJob" element={<FindJob />} />
           <Route path="/home/ChangePass" element={<ChangePass />} />
           <Route path="/home/ListCO" element={<ListCO />}/>
+          <Route path="/home/DetailCO/CurdPost/:idCO" element={<CurdPost />}/>
+          <Route path="/home/DetailCO/CVreview/:idjob" element={<CVreview />}/>
           <Route path="/home/Myprofile" element={<Myprofile />}/>
           <Route path="/home/DetailCO/:idCO" element={<DetailCO />}/>
           <Route path="/home/DetailJob/:idjob" element={<DetailJob />}/>
           <Route path="/home/CVapplied/" element={<CVapplied />}/>
-          <Route path="/home/DetailCO/CVreview/:idjob" element={<CVreview />}/>
-          <Route path="/home/DetailCO/CurdPost" element={<CurdPost />}/>
         </Route>
         <Route path="/log/" element={<Loglayout />}>
           <Route index element={<Login />} />

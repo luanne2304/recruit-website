@@ -61,13 +61,13 @@ export default function DialogApplyCV({setOpen,open,idpost}) {
         res.data.data.CV.map((item)=>(
           temp.push({filetitle:item.filetitle,linkfile:item.linkfile,_id:item._id})
         ));
+        console.log(temp)
         setCVs(temp)
       } catch (error) {
         console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
       }
     };
     getUserData();
-    // getUserData();
   }, []);
 
 

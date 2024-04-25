@@ -24,15 +24,36 @@ import "./CVreview.css";
   
 
 const CVreview = () => {
-    const [age, setAge] = React.useState('');
     const [fetchpost,setFetchpost] = React.useState()
-    const [listCVs,setListCVs] = React.useState()
+    const [listCVsPending,setListCVsPending] = React.useState()
+    const [listCVsbyStatus,setListCVsbyStatus] = React.useState()
+    const [processedCVs,setProcessedCVs]=React.useState([])
 
     const { idjob } = useParams();
 
     const handleChange = (event) => {
-      setAge(event.target.value);
+      const existingCVIndex = processedCVs.findIndex(cv => cv.cv === event.target.name);
+      if (existingCVIndex !== -1) {
+        // Nếu đã tồn tại, cập nhật giá trị result của cv đó
+        const updatedCVs = [...processedCVs];
+        updatedCVs[existingCVIndex] = { ...updatedCVs[existingCVIndex], result: event.target.value };
+        setProcessedCVs(updatedCVs);
+      } else {
+        setProcessedCVs([...processedCVs, { cv: event.target.name, result: event.target.value }]);
+      }
     };
+
+    const test = async()=>{
+      if(processedCVs.length==0){
+        return
+      }
+      await axios.put(`http://localhost:4000/api/Applications/updateStatusApply`,{processedCVs:processedCVs});
+    }
+
+    const showCVsbyStatus=async (event)=>{
+      const response  = await axios.get(`http://localhost:4000/api/Applications/getApplyPostByStatus`,{params:{idpost:idjob,status:event.target.name}});
+      setListCVsbyStatus(response.data.data)
+    }
 
     React.useEffect(() => {
 
@@ -41,8 +62,9 @@ const CVreview = () => {
           const response  = await axios.get(`http://localhost:4000/api/post/getDetailjob/${idjob}`);
           setFetchpost(response.data.data)
           const response2  = await axios.get(`http://localhost:4000/api/Applications/getApplyPendingbyPost/${idjob}`);
-          setListCVs(response2.data.data)
-          console.log(response2.data.data)
+          setListCVsPending(response2.data.data)
+          // const response3  = await axios.get(`http://localhost:4000/api/Applications/getApplyPostByStatus`,{params:{idpost:idjob,status:}});
+          // setListCVsbyStatus(response3.data.data)
         } catch(error) {
           console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
         }
@@ -69,41 +91,48 @@ const CVreview = () => {
                     alt="green iguana"
                   />
                   <CardContent>
-                    {listCVs && listCVs.map((item, index)=>(
-                      <Box key={index} sx={{display:"flex" , alignItems:"center", justifyContent:"space-between"}}>
-                      <Box sx={{width:"100%"}}><CV></CV></Box>
+                    {listCVsPending && listCVsPending.map((item, index)=>(
+                      <Box key={index} sx={{mt:2 ,display:"flex" , alignItems:"center", justifyContent:"space-between"}}>
+                      <Box sx={{width:"100%"}}>
+                        <CV title={item.cvId.filetitle} link={item.cvId.linkfile} id={item.cvId._id}></CV>
+                        </Box>
                       <Box sx={{ width: 160 , ml:3}}>
                         <FormControl fullWidth>
                           <InputLabel id="demo-simple-select-label">
                             Xếp loại
                           </InputLabel>
                           <Select
+                            label="Xếp loại"
                             labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={age}
-                            label="Age"
+                            name={item._id}
+                            defaultValue=""
                             onChange={handleChange}
                           >
-                            <MenuItem value={10}>Không đạt</MenuItem>
-                            <MenuItem value={20}>Cân nhắc</MenuItem>
-                            <MenuItem value={30}>Đạt</MenuItem>
+                            <MenuItem value="Không đạt">Không đạt</MenuItem>
+                            <MenuItem value="Cân nhắc">Cân nhắc</MenuItem>
+                            <MenuItem value="Đạt">Đạt</MenuItem>
                           </Select>
                         </FormControl>
                       </Box>
                       </Box>
                     ))}
+                    <Button onClick={test} sx={{float:"right", margin: 2}} variant="contained">Xác nhận</Button>
                   </CardContent>
                 </CardActionArea>
               </Card>
             </Box>
             <Box className="extra-content-wrap" sx={{ display:"flex",  flexDirection: 'column', alignItems:"center"}}>
               <ButtonGroup sx={{mt:2, mb:2}} variant="outlined" aria-label="Basic button group">
-                <Button>Không đạt</Button>
-                <Button>Cân nhắc</Button>
-                <Button>Đã đạt</Button>
+                <Button name="Không đạt" onClick={showCVsbyStatus}>Không đạt</Button>
+                <Button name="Cân nhắc" onClick={showCVsbyStatus}>Cân nhắc</Button>
+                <Button name="Đạt" onClick={showCVsbyStatus}>Đã đạt</Button>
               </ButtonGroup>
               <Box sx={{width:"90%"}}>
-                <CV></CV>
+              {listCVsbyStatus && listCVsbyStatus.map((item, index)=>(
+                <Box key={index}>
+                 <CV title={item.cvId.filetitle} link={item.cvId.linkfile} id={item.cvId._id}></CV>
+                </Box>
+              ))}
               </Box>
             </Box>
           </Box>

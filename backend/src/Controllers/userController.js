@@ -1,5 +1,6 @@
 
 const userModel = require("../Models/userModel");
+const mongoose = require("mongoose");
 const {ref,uploadBytesResumable,getDownloadURL} =require("firebase/storage")
 const jwt = require('jsonwebtoken');
 const {v4} =require("uuid")
@@ -187,6 +188,83 @@ updateUser: async (req, res, next) => {
           success: false,
           message: error.message,
       });
+  }
+},
+
+getCVsAppliedbyUser: async (req, res, next) => {
+  try {
+    const  { iduser } = req.query
+
+    const result = await userModel.aggregate([
+      {
+        $match: {
+          "_id": new mongoose.Types.ObjectId(iduser)
+        }
+      },
+      {
+        $lookup: {
+          from: "cvs",
+          localField: "_id",
+          foreignField: "idUser",
+          as: "user_cv"
+        }
+      },
+      {
+        $unwind: "$user_cv"
+      },
+      {
+        $lookup: {
+          from: "applications",
+          localField: "user_cv._id",
+          foreignField: "cvId",
+          as: "apply"
+        }
+      },
+      {
+        $unwind: "$apply"
+      },
+      {
+        $lookup: {
+          from: "posts",
+          localField: "apply.postId",
+          foreignField: "_id",
+          as: "post"
+        }
+      },
+      {
+        $unwind: "$post"
+      },  
+      {
+        $lookup: {
+          from: "cos",
+          localField: "post.CO",
+          foreignField: "_id",
+          as: "co_info"
+        }
+      },
+      {
+        $unwind:"$co_info"
+      },
+      {
+        $sort: {
+          "apply.createdAt": -1 // Sắp xếp theo createdAt, -1 là giảm dần (tức là mới nhất đến cũ nhất)
+        }
+      }
+    ])
+    const populatedResult = await userModel.populate(result, {
+      path: "post.CO", // Đường dẫn tới trường coId trong posts
+      model: "COs" // Tên của model CO
+    });
+    return res.status(200).json({
+      success: true,
+      data:populatedResult
+    });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 }
 
