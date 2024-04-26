@@ -49,7 +49,9 @@ const CurdPost = () => {
     salaryfrom: "",
     duration: null,
     skill: [],
+    skillformat: [],
     exp: [],
+    expformat: [],
     CO: "661cead4df78725c5b387ac3",
   });
 
@@ -60,19 +62,18 @@ const CurdPost = () => {
     return option.title === value.title;
   };
 
-  const handleDesChange = (html) => {
-    setFormData({ ...formData, des: html });
+  const handleChange = (event) => {
+    console.log(event.target)
+    // setFormData({ ...formData, [fieldName]: event.target.value });
+    setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
-  const handleRequireChange = (html) => {
-    setFormData({ ...formData, require: html });
-  };
-
-  const handleBenefitChange = (html) => {
-    setFormData({ ...formData, benefit: html });
+  const handleEditorChange = (html,index) => {
+    setFormData({ ...formData, [index]: html });
   };
 
   const handleChangeSkill = (event, newValue) => {
+    console.log(event)
     setFormData({ ...formData, skill: newValue });
   };
 
@@ -84,20 +85,18 @@ const CurdPost = () => {
     setFormData({ ...formData, duration: newDate.$d });
   };
 
-  const check = async () => {
-    formData.skill = await formData.skill.map((skill) => skill.title);
-    formData.exp = await formData.exp.map((exp) => exp.title);
+  const submitForm = async () => {
+    formData.skillformat = await formData.skill.map((skill) => skill.title);
+    formData.expformat = await formData.exp.map((exp) => exp.title);
     console.log(formData);
-    try {
-      await axios.post(`http://localhost:4000/api/post/create`, formData);
-    } catch (error) {
-      console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
-    }
+    // try {
+    //   await axios.post(`http://localhost:4000/api/post/create`, formData);
+    // } catch (error) {
+    //   console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
+    // }
   };
 
-  const handleChange = (event) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
-  };
+
 
   const levelskill = [
     { title: "Intern" },
@@ -138,7 +137,6 @@ const CurdPost = () => {
     { title: "React Native" },
   ];
 
-  const [age, setAge] = React.useState('');
 
 
   useEffect(() => {
@@ -220,7 +218,7 @@ const CurdPost = () => {
                       Từ
                     </InputLabel>
                     <FilledInput
-                      name="salaryto"
+                      name="salaryfrom"
                       value={formData.salaryfrom}
                       onChange={handleChange}
                       id="filled-adornment-amount"
@@ -235,7 +233,7 @@ const CurdPost = () => {
                       Đến
                     </InputLabel>
                     <FilledInput
-                      name="salaryfrom"
+                      name="salaryto"
                       value={formData.salaryto}
                       onChange={handleChange}
                       id="filled-adornment-amount"
@@ -284,15 +282,18 @@ const CurdPost = () => {
                       Địa chỉ
                     </InputLabel>
                     <Select
+                      sx={{width:"500px"}}
                       labelId="demo-simple-select-autowidth-label"
                       id="demo-simple-select-autowidth"
-                      value={age}
+                      defaultValue=""
                       autoWidth
                       label="Địa chỉ"
+                      name="address"
+                      onClick={handleChange}
                     >
-                      <MenuItem value={10}>Twenty</MenuItem>
-                      <MenuItem value={21}>Twenty one</MenuItem>
-                      <MenuItem value={22}>Twenty one and a half</MenuItem>
+                      {fetchco && fetchco.address.map((item,index)=>(
+                        <MenuItem key={index} value={item._id}>{item.streetnumber+", "+item.ward+", "+item.district+", "+item.city}</MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </Typography>
@@ -303,6 +304,7 @@ const CurdPost = () => {
                   <Autocomplete
                     multiple
                     id="checkboxes-tags-demo"
+                    name="aaa"
                     options={skills}
                     disableCloseOnSelect
                     onChange={handleChangeSkill}
@@ -366,19 +368,19 @@ const CurdPost = () => {
                   <Typography className="label-form" component="div">
                     Mô tả:
                   </Typography>
-                  <EditorField onContentChange={handleDesChange} />
+                  <EditorField onContentChange={handleEditorChange} index="des" />
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
                     Yêu cầu:
                   </Typography>
-                  <EditorField onContentChange={handleRequireChange} />
+                  <EditorField onContentChange={handleEditorChange} index="require"/>
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
                     Quyền lợi:
                   </Typography>
-                  <EditorField onContentChange={handleBenefitChange} />
+                  <EditorField onContentChange={handleEditorChange} index="benefit"/>
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
@@ -407,7 +409,7 @@ const CurdPost = () => {
                 <Button variant="outlined" color="error">
                   Xóa bài
                 </Button>
-                <Button onClick={check} variant="contained" color="success">
+                <Button onClick={submitForm} variant="contained" color="success">
                   Lưu
                 </Button>
               </Stack>

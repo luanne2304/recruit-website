@@ -57,11 +57,10 @@ export default function DialogApplyCV({setOpen,open,idpost}) {
       try {
         const id="660cfd11a53d71f4940dcc55"
         const temp = [];
-        const res = await axios.get(`http://localhost:4000/api/user/${id}`);
-        res.data.data.CV.map((item)=>(
+        const res = await axios.get(`http://localhost:4000/api/CV/getCVByIduser/${id}`);
+        res.data.data.map((item)=>(
           temp.push({filetitle:item.filetitle,linkfile:item.linkfile,_id:item._id})
         ));
-        console.log(temp)
         setCVs(temp)
       } catch (error) {
         console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);

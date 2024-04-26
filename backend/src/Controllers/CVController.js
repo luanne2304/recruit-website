@@ -44,7 +44,23 @@ const CVController = {
           });
       }
     },
-
+    getCVByIduser: async (req, res, next) => {
+      try {
+        const id = req.params.iduser;
+        const getCV = await CVModel.find({idUser:id});
+          return res.status(200).json({
+              success: true,
+              data: getCV,
+          });
+      } catch (error) {
+        console.log(error);
+          return res.status(500).json({
+              success: false,
+              message: error.message,
+          });
+          
+      }
+  },
 }
 
 module.exports = CVController;

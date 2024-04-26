@@ -13,7 +13,7 @@ class EditorField extends Component {
     this.setState({ editorHtml: html }, () => {
       // Gọi hàm callback truyền vào qua props và chuyển dữ liệu HTML
       if (this.props.onContentChange) {
-        this.props.onContentChange(html);
+        this.props.onContentChange(html,this.props.index);
       }
     });
   }
