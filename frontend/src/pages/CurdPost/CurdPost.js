@@ -25,8 +25,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import EditorField from "../../components/EditorField/EditorField";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import CO from "../../components/CO/CO";
 import "./CurdPost.css";
 
@@ -63,9 +62,14 @@ const CurdPost = () => {
   };
 
   const handleChange = (event) => {
-    console.log(event.target)
     // setFormData({ ...formData, [fieldName]: event.target.value });
     setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
+  const handleAddressChange = (event) => {
+    // setFormData({ ...formData, [fieldName]: event.target.value });
+    const foundFetchco = fetchco.address.find(item => item._id === event.target.value );
+    setFormData({ ...formData, address:foundFetchco });
   };
 
   const handleEditorChange = (html,index) => {
@@ -73,7 +77,6 @@ const CurdPost = () => {
   };
 
   const handleChangeSkill = (event, newValue) => {
-    console.log(event)
     setFormData({ ...formData, skill: newValue });
   };
 
@@ -145,6 +148,7 @@ const CurdPost = () => {
         const response = await axios.get(
           `http://localhost:4000/api/CO/getCObyID/${idCO}`
         );
+        console.log(response.data.data)
         setFetchco(response.data.data);
       } catch (error) {
         console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
@@ -286,10 +290,8 @@ const CurdPost = () => {
                       labelId="demo-simple-select-autowidth-label"
                       id="demo-simple-select-autowidth"
                       defaultValue=""
-                      autoWidth
                       label="Địa chỉ"
-                      name="address"
-                      onClick={handleChange}
+                      onChange={handleAddressChange}
                     >
                       {fetchco && fetchco.address.map((item,index)=>(
                         <MenuItem key={index} value={item._id}>{item.streetnumber+", "+item.ward+", "+item.district+", "+item.city}</MenuItem>

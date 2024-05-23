@@ -2,7 +2,7 @@ const express = require("express");
 const userRouter = express.Router();
 const userController = require("../Controllers/userController");
 const Authorization = require("../middleware/userAuth");  
-const { uploadPDF } = require('../middleware/multer')
+const { uploadPDF } = require('../middleware/multer');
 
 
 userRouter.post("/api/user/login", userController.login);
