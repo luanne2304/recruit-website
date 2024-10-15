@@ -16,7 +16,7 @@ import DetailJob from "./pages/DetailJob/DetailJob";
 import CVapplied from "./pages/CVapplied/CVapplied";
 import UserManager from "./pages/UserManager/UserManager";
 import ReportManager from "./pages/ReportManager/ReportManager";
-import COManager from "./pages/COManager/COManager";
+import CrudCO from "./pages/CrudCO/CrudCO";
 import Adminlayout from "./layouts/adminlayout"
 import Test from "./pages/test";
 
@@ -46,7 +46,8 @@ function App() {
           <Route index element={<ReportManager/>} />
           <Route path="/admin/ReportPosts" element={<ReportManager />} />
           <Route path="/admin/UserManager" element={<UserManager />} />
-          <Route path="/admin/COManager" element={<COManager />} />
+          <Route path="/admin/COManager" />
+          <Route path="/admin/CrudCO" element={<CrudCO />} />
           <Route path="/admin/test" element={<Test />} />
       </Route>
       </Routes>

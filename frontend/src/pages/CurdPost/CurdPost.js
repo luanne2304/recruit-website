@@ -37,6 +37,23 @@ const CurdPost = () => {
 
   const [fetchco, setFetchco] = useState();
 
+  const defaultFormData = {
+    title: "",
+    des: "",
+    require: "",
+    benefit: "",
+    address: null,
+    form: "",
+    salaryto: "",
+    salaryfrom: "",
+    duration: null,
+    skill: [],
+    skillformat: [],
+    exp: [],
+    expformat: [],
+    CO: idCO,
+  };
+
   const [formData, setFormData] = useState({
     title: "",
     des: "",
@@ -51,7 +68,7 @@ const CurdPost = () => {
     skillformat: [],
     exp: [],
     expformat: [],
-    CO: "661cead4df78725c5b387ac3",
+    CO: idCO,
   });
 
   const isOptionEqualToValue = (option, value) => {
@@ -88,10 +105,34 @@ const CurdPost = () => {
     setFormData({ ...formData, duration: newDate.$d });
   };
 
-  const submitForm = async () => {
+  const submitForm = async (e) => {
+    e.preventDefault();
     formData.skillformat = await formData.skill.map((skill) => skill.title);
     formData.expformat = await formData.exp.map((exp) => exp.title);
     console.log(formData);
+    let allFieldsChanged = true; // Biến cờ để kiểm tra
+    const checksalaryto= parseFloat(formData.salaryto);
+    const checksalaryfrom= parseFloat(formData.salaryfrom);
+    console.log(checksalaryfrom)
+    console.log(checksalaryto)
+    if (!isNaN(checksalaryto) && !isNaN(checksalaryfrom)) {
+      if(checksalaryfrom>=checksalaryto){
+        allFieldsChanged = false;
+      }
+    }
+    for (let key in formData) {
+      if (key === 'CO' || key === 'salaryto'|| key === 'salaryfrom') continue;
+      if (JSON.stringify(formData[key]) === JSON.stringify(defaultFormData[key])) {
+        console.log(`Field ${key} has not been changed.`);
+        allFieldsChanged = false;  // Đặt biến cờ thành false nếu có trường chưa thay đổi
+      }
+    }
+    if(allFieldsChanged) {
+      console.log("hoan tat");
+    }
+    else{
+      console.log("loi~");
+    }
     // try {
     //   await axios.post(`http://localhost:4000/api/post/create`, formData);
     // } catch (error) {
@@ -198,9 +239,9 @@ const CurdPost = () => {
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
-                    Lương
+                    Lương:
                   </Typography>
-                  <FormControl>
+                  {/* <FormControl>
                     <RadioGroup
                       row
                       aria-labelledby="demo-row-radio-buttons-group-label"
@@ -216,12 +257,13 @@ const CurdPost = () => {
                         label="Thỏa thuận"
                       />
                     </RadioGroup>
-                  </FormControl>
+                  </FormControl> */}
                   <FormControl sx={{ m: 1 }} variant="filled">
                     <InputLabel htmlFor="filled-adornment-amount">
                       Từ
                     </InputLabel>
                     <FilledInput
+                      type="number"
                       name="salaryfrom"
                       value={formData.salaryfrom}
                       onChange={handleChange}
@@ -237,6 +279,7 @@ const CurdPost = () => {
                       Đến
                     </InputLabel>
                     <FilledInput
+                      type="number"
                       name="salaryto"
                       value={formData.salaryto}
                       onChange={handleChange}

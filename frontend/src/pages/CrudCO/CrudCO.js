@@ -32,7 +32,7 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const COManager = () => {
+const CrudCO = () => {
 
   const [fileLOGO, setFileLOGO] = useState(null);
   const [photoURL, setPhotoURL] = useState("");
@@ -60,8 +60,6 @@ const COManager = () => {
     }
   };
 
-
-
   const test=async ()=> {
     console.log(listaddress)
     const formData = new FormData();
@@ -74,17 +72,19 @@ const COManager = () => {
     formData.append('taxcode', taxcode);
     formData.append('iDusermanager', iDusermanager);
     formData.append('listaddress', JSON.stringify(listaddress));
-
-    try{
-    const res =await axios.post("http://localhost:4000/api/CO/create",formData,{
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    }
-  )
-    } catch(error){
-      console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
-    } 
+    console.log(formData)
+  //   try{
+  //     console.log("aa")
+  //   const res =await axios.post("http://localhost:4000/api/CO/create",formData,{
+  //     headers: {
+  //       'Content-Type': 'multipart/form-data'
+  //     }
+  //   }
+  // )
+  //   } catch(error){
+  //     console.log("bb")
+  //     console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+  //   } 
   }
 
 
@@ -253,4 +253,4 @@ const COManager = () => {
   );
 };
 // /
-export default COManager;
+export default CrudCO;

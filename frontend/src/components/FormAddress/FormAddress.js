@@ -15,6 +15,8 @@ import {
   TableRow,
 } from "@mui/material/";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const FormAddress = ({ listaddress, setListaddress}) => {
 
@@ -32,6 +34,15 @@ const FormAddress = ({ listaddress, setListaddress}) => {
   const [fetchQH, setFetchQH] = useState([]);
   const [fetchPX, setFetchPX] = useState([]);
   const [tree, setTree] = useState();
+
+  const notify = (status) => {
+    switch (status) {
+      case 'success':
+        return toast.success("Thêm thành công!");
+      case 'warning':
+        return toast.error("Lỗi mất rồi!");
+    }
+  }
 
   const handleDeleteAddress = (id) => {
 
@@ -52,6 +63,7 @@ const FormAddress = ({ listaddress, setListaddress}) => {
     //   streetnumber: "",
     // })
     setListaddress([...listaddress, address]);
+    notify();
   };
 
   const handleChangeTP = (event, value) => {
@@ -115,6 +127,7 @@ const FormAddress = ({ listaddress, setListaddress}) => {
 
   return (
     <>
+      <ToastContainer />
       <Typography className="form-item">
         <Typography className="label-form" component="div">
           Địa chỉ:
