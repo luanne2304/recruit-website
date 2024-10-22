@@ -39,39 +39,39 @@ const CrudCO = () => {
   const [openCropLOGO, setOpenCropLOGO] = useState(false);
   const [aspect,setAspect]=useState();
 
-
-  const [nameCO,setNameCO]=useState()
   const [listaddress, setListaddress] = useState([]);
-
-  const [desCO,setDesCO]=useState()
-  const [linkCO,setLinkCO]=useState()
-  const [scaleto,setStaffto]=useState()
-  const [scalefrom,setStafffrom]=useState()
-  const [taxcode,setTaxcode]=useState()
-  const [iDusermanager,setIDusermanager]=useState()
 
   const handleChangeLOGO = (e) => {
     const fileLOGO = e.target.files[0];
     if (fileLOGO) {
       setFileLOGO(fileLOGO);
+      setFormData({ ...formData, image : fileLOGO });
       setPhotoURL(URL.createObjectURL(fileLOGO));
       setOpenCropLOGO(true);
       setAspect(1)
     }
   };
 
-  const test=async ()=> {
+  const [formData, setFormData] = useState({
+    image: null,
+    nameCO: "",
+    desCO: "",
+    linkCO: "",
+    scaleto: null,
+    scalefrom: null,
+    taxcode: "",
+    iDusermanager: "",
+    listaddress: [],
+  });
+
+  const handleChange = (event) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
+  const submit=async ()=> {
     console.log(listaddress)
-    const formData = new FormData();
-    formData.append('image', fileLOGO);
-    formData.append('nameCO', nameCO);
-    formData.append('desCO', desCO);
-    formData.append('linkCO', linkCO);
-    formData.append('scaleto', scaleto);
-    formData.append('scalefrom', scalefrom);
-    formData.append('taxcode', taxcode);
-    formData.append('iDusermanager', iDusermanager);
-    formData.append('listaddress', JSON.stringify(listaddress));
+
+    // formData.append('listaddress', JSON.stringify(listaddress));
     console.log(formData)
   //   try{
   //     console.log("aa")
@@ -87,6 +87,9 @@ const CrudCO = () => {
   //   } 
   }
 
+  useEffect(() => {
+    setFormData({ ...formData, listaddress:  JSON.stringify(listaddress)});
+  }, [listaddress]);
 
   return (
     <Box>
@@ -119,11 +122,13 @@ const CrudCO = () => {
                   id="outlined-basic"
                   label="Nhập tên công ty"
                   variant="outlined"
-                  onChange={(e)=> setNameCO(e.target.value)}
+                  value={formData.nameCO}
+                  name="nameCO"
+                  onChange={handleChange}
                 />
               </Typography>
 
-              <FormAddress setListaddress={setListaddress} listaddress={listaddress}/>
+              <FormAddress listaddress={listaddress} setListaddress={setListaddress}/>
 
               <Typography className="form-item">
                 <Typography className="label-form" component="div">
@@ -136,7 +141,9 @@ const CrudCO = () => {
                   variant="outlined"
                   multiline
                   minRows={3}
-                  onChange={(e)=> setDesCO(e.target.value)}
+                  value={formData.desCO}
+                  name="desCO"
+                  onChange={handleChange}
                 />
               </Typography>
               <Typography className="form-item">
@@ -148,7 +155,9 @@ const CrudCO = () => {
                   id="outlined-basic"
                   label="Nhập link"
                   variant="outlined"
-                  onChange={(e)=> setLinkCO(e.target.value)}
+                  value={formData.linkCO}
+                  name="linkCO"
+                  onChange={handleChange}
                 />
               </Typography>
               <Typography className="form-item">
@@ -158,10 +167,10 @@ const CrudCO = () => {
                 <FormControl sx={{ m: 1 }} variant="filled">
                   <InputLabel htmlFor="filled-adornment-amount">Từ</InputLabel>
                   <FilledInput  
-                    name="salaryfrom"
-                    value={null}
                     id="filled-adornment-amount"
-                    onChange={(e)=> setStafffrom(e.target.value)}
+                    value={formData.scalefrom}
+                    name="scalefrom"
+                    onChange={handleChange}
                     startAdornment={
                       <InputAdornment position="start">
                         <SupervisedUserCircleIcon />
@@ -173,10 +182,10 @@ const CrudCO = () => {
                 <FormControl sx={{ m: 1 }} variant="filled">
                   <InputLabel htmlFor="filled-adornment-amount">Đến</InputLabel>
                   <FilledInput
-                    name="salaryto"
-                    value={null}
                     id="filled-adornment-amount"
-                    onChange={(e)=> setStaffto(e.target.value)}
+                    value={formData.scaleto}
+                    name="scaleto"
+                    onChange={handleChange}
                     startAdornment={
                       <InputAdornment position="start">
                         <SupervisedUserCircleIcon />
@@ -194,7 +203,9 @@ const CrudCO = () => {
                   id="outlined-basic"
                   label="Nhập Mã số thuế"
                   variant="outlined"
-                  onChange={(e)=> setTaxcode(e.target.value)}
+                  value={formData.taxcode}
+                  name="taxcode"
+                  onChange={handleChange}
                 />
               </Typography>
               <Typography className="form-item">
@@ -206,7 +217,9 @@ const CrudCO = () => {
                   id="outlined-basic"
                   label="Nhập tài khoản quản lý"
                   variant="outlined"
-                  onChange={(e)=> setIDusermanager(e.target.value)}
+                  value={formData.iDusermanager}
+                  name="iDusermanager"
+                  onChange={handleChange}
                 />
               </Typography>
               <Typography className="form-item">
@@ -233,7 +246,7 @@ const CrudCO = () => {
                 <Button variant="outlined" color="error">
                   Hủy
                 </Button>
-                <Button variant="contained" color="success" onClick={test}>
+                <Button variant="contained" color="success" onClick={submit}>
                   Lưu
                 </Button>
               </Stack>

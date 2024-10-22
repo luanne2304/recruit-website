@@ -54,16 +54,18 @@ const FormAddress = ({ listaddress, setListaddress}) => {
   };
 
   const addChip = () => {
-    console.log(address);
-    console.log(listaddress);
-    // setAddress({
-    //   district: null,
-    //   ward: null,
-    //   city: null,
-    //   streetnumber: "",
-    // })
+    if(address.city ===null ||address.district===null|| address.ward===null|| address.streetnumber===""){
+      notify("warning");
+      return
+    }
+    setAddress({
+      district: null,
+      ward: null,
+      city: null,
+      streetnumber: "",
+    })
     setListaddress([...listaddress, address]);
-    notify();
+    notify("success");
   };
 
   const handleChangeTP = (event, value) => {
