@@ -113,8 +113,6 @@ const CurdPost = () => {
     let allFieldsChanged = true; // Biến cờ để kiểm tra
     const checksalaryto= parseFloat(formData.salaryto);
     const checksalaryfrom= parseFloat(formData.salaryfrom);
-    console.log(checksalaryfrom)
-    console.log(checksalaryto)
     if (!isNaN(checksalaryto) && !isNaN(checksalaryfrom)) {
       if(checksalaryfrom>=checksalaryto){
         allFieldsChanged = false;

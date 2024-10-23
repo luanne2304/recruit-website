@@ -15,6 +15,7 @@ import {
 
 } from "@mui/material/";
 import { styled } from '@mui/material/styles';
+import { useParams } from 'react-router-dom';
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import CloudUploadIcon  from "@mui/icons-material/CloudUpload";
 import CropEasy from "../../components/Crop/CropEasy";
@@ -34,6 +35,9 @@ const VisuallyHiddenInput = styled('input')({
 
 const CrudCO = () => {
 
+  const { idCO } = useParams();
+  const [fetchco,setFetchco] =useState()
+
   const [fileLOGO, setFileLOGO] = useState(null);
   const [photoURL, setPhotoURL] = useState("");
   const [openCropLOGO, setOpenCropLOGO] = useState(false);
@@ -42,7 +46,7 @@ const CrudCO = () => {
   const [listaddress, setListaddress] = useState([]);
 
   const handleChangeLOGO = (e) => {
-    const fileLOGO = e.target.files[0];
+    const fileLOGO = e.target.files[0]; 
     if (fileLOGO) {
       setFileLOGO(fileLOGO);
       setFormData({ ...formData, image : fileLOGO });
@@ -52,13 +56,25 @@ const CrudCO = () => {
     }
   };
 
+  const defaultFormData={
+    image: null,
+    nameCO: "",
+    desCO: "",
+    linkCO: "",
+    scaleto: "",
+    scalefrom: "",
+    taxcode: "",
+    iDusermanager: "",
+    listaddress: "[]",
+  }
+
   const [formData, setFormData] = useState({
     image: null,
     nameCO: "",
     desCO: "",
     linkCO: "",
-    scaleto: null,
-    scalefrom: null,
+    scaleto: "",
+    scalefrom: "",
     taxcode: "",
     iDusermanager: "",
     listaddress: [],
@@ -68,11 +84,29 @@ const CrudCO = () => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
-  const submit=async ()=> {
-    console.log(listaddress)
-
-    // formData.append('listaddress', JSON.stringify(listaddress));
-    console.log(formData)
+  const submitForm=async (e)=> {
+    e.preventDefault();
+    let allFieldsChanged = true;
+    const checkscaleto= parseFloat(formData.scaleto);
+    const checkscalefrom= parseFloat(formData.scalefrom);
+    if (!isNaN(checkscaleto) && !isNaN(checkscalefrom)) {
+      if(checkscalefrom>=checkscaleto){
+        allFieldsChanged = false;
+      }
+    }
+    for (let key in formData) {
+      if (key === 'CO' || key === 'salaryto'|| key === 'salaryfrom') continue;
+      if (JSON.stringify(formData[key]) === JSON.stringify(defaultFormData[key])) {
+        console.log(`Field ${key} has not been changed.`);
+        allFieldsChanged = false;  // Đặt biến cờ thành false nếu có trường chưa thay đổi
+      }
+    }
+    if(allFieldsChanged) {
+      console.log("hoan tat");
+    }
+    else{
+      console.log("loi~");
+    }
   //   try{
   //     console.log("aa")
   //   const res =await axios.post("http://localhost:4000/api/CO/create",formData,{
@@ -90,6 +124,41 @@ const CrudCO = () => {
   useEffect(() => {
     setFormData({ ...formData, listaddress:  JSON.stringify(listaddress)});
   }, [listaddress]);
+
+  useEffect(() => {
+    const getCO= async () => {
+      try {
+        if (idCO) {
+          const response  = await axios.get(`http://localhost:4000/api/CO/getCObyID/${idCO}`);
+          setFetchco(response.data.data)
+          console.log(response.data.data)
+          setFormData({ 
+            nameCO:response.data.data.name,
+            desCO:response.data.data.des,
+            scaleto:response.data.data.scaleto,
+            scalefrom:response.data.data.scalefrom,
+            taxcode:response.data.data.taxcode,
+            iDusermanager:response.data.data.idaccount_manager,
+            linkCO:response.data.data.link,
+          })
+          // image: null,
+          // nameCO: "",
+          // desCO: "",
+          // linkCO: "",
+          // scaleto: "",
+          // scalefrom: "",
+          // taxcode: "",
+          // iDusermanager: "",
+          // listaddress: [],
+        }
+      } catch (error) {
+        console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
+      }
+    };
+    getCO();
+  }, [idCO]);
+
+
 
   return (
     <Box>
@@ -246,7 +315,7 @@ const CrudCO = () => {
                 <Button variant="outlined" color="error">
                   Hủy
                 </Button>
-                <Button variant="contained" color="success" onClick={submit}>
+                <Button variant="contained" color="success" onClick={submitForm}>
                   Lưu
                 </Button>
               </Stack>

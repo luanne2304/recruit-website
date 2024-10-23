@@ -48,6 +48,7 @@ function App() {
           <Route path="/admin/UserManager" element={<UserManager />} />
           <Route path="/admin/COManager" />
           <Route path="/admin/CrudCO" element={<CrudCO />} />
+          <Route path="/admin/CrudCO/:idCO" element={<CrudCO />} />
           <Route path="/admin/test" element={<Test />} />
       </Route>
       </Routes>
