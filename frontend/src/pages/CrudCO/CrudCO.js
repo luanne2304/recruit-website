@@ -141,6 +141,13 @@ const CrudCO = () => {
             iDusermanager:response.data.data.idaccount_manager,
             linkCO:response.data.data.link,
           })
+          let addressData  = response.data.data.address.map((address) => ({
+            city: { label: address.city, code:address.city_code},
+            district: { label: address.district, code:address.district_code},
+            ward: { label: address.ward, code: address.ward_code},
+            streetnumber: address.streetnumber
+          }));
+          setListaddress(addressData)
           // image: null,
           // nameCO: "",
           // desCO: "",

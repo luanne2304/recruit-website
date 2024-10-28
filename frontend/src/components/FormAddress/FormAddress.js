@@ -66,6 +66,7 @@ const FormAddress = ({ listaddress, setListaddress}) => {
     })
     setListaddress([...listaddress, address]);
     notify("success");
+    console.log(address)
   };
 
   const handleChangeTP = (event, value) => {
