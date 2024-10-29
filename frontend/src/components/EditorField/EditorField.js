@@ -4,9 +4,16 @@ import ReactQuill, { Quill } from "react-quill";
 class EditorField extends Component {
   constructor(props) {
     super(props);
-    this.state = { editorHtml: "" };
+    this.state = { editorHtml: props.defaultValue|| "" };
     this.handleChange = this.handleChange.bind(this);
     this.textInput = React.createRef();
+  }
+
+  componentDidUpdate(prevProps) {
+    // Cập nhật editorHtml khi defaultValue thay đổi
+    if (prevProps.defaultValue !== this.props.defaultValue) {
+      this.setState({ editorHtml: this.props.defaultValue });
+    }
   }
 
   handleChange(html) {

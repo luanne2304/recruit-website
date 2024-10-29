@@ -33,9 +33,14 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const CurdPost = () => {
-  const { idCO } = useParams();
+  const { idCO ,idjob} = useParams();
 
   const [fetchco, setFetchco] = useState();
+
+  const [loadjob, setLoadjob] = useState(false);
+
+  const [addressDefault,setAddressDefault]= useState()
+  const [selectDefault,setSelectDefault]=useState("")
 
   const defaultFormData = {
     title: "",
@@ -86,6 +91,12 @@ const CurdPost = () => {
   const handleAddressChange = (event) => {
     // setFormData({ ...formData, [fieldName]: event.target.value });
     const foundFetchco = fetchco.address.find(item => item._id === event.target.value );
+    console.log(foundFetchco)
+    setSelectDefault( event.target.value)
+    if( foundFetchco===undefined){
+      setFormData({ ...formData, address:addressDefault });
+    }
+    else
     setFormData({ ...formData, address:foundFetchco });
   };
 
@@ -179,7 +190,73 @@ const CurdPost = () => {
     { title: "React Native" },
   ];
 
+  useEffect(() => {
+    const getjob= async () => {
+      try {
+        if (idjob) {
+          const response  = await axios.get(`http://localhost:4000/api/get/getDetailjob/${idjob}`);
+          console.log(response.data.data)
+          // const [formData, setFormData] = useState({
+          //   title: "",
+          //   des: "",
+          //   require: "",
+          //   benefit: "",
+          //   address: null,
+          //   form: "",
+          //   salaryto: "",
+          //   salaryfrom: "",
+          //   duration: null,
+          //   skill: [],
+          //   skillformat: [],
+          //   exp: [],
+          //   expformat: [],
+          //   CO: idCO,
+          // });
+          setFormData({
+            title:response.data.data.title,
+            des:response.data.data.des,
+            require:response.data.data.require,
+            benefit:response.data.data.benefit,
+            address:response.data.data.address,
+          })
 
+          setLoadjob(true)
+          setAddressDefault(response.data.data.address)
+          setSelectDefault(0)
+          // setFetchco(response.data.data)
+          // console.log(response.data.data)
+          // setFormData({ 
+          //   nameCO:response.data.data.name,
+          //   desCO:response.data.data.des,
+          //   scaleto:response.data.data.scaleto,
+          //   scalefrom:response.data.data.scalefrom,
+          //   taxcode:response.data.data.taxcode,
+          //   iDusermanager:response.data.data.idaccount_manager,
+          //   linkCO:response.data.data.link,
+          // })
+          // let addressData  = response.data.data.address.map((address) => ({
+          //   city: { label: address.city, code:address.city_code},
+          //   district: { label: address.district, code:address.district_code},
+          //   ward: { label: address.ward, code: address.ward_code},
+          //   streetnumber: address.streetnumber
+          // }));
+          // setListaddress(addressData)
+          // // image: null,
+          // nameCO: "",
+          // desCO: "",
+          // linkCO: "",
+          // scaleto: "",
+          // scalefrom: "",
+          // taxcode: "",
+          // iDusermanager: "",
+          // listaddress: [],
+        }
+      } catch (error) {
+        console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
+      }
+    };
+    getjob();
+  }, [idjob]);
 
   useEffect(() => {
     const getCO = async () => {
@@ -330,10 +407,15 @@ const CurdPost = () => {
                       sx={{width:"500px"}}
                       labelId="demo-simple-select-autowidth-label"
                       id="demo-simple-select-autowidth"
-                      defaultValue=""
+                      value={selectDefault}
                       label="Địa chỉ"
                       onChange={handleAddressChange}
                     >
+                      {(loadjob ) && (
+                        <MenuItem  value={0}>{"Hiện tại: "+addressDefault.streetnumber+", "+addressDefault.ward+", "+addressDefault.district+", "+addressDefault.city}</MenuItem>
+                       )
+                      } 
+                        
                       {fetchco && fetchco.address.map((item,index)=>(
                         <MenuItem key={index} value={item._id}>{item.streetnumber+", "+item.ward+", "+item.district+", "+item.city}</MenuItem>
                       ))}
@@ -411,19 +493,19 @@ const CurdPost = () => {
                   <Typography className="label-form" component="div">
                     Mô tả:
                   </Typography>
-                  <EditorField onContentChange={handleEditorChange} index="des" />
+                  <EditorField onContentChange={handleEditorChange} index="des"  defaultValue={formData.des || ''} />
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
                     Yêu cầu:
                   </Typography>
-                  <EditorField onContentChange={handleEditorChange} index="require"/>
+                  <EditorField onContentChange={handleEditorChange} index="require"  defaultValue={formData.require || ''} />
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">
                     Quyền lợi:
                   </Typography>
-                  <EditorField onContentChange={handleEditorChange} index="benefit"/>
+                  <EditorField onContentChange={handleEditorChange} index="benefit"  defaultValue={formData.benefit || ''} />
                 </Typography>
                 <Typography className="form-item">
                   <Typography className="label-form" component="div">

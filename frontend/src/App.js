@@ -30,6 +30,7 @@ function App() {
           <Route path="/home/ChangePass" element={<ChangePass />} />
           <Route path="/home/ListCO" element={<ListCO />}/>
           <Route path="/home/DetailCO/CurdPost/:idCO" element={<CurdPost />}/>
+          <Route path="/home/DetailCO/CurdPost/:idCO/:idjob" element={<CurdPost />}/>
           <Route path="/home/DetailCO/CVreview/:idjob" element={<CVreview />}/>
           <Route path="/home/Myprofile" element={<Myprofile />}/>
           <Route path="/home/DetailCO/:idCO" element={<DetailCO />}/>
