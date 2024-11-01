@@ -26,6 +26,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import EditorField from "../../components/EditorField/EditorField";
 import { useParams, useNavigate } from "react-router-dom";
+import dayjs from 'dayjs';
 import CO from "../../components/CO/CO";
 import "./CurdPost.css";
 
@@ -80,7 +81,7 @@ const CurdPost = () => {
     if (!value) {
       return false;
     }
-    return option.title === value.title;
+    return option === value;
   };
 
   const handleChange = (event) => {
@@ -114,6 +115,8 @@ const CurdPost = () => {
 
   const handleDateChange = (newDate) => {
     setFormData({ ...formData, duration: newDate.$d });
+    console.log(newDate)
+    console.log(newDate.$d)
   };
 
   const submitForm = async (e) => {
@@ -142,52 +145,30 @@ const CurdPost = () => {
     else{
       console.log("loi~");
     }
-    // try {
-    //   await axios.post(`http://localhost:4000/api/post/create`, formData);
-    // } catch (error) {
-    //   console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
-    // }
+    try {
+      await axios.post(`http://localhost:4000/api/post/create`, formData);
+    } catch (error) {
+      console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
+    }
   };
 
 
 
   const levelskill = [
-    { title: "Intern" },
-    { title: "Fresher" },
-    { title: "Juinor" },
-    { title: "Senior" },
-    { title: "Manager" },
+   "Intern" ,
+    "Fresher" ,
+     "Juinor" 
   ];
 
   const skills = [
-    { title: "HTML" },
-    { title: "CSS" },
-    { title: "WORDPRESS" },
-    { title: "C" },
-    { title: "C++" },
-    { title: "C#" },
-    { title: "Javasript" },
-    { title: "PHP" },
-    { title: "Java" },
-    { title: "Python" },
-    { title: "RUBY" },
-    { title: "SQLserver" },
-    { title: "MySQL" },
-    { title: "ORACLE" },
-    { title: "AWS" },
-    { title: "DOCKER" },
-    { title: "Angular" },
-    { title: "VUE" },
-    { title: "REACT" },
-    { title: "NEXTJS" },
-    { title: "SPRING" },
-    { title: "NODEJS" },
-    { title: "GOLANG" },
-    { title: ".NET" },
-    { title: "LAVAREL" },
-    { title: "RAILS" },
-    { title: "Fluter" },
-    { title: "React Native" },
+    "HTML",
+    "CSS" ,
+    "WORDPRESS" ,
+     "C" ,
+     "C++" ,
+    "C#" ,
+    ".NET", 
+    "SQLserver"
   ];
 
   useEffect(() => {
@@ -218,6 +199,13 @@ const CurdPost = () => {
             require:response.data.data.require,
             benefit:response.data.data.benefit,
             address:response.data.data.address,
+            skill:response.data.data.tag.skill,
+            exp:response.data.data.tag.exp,
+            duration:response.data.data.duration,
+            form:response.data.data.form,
+            salaryfrom:response.data.data.salaryfrom,
+            salaryto:response.data.data.salaryto,
+
           })
 
           setLoadjob(true)
@@ -432,8 +420,9 @@ const CurdPost = () => {
                     name="aaa"
                     options={skills}
                     disableCloseOnSelect
+                    value={formData.skill}
                     onChange={handleChangeSkill}
-                    getOptionLabel={(option) => option.title}
+                    getOptionLabel={(option) => option}
                     isOptionEqualToValue={isOptionEqualToValue}
                     renderOption={(props, option, { selected }) => (
                       <li {...props}>
@@ -443,7 +432,7 @@ const CurdPost = () => {
                           style={{ marginRight: 8 }}
                           checked={selected}
                         />
-                        {option.title}
+                        {option}
                       </li>
                     )}
                     style={{ width: 500 }}
@@ -465,7 +454,8 @@ const CurdPost = () => {
                     id="checkboxes-tags-demo"
                     options={levelskill}
                     disableCloseOnSelect
-                    getOptionLabel={(option) => option.title}
+                    value={formData.exp}
+                    getOptionLabel={(option) => option}
                     onChange={handleChangeLevel}
                     isOptionEqualToValue={isOptionEqualToValue}
                     renderOption={(props, option, { selected }) => (
@@ -476,7 +466,7 @@ const CurdPost = () => {
                           style={{ marginRight: 8 }}
                           checked={selected}
                         />
-                        {option.title}
+                        {option}
                       </li>
                     )}
                     style={{ width: 500 }}
@@ -520,6 +510,7 @@ const CurdPost = () => {
                         <DateTimePicker
                           name="duration"
                           onChange={handleDateChange}
+                          value={dayjs(formData.duration)}
                         />
                       </DemoItem>
                     </DemoContainer>
