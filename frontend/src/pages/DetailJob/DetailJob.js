@@ -15,12 +15,14 @@ import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import FlagIcon from "@mui/icons-material/Flag";
 import Logocty from "../../assets/images/logocty.jpg";
 import COjob from "../../components/COjob/COjob";
+import ReportformDialog from "../../components/ReportformDialog/ReportformDialog";
 import DialogApplyCV from "../../components/DialogApplyCV/DialogApplyCV";
 import { useParams } from "react-router-dom";
 import "./DetailJob.css";
 
 const DetailJob = () => {
   const [openApply, setOpenApply] = useState(false);
+  const [openReport, setOpenReport] = useState(false);
   const [fetchpost, setFetchpost] = useState(null);
 
   const { idjob } = useParams();
@@ -29,11 +31,15 @@ const DetailJob = () => {
     setOpenApply(true);
   };
 
+  const handleChangeReport = () => {
+    setOpenReport(true);
+  };
+
   useEffect(() => {
     const getALLjob = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/post/getDetailjob/${idjob}`
+          `http://localhost:4000/api/get/getDetailjob/${idjob}`
         );
         setFetchpost(response.data.data);
       } catch (error) {
@@ -46,6 +52,7 @@ const DetailJob = () => {
 
   return (
     <>
+      <ReportformDialog setOpen={setOpenReport} open={openReport} idpost={idjob}></ReportformDialog>
       <DialogApplyCV setOpen={setOpenApply} open={openApply}></DialogApplyCV>
       <Box>
         <Box className="main">
@@ -186,6 +193,8 @@ const DetailJob = () => {
                           variant="contained"
                           color="error"
                           endIcon={<FlagIcon />}
+                          onClick={handleChangeReport}
+                          
                         >
                           Báo cáo
                         </Button>
