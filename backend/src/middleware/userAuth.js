@@ -20,8 +20,28 @@ const Authorization = {
           next(); // Tiếp tục tiến hành xử lý request
       });
         
+      },
+
+       verifyTokenAndUserAuthorization: async (req, res, next) => {
+        Authorization.authenticateUser(req, res, () => {
+          if (req.user.id === req.params.id|| req.user.isAdmin) {
+            next();
+          } else {
+            return res.sendStatus(403);
+          }
+        });
+      },
+      
+        verifyTokenAndAdmin: async (req, res, next) => {
+            Authorization.authenticateUser(req, res, () => {
+          if (req.user.isAdmin) {
+            next();
+          } else {
+            return res.sendStatus(403);
+          }
+        });
       }
-       
+
 };
 
 
