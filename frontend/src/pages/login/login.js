@@ -1,5 +1,4 @@
 import { useState } from "react";
-import axios from "axios";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
@@ -14,6 +13,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import GoogleIcon from "@mui/icons-material/Google";
+import { useAuth } from "../../context/AuthContext";
 import {auth,provider} from "../../config/index"
 import {signInWithPopup} from "firebase/auth"
 import "@fontsource/roboto/400.css";
@@ -24,6 +24,9 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 
 const Login = () => {
+
+  const { setAccessToken } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -39,10 +42,8 @@ const Login = () => {
   const loginByEmail = async () => {
     try {
       const res = await userService.login(email, password);
-      localStorage.setItem("token", res.token);
-      console.log(res);
-      console.log(localStorage.getItem("token"));
       if (res.success) {
+        setAccessToken(res.accessToken);
         navigate("/home");
       } else {
         alert("Đăng nhập thất bại");
@@ -57,30 +58,15 @@ const Login = () => {
   const loginWithGG= async ()=>{
     signInWithPopup(auth,provider).then(async (data)=>{
       try{
-      await axios.post(`http://localhost:4000/api/user/signinnwithGmail`,{
-        displayName: data.user.displayName,
-        email: data.user.email,
-        photoURL: data.user.photoURL
-      })
+      const res = await userService.signinnwithGG(data);
+      setAccessToken(res.accessToken);
       navigate("/home");
       } catch(error){
         console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
       }
     })
-  }
+  };
 
-  // const login=async ()=>{
-  //   try{
-  //     await axios.post(`http://localhost:4000/api/user/signinnwithGmail`,{
-  //       displayName: data.user.displayName,
-  //       email: data.user.email,
-  //       photoURL: data.user.photoURL
-  //     })
-  //     window.location.href = '/home';
-  //     } catch(error){
-  //       console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
-  //     }
-  // }
 
   return (
     <Box className="wrap-login">
@@ -156,7 +142,7 @@ const Login = () => {
         <Box textAlign="center" sx={{ mt: "20px", width: "100%" }}>
           <Box>
             Bạn chưa có tài khoản?
-            <NavLink to="/register" underline="none">
+            <NavLink to="/log/register" underline="none">
               Đăng ký
             </NavLink>
           </Box>
