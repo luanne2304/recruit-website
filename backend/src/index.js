@@ -4,7 +4,9 @@ const app = express();
 const cors = require('cors');
 const dotenv = require("dotenv");
 const fs = require('fs');
+const cookieParser = require("cookie-parser");
 
+const authRouter =require("./Routers/AuthRouter")
 const userRouter =require("./Routers/userRouter")
 const postRouter =require("./Routers/postRouter")
 const CORouter =require("./Routers/CORouter")
@@ -13,19 +15,33 @@ const ApplicationsRouter =require("./Routers/ApplicationsRouter")
 
 dotenv.config();
 
+
 app.use(express.json());
 app.use(express.urlencoded())
+app.use(cookieParser()); 
 
 
 const corsOption = {
-  origin: "*",
+  origin: "http://localhost:3000",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders:  [
+    "Authorization", 
+    "Content-Type", 
+    "Accept", 
+    "X-Requested-With", 
+    "Cache-Control", 
+    "X-Custom-Header" // Thêm các header tùy chỉnh của bạn nếu cần
+  ],
   preflightContinue: false,
   optionsSuccessStatus: 204,
+  credentials: true,
+  exposedHeaders: ["Authorization"],
 };
 
+app.options('*', cors(corsOption));
 app.use(cors(corsOption))
 
+app.use(authRouter)
 app.use(userRouter)
 app.use(postRouter)
 app.use(CORouter)

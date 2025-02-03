@@ -13,19 +13,17 @@ import LockIcon from "@mui/icons-material/Lock";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import GoogleIcon from "@mui/icons-material/Google";
-import { useAuth } from "../../context/AuthContext";
 import {auth,provider} from "../../config/index"
 import {signInWithPopup} from "firebase/auth"
 import "@fontsource/roboto/400.css";
 import "./login.css";
 import userService from "../../services/userService";
 import { NavLink, useNavigate } from "react-router-dom";
+import { setAccessTokenUtil,getAccessTokenUtil } from '../../utils/authUtils';
 
 
 
 const Login = () => {
-
-  const { setAccessToken } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,7 +41,7 @@ const Login = () => {
     try {
       const res = await userService.login(email, password);
       if (res.success) {
-        setAccessToken(res.accessToken);
+        setAccessTokenUtil(res.accessToken);
         navigate("/home");
       } else {
         alert("Đăng nhập thất bại");
@@ -59,7 +57,7 @@ const Login = () => {
     signInWithPopup(auth,provider).then(async (data)=>{
       try{
       const res = await userService.signinnwithGG(data);
-      setAccessToken(res.accessToken);
+      setAccessTokenUtil(res.accessToken);
       navigate("/home");
       } catch(error){
         console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);

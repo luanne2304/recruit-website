@@ -1,23 +1,34 @@
 import cf_axios from "./cf_axios";
+import api from "./interceptorAPI";
 
 const userService = {
     login: async (email, password) => {
-        const res = await cf_axios.post("/user/login", { email, password });
+        const res = await cf_axios.post("/auth/login", { email, password });
         return res.data;
     },
     register: async (fullName, email, password) => {
-        const res = await cf_axios.post("/user/signup", {fullName, email, password});
+        const res = await cf_axios.post("/auth/signup", {fullName, email, password});
         return res.data;
     },
 
     signinnwithGG: async (data) => {
-        const res = await cf_axios.post("/user/signinnwithGmail",{
+        const res = await cf_axios.post("/auth/signinnwithGmail",{
             displayName: data.user.displayName,
             email: data.user.email,
             photoURL: data.user.photoURL
           });
         return res.data;
     },
+
+    testUser: async (accessToken) => {
+        const res = await api.post("/auth/test",null, {
+            headers: {
+                Authorization: `Bearer ${accessToken}` // Gắn token vào header
+            }
+          });
+        return res.data;
+    },
+
 
     getUser: async (token) => {
         const res = await cf_axios.get("/users");

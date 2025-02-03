@@ -11,7 +11,7 @@ const { auth,storage } = require('../config/index')
 
 const userController = {
   generateAuthToken : async (user) => {
-    const token = jwt.sign({ _id: user._id , isAdmin: user.isAdmin,}, process.env.JWT_KEY,{ expiresIn: "30s" });
+    const token = jwt.sign({ _id: user._id , isAdmin: user.isAdmin,}, process.env.JWT_KEY,{ expiresIn: "10s" });
     
     return token;
   },

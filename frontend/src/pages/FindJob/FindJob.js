@@ -7,9 +7,21 @@ import SearchIcon from '@mui/icons-material/Search';
 import JobSummary from "../../components/JobSummary/JobSummary";
 import DetailJobswift from "../../components/DetailJobswift/DetailJobswift";
 import Banner from "../../components/Banner/Banner";
+import userService from "../../services/userService";
+import { setAccessTokenUtil,getAccessTokenUtil } from '../../utils/authUtils';
 import "./FindJob.css";
 
 const FindJob = () => {
+  
+
+  const test= async ()=>{
+      try{
+      const res = await userService.testUser(getAccessTokenUtil());
+      console.log(getAccessTokenUtil())
+      } catch(error){
+        console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+      }
+    }
 
   const [listjobs, setListjobs] =useState([])
   const [active,setActive] = useState(0)
@@ -28,7 +40,6 @@ const FindJob = () => {
       console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
     }
   };
-
 
   useEffect(() => {
     const getALLjob = async () => {
@@ -65,6 +76,25 @@ const FindJob = () => {
                 }}
               >
                 <SearchIcon></SearchIcon> Tìm kiếm
+              </Button>
+              <Button
+                variant="contained"
+                sx={{
+                  fontSize: "20px",
+                  padding: "10px 30px",
+                }}
+                onClick={test}
+              >
+            TestUser
+              </Button>
+              <Button
+                variant="contained"
+                sx={{
+                  fontSize: "20px",
+                  padding: "10px 30px",
+                }}
+              >
+                TestAdmin
               </Button>
             </Box>
             <ButtonDialogFilter setFilter={getFilterjob}></ButtonDialogFilter>

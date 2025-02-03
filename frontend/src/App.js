@@ -18,12 +18,10 @@ import UserManager from "./pages/UserManager/UserManager";
 import ReportManager from "./pages/ReportManager/ReportManager";
 import CrudCO from "./pages/CrudCO/CrudCO";
 import Adminlayout from "./layouts/adminlayout";
-import { AuthProvider } from "./context/AuthContext";
 import Test from "./pages/test";
 
 function App() {
   return (
-    <AuthProvider>
     <Router>
       <Routes>
         <Route path="/home/" element={<Homelayout />}>
@@ -56,7 +54,6 @@ function App() {
       </Route>
       </Routes>
     </Router>
-    </AuthProvider>
   );
 }
 
