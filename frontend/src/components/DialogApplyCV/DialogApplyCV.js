@@ -13,7 +13,8 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import CV from "../../components/CV/CV";
-
+import CVService from '../../services/CVService';
+import ApplicationsService from '../../services/ApplicationsService';
 export default function DialogApplyCV({setOpen,open,idpost}) {
   
     const [CVs, setCVs]= React.useState([])
@@ -37,7 +38,7 @@ export default function DialogApplyCV({setOpen,open,idpost}) {
         setOpen(false);
         setRadioCV("")
         try {
-          const res = await axios.post(`http://localhost:4000/api/Applications/apply`,{idCV:radioCV, idPost:idpost});
+          const res = await ApplicationsService.apply(radioCV,idpost)
           console.log(res)
         } catch (error) {
           console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
@@ -55,10 +56,9 @@ export default function DialogApplyCV({setOpen,open,idpost}) {
   React.useEffect(() => {
     const getUserData = async () => {
       try {
-        const id="660cfd11a53d71f4940dcc55"
         const temp = [];
-        const res = await axios.get(`http://localhost:4000/api/CV/getCVByIduser/${id}`);
-        res.data.data.map((item)=>(
+        const res = await CVService.getByUser();
+        res.data.map((item)=>(
           temp.push({filetitle:item.filetitle,linkfile:item.linkfile,_id:item._id})
         ));
         setCVs(temp)

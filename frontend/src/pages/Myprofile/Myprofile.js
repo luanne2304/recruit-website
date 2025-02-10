@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -11,8 +11,13 @@ import CV from "../../components/CV/CV";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import "./Myprofile.css";
 import Avatar from "../../assets/images/logocty.jpg";
+import CropEasy from "../../components/Crop/CropEasy";
+
 import userService from "../../services/userService";
 import ButtonDialogFormPDF from "../../components/ButtonDialogFormPDF/ButtonDialogFormPDF";
+import { useAuth  } from '../../utils/authUtils';
+import CVService from "../../services/CVService";
+
 
 
 const VisuallyHiddenInput = styled("input")({
@@ -27,32 +32,48 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-}));
 
 const Myprofile = () => {
-  const [fullName, setFullName] = React.useState("");
-  const [phone, setPhone] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [avatar, setAvatar] = React.useState(null);
+  const { accessToken } = useAuth()
+  const [userData, setUserData] = useState({
+      id: "",
+      fullName: "",
+      email: "",
+      phone: "",
+      ava:null
+  });
+
+  const [fileLOGO, setFileLOGO] = useState(null);
+  const [photoURLCrop, setPhotoURLCrop] = useState("");
+  const [photoURL, setPhotoURL] = useState("");
+  const [openCropLOGO, setOpenCropLOGO] = useState(false);
+  const [aspect,setAspect]=useState();
+
   const [cv, setCv] = React.useState([]);
   
+
+  const handleEditorChange = (event) => {
+    setUserData({ ...userData, [event.target.name]: event.target.value });
+  };
 
   React.useEffect(() => {
     const getUserData = async () => {
       try {
-        const id="660cfd11a53d71f4940dcc55"
         const temp = [];
-        const res = await axios.get(`http://localhost:4000/api/user/${id}`);
-        res.data.data.CV.map((item)=>(
+        const resUser = await userService.getUserById(accessToken)
+        console.log(resUser)
+        setUserData({
+          id: resUser.data._id,
+          fullName: resUser.data.fullName,
+          email: resUser.data.email,
+          phone: resUser.data.sdt
+        });
+        setPhotoURL(resUser.data.avatar)
+        const resCV= await CVService.getByUser(accessToken)
+        resCV.data.map((item)=>(
           temp.push({filetitle:item.filetitle,linkfile:item.linkfile,_id:item._id})
         ));
-        console.log(temp)
+        console.log(resCV)
         setCv(temp)
       } catch (error) {
         console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
@@ -62,39 +83,34 @@ const Myprofile = () => {
     // getUserData();
   }, []);
 
-  // const getUserData = async () => {
-  //   const res = await userService.getUserById();
-  //   if(res.data) {
-  //     setFullName(res.data.fullName);
-  //     setPhone(res.data.sdt);
-  //     setEmail(res.data.email);
-  //     setAvatar(res.data.avatar);
-  //     setCv(res.data.cv);
-  //   }
-  // };
 
   const handleImageChange = (e) => {
-    if (e.target.files[0]) {
-      const reader = new FileReader();
-
-      reader.addEventListener('load', () => {
-        setAvatar(reader.result);
-      });
-
-      reader.readAsDataURL(e.target.files[0]);
+    const fileLOGO = e.target.files[0]; 
+    if (fileLOGO) {
+      setFileLOGO(fileLOGO);
+      setUserData({ ...userData, ava : fileLOGO });
+      setPhotoURLCrop(URL.createObjectURL(fileLOGO));
+      setOpenCropLOGO(true);
+      setAspect(1);
     }
   };
 
   const handleChange = () => {
-    const data = {
-      fullName: fullName,
-      sdt: phone,
-      avatar: avatar,
-    };
-    userService.updateUser(data).then((res) => {
+    const formData = new FormData();
+    formData.append("id", userData.id);
+    formData.append("fullName", userData.fullName);
+    formData.append("phone", userData.phone);
+  
+    if (fileLOGO) {
+      formData.append("image", fileLOGO); 
+    }
+
+    userService.updateUser(formData,accessToken).then((res) => {
       if (res.success) {
+        console.log(res)
         alert("Cập nhật thành công");
       }
+    
     });
   }
 
@@ -110,7 +126,7 @@ const Myprofile = () => {
           </Box>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <img src={avatar || Avatar} style={{ width: 250 }} />
+              <img src={photoURL || Avatar} style={{ width: 250 }} />
               <Box textAlign="center">
                 <Button
                   component="label"
@@ -136,8 +152,9 @@ const Myprofile = () => {
                   id="outlined-basic"
                   label="Nhập tên của bạn"
                   variant="outlined"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  name="fullName"
+                  value={userData.fullName}
+                  onChange={handleEditorChange}
                 />
               </Box>
               <Box>
@@ -149,8 +166,9 @@ const Myprofile = () => {
                   id="outlined-basic"
                   label="Nhập SDT"
                   variant="outlined"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  name="phone"
+                  value={userData.phone}
+                  onChange={handleEditorChange}
                 />
               </Box>
               <Box>
@@ -162,7 +180,8 @@ const Myprofile = () => {
                   id="outlined-basic"
                   label="Nhập mail"
                   variant="outlined"
-                  value={email}
+                  name="email"
+                  value={userData.email}
                 />
               </Box>
             </Box>
@@ -193,6 +212,15 @@ const Myprofile = () => {
         </Box>
         </Box>
       </Box>
+      {openCropLOGO && (
+        <CropEasy
+          photoURL={photoURLCrop}
+          setOpenCrop={setOpenCropLOGO}
+          setPhotoURL={setPhotoURL}
+          setFile={setFileLOGO}
+          aspect={aspect}
+        />
+      )}
     </Box>
   );
 };

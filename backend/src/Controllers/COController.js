@@ -38,7 +38,7 @@ const COController = {
           streetnumber:i.streetnumber,
         })
       })
-        const imgref = await ref(storage,`logos/${file.filename}.${v4()}`)
+        const imgref =  ref(storage,`logos/${file.filename}.${v4()}`)
         const snapshot =await uploadBytesResumable(imgref, file.buffer, metadata);
         const downloadURL = await getDownloadURL(snapshot.ref);
         const newCO = new COModel({
@@ -68,7 +68,7 @@ const COController = {
 
   getAll: async  (req, res, next) => {
     try {
-      const getCO = await COModel.find({status:true})
+      const getCO = await COModel.find()
       return res.status(200).json({
         success: true,
         data: getCO,
@@ -88,6 +88,87 @@ const COController = {
       return res.status(200).json({
         success: true,
         data: getCO,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  getCObyIDuser: async  (req, res, next) => {
+    try {
+      const id =req.user._id
+      const getCO = await COModel.findOne({idaccount_manager:id})
+      if(!getCO){
+        return res.status(404).json("ko co Congty");
+      }
+      return res.status(200).json({
+        success: true,
+        data: getCO,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  updateStatus: async (req, res, next) => {
+    try {
+      const { id } = req.params; // Lấy ID công ty từ URL
+      const { status ,reason} = req.body; // Lấy status mới từ request body
+  
+      // Kiểm tra xem công ty có tồn tại không
+      const existingCO = await COModel.findById(id);
+      if (!existingCO) {
+        return res.status(404).json({
+          success: false,
+          message: "Không tìm thấy công ty",
+        });
+      }
+  
+      // Cập nhật status
+      existingCO.status = status;
+      await existingCO.save();
+      console.log(req.body)
+      return res.status(200).json({
+        success: true,
+        message: "Cập nhật trạng thái thành công",
+        data: existingCO,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  updateIdaccountCO: async (req, res, next) => {
+    try {
+      const { id } = req.params; // Lấy ID công ty từ URL
+      const { idaccount_manager } = req.body; // Lấy dữ liệu mới từ request body
+
+      // Kiểm tra xem công ty có tồn tại không
+      const existingCO = await COModel.findById(id);
+      if (!existingCO) {
+        return res.status(404).json({
+          success: false,
+          message: "Không tìm thấy công ty",
+        });
+      }
+
+      existingCO.idaccount_manager = idaccount_manager;
+
+      await existingCO.save();
+      
+      return res.status(200).json({
+        success: true,
+        message: "Cập nhật thành công",
+        data: existingCO,
       });
     } catch (error) {
       return res.status(500).json({

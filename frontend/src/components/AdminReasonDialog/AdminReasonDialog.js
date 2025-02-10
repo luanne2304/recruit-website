@@ -7,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function ReportformDialog({open,setOpen,onSubmit} ) {
+export default function AdminReasonDialog({open,setOpen,onSubmit } ) {
 
   const handleClose = () => {
     setOpen(false);
@@ -29,11 +29,10 @@ export default function ReportformDialog({open,setOpen,onSubmit} ) {
           },
         }}
       >
-        <DialogTitle>Báo cáo</DialogTitle>
+        <DialogTitle>!!!</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Mô tả chi tiết về báo cáo của bạn cho bài viết này
-            - Tất cả các báo cáo của bạn sẽ được chúng tôi kiểm duyệt kĩ càng 
+            Nguyên nhân/ Lý do thực hiện thao tác:
           </DialogContentText>
           <TextField
             autoFocus
@@ -48,7 +47,7 @@ export default function ReportformDialog({open,setOpen,onSubmit} ) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Hủy</Button>
-          <Button type="submit">Báo cáo</Button>
+          <Button type="submit">Xác nhận</Button>
         </DialogActions>
       </Dialog>
   );

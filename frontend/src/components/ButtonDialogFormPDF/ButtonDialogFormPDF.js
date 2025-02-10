@@ -9,6 +9,8 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
+import { useAuth }  from '../../utils/authUtils';
+import CVService from "../../services/CVService";
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -23,7 +25,7 @@ const VisuallyHiddenInput = styled("input")({
   });
 
 export default function ButtonDialogFormPDF() {
-  
+  const { accessToken } = useAuth()
     const [open, setOpen] = React.useState(false);
     const [filepdf,setFilepdf]= React.useState(null);
     const [filetitle,setFiletitle]= React.useState(null);
@@ -50,17 +52,11 @@ export default function ButtonDialogFormPDF() {
   }
 
   const test= async()=>{
-
-    const temp ="660cfd11a53d71f4940dcc55"
     const formData = new FormData();
     formData.append('pdf', filepdf);
     formData.append('filetitle', filetitle);
     try{
-    await axios.post(`http://localhost:4000/api/CV/uploadCV/${temp}`,formData,{
-      headers: {
-        'Content-Type': 'multipart/form-data'
-    }
-    })
+    await CVService.upload(formData,accessToken)
     setOpen(false)
     } catch(error){
       console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);

@@ -8,16 +8,17 @@ import JobSummary from "../../components/JobSummary/JobSummary";
 import DetailJobswift from "../../components/DetailJobswift/DetailJobswift";
 import Banner from "../../components/Banner/Banner";
 import userService from "../../services/userService";
-import { setAccessTokenUtil,getAccessTokenUtil } from '../../utils/authUtils';
+import { useAuth  } from '../../utils/authUtils';
+import postService from "../../services/postService";
 import "./FindJob.css";
 
 const FindJob = () => {
   
+  const { accessToken,setAccessToken } = useAuth()
 
   const test= async ()=>{
       try{
-      const res = await userService.testUser(getAccessTokenUtil());
-      console.log(getAccessTokenUtil())
+      const res = await userService.testUser(accessToken);
       } catch(error){
         console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
       }
@@ -32,10 +33,8 @@ const FindJob = () => {
 
   const getFilterjob = async (filter) => {
     try {
-      const response  = await axios.get(`http://localhost:4000/api/post/getFilterjob`,{
-        params:filter
-      });
-      setListjobs(response.data.data)
+      const res  = await postService.getFilterjob(filter)
+      setListjobs(res.data)
     } catch(error) {
       console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
     }
@@ -44,8 +43,8 @@ const FindJob = () => {
   useEffect(() => {
     const getALLjob = async () => {
       try {
-        const response  = await axios.get(`http://localhost:4000/api/post/getALLjob`);
-        setListjobs(response.data.data)
+        const res  = await postService.getAll();
+        setListjobs(res.data)
       } catch(error) {
         console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
       }

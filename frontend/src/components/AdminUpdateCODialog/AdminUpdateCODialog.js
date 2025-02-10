@@ -7,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function ReportformDialog({open,setOpen,onSubmit} ) {
+export default function AdminUpdateCODialog({open,setOpen,onSubmit } ) {
 
   const handleClose = () => {
     setOpen(false);
@@ -23,32 +23,31 @@ export default function ReportformDialog({open,setOpen,onSubmit} ) {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries(formData.entries());
-            const reason = formJson.reason;
-            onSubmit(reason)
+            const idacc = formJson.idacc;
+            onSubmit(idacc)
             handleClose();
           },
         }}
       >
-        <DialogTitle>Báo cáo</DialogTitle>
+        <DialogTitle>Cập nhật tài khoản sở hữu công ty</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Mô tả chi tiết về báo cáo của bạn cho bài viết này
-            - Tất cả các báo cáo của bạn sẽ được chúng tôi kiểm duyệt kĩ càng 
+            ID Account:
           </DialogContentText>
           <TextField
             autoFocus
             required
             margin="dense"
-            id="reason"
-            name="reason"
-            label="Mô tả"
+            id="idacc"
+            name="idacc"
+            label="Nhập"
             fullWidth
             variant="standard"
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Hủy</Button>
-          <Button type="submit">Báo cáo</Button>
+          <Button type="submit">Xác nhận</Button>
         </DialogActions>
       </Dialog>
   );

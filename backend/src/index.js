@@ -11,6 +11,7 @@ const userRouter =require("./Routers/userRouter")
 const postRouter =require("./Routers/postRouter")
 const CORouter =require("./Routers/CORouter")
 const CVRouter =require("./Routers/CVRouter")
+const reportRouter =require("./Routers/reportRouter")
 const ApplicationsRouter =require("./Routers/ApplicationsRouter")
 
 dotenv.config();
@@ -47,6 +48,7 @@ app.use(postRouter)
 app.use(CORouter)
 app.use(CVRouter)
 app.use(ApplicationsRouter)
+app.use(reportRouter)
 
 
 const url=process.env.URL_MONGO ;

@@ -71,7 +71,7 @@ export default function JobSummary({job}) {
             </Box>
             <Box display="flex" alignItems="center"  sx={{mt: 1}}>
               <PlaceIcon></PlaceIcon>
-              <Typography variant="body2" sx={{ml: 1}}>Hà nội</Typography>
+              <Typography variant="body2" sx={{ml: 1}}>{job.address.city}</Typography>
             </Box>
             <Box  sx={{mt: 1}}>
               {job.tag.skill.map((skill) => (

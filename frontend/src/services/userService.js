@@ -1,5 +1,7 @@
 import cf_axios from "./cf_axios";
 import api from "./interceptorAPI";
+import { useAuth  } from '../utils/authUtils';
+import axios from "axios";
 
 const userService = {
     login: async (email, password) => {
@@ -20,6 +22,20 @@ const userService = {
         return res.data;
     },
 
+    logout: async (accessToken) => {
+        const res = await api.post("/auth/logout",null, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        } );
+        return res;
+    },
+
+    requesttoken: async () => {
+        const res = await cf_axios.get("/auth/requestRefreshToken");
+        return res.data;
+    },
+
     testUser: async (accessToken) => {
         const res = await api.post("/auth/test",null, {
             headers: {
@@ -30,30 +46,39 @@ const userService = {
     },
 
 
-    getUser: async (token) => {
-        const res = await cf_axios.get("/users");
+    getAllUser: async () => {
+        const res = await cf_axios.get("/user/getAllUsers");
         return res.data;
     },
-    getUserById: async (token) => {
-        const res = await cf_axios.get("/user", {
+
+    getUserById: async (accessToken) => {
+        const res = await api.get("/user/GetUser", {
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${accessToken}`,
             },
         });
         return res.data;
     },
-    deleteUser: async (id,token) => {
-        const res = await cf_axios.delete(`/users/${id}`);
-        return res.data;
+
+    updateStatus: async (ids, newStatus,reason) => {
+        const res = await cf_axios.put(`/user/update-status`, {ids, status: newStatus,reason });
+        return res;
     },
-    resetPassword: async (id, password,token) => {
-        const res = await cf_axios.put(`/users/${id}`, { password });
-        return res.data;
-    },
-    updateUser: async (data ,token) => {
-        const res = await cf_axios.patch("/user", data, {
+
+
+    resetPassword: async ( oldPassword,newPassword,accessToken) => {
+        const res = await api.put(`/user/resetPassword`, { oldPassword,newPassword }, {
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${accessToken}`
+            },
+        });
+        return res.data;
+    },
+    updateUser: async (formData,accessToken ) => {
+        const res = await api.put(`/user/update/${formData.get("id")}`, formData, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "multipart/form-data"
             },
         });
         return res.data;

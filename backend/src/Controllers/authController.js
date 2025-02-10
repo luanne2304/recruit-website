@@ -13,20 +13,20 @@ const authController = {
 
 
   generateAuthToken :  (user) => {
-    const token = jwt.sign({ _id: user._id , isAdmin: user.isAdmin,}, process.env.JWT_KEY,{ expiresIn: "5s" });
+    const token = jwt.sign({ _id: user._id , isAdmin: user.isAdmin,status:user.status}, process.env.JWT_KEY,{ expiresIn: "1d" });
     
     return token;
   },
 
   generateRefreshToken :  (user) => {
-    const token = jwt.sign({ _id: user._id , isAdmin: user.isAdmin,}, process.env.JWT_REFRESH_KEY,{ expiresIn: "30s" });
+     const token = jwt.sign({ _id: user._id , isAdmin: user.isAdmin,status:user.status}, process.env.JWT_REFRESH_KEY,{ expiresIn: "1d" });
     
     return token;
   },
 
-  saveRefreshToken : async (userId, refreshToken, ttl = 86400) => { 
+  saveRefreshToken :  (userId, refreshToken, ttl = 86400) => { 
     const key = `refreshToken:${userId}:${refreshToken}`;
-    client.SETEX(key, ttl, "valid", (err, reply) => {
+     client.SETEX(key, ttl, "valid", (err, reply) => {
         if (err) {
             console.error("Error saving refresh token:", err);
         } else {
@@ -35,18 +35,16 @@ const authController = {
     });
   },
 
-  verifyRefreshToken : async (userId,refreshToken) => {
+  verifyRefreshToken :async (userId,refreshToken) => {
+    try {
     const key = `refreshToken:${userId}:${refreshToken}`;
-    client.get(key, (err, reply) => {
-        if (err) {
-            console.error("Error verifying refresh token:", err);
-            return false
-        } else if (!reply) {
-            return false
-        } else {
-            return true
-        }
-    });
+    const reply = await client.GET(key); // Dùng await trực tiếp
+
+    return !!reply;
+  } catch (err) {
+    console.error(" Error verifying refresh token:", err);
+    return false;
+  }
   },
 
   revokeRefreshToken : async (userId, refreshToken) => {
@@ -60,48 +58,39 @@ const authController = {
     });
   },
 
-  // requestRefreshToken: async (req, res) => {
-  //   try{
-  //   const refreshToken = req.cookies.refreshToken;
-    
-   
-  //   jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY, (err, user) => {
-  //     if (err) {
-  //       console.log(err);
-  //     }
-  //     authController.verifyRefreshToken(user._id,refreshToken);
-  //     const newAccessToken = authController.generateAccessToken(user);
-  //     const newRefreshToken = authController.generateRefreshToken(user);
-  //     if(!authController.verifyRefreshToken(refreshToken))
-  //     {
-  //       res.status(403).json(
-  //         "Your token is Invalid or expired "
-  //       );
-  //     }
-  //     res.cookie("refreshToken", refreshToken, {
-  //       httpOnly: true,
-  //       secure:false,
-  //       path: "/",
-  //       sameSite: "strict",
-  //     });
-  //     res.status(200).json({
-  //       accessToken: newAccessToken,
-  //       refreshToken: newRefreshToken,
-  //     });
-  //   });
-  //   }catch(error){
-  //     res.status(403).json(
-  //       "Your token is Invalid or expired "
-  //     );
-  //   }
-  // },
+  requestRefreshToken: async (req, res) => {
+    try{
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: "No refresh token provided" });
+    }
+
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY,async (err, user) => {
+      if (err) {
+        console.log(err);
+      }
+      const isValidToken =await authController.verifyRefreshToken(user._id, refreshToken);
+      if (!isValidToken) {
+        return res.status(401).json({ message: "Your token is invalid or expired" });
+      }
+      const checkuser = await userModel.findById(user._id);
+      const newAccessToken = authController.generateAuthToken(checkuser);
+      res.status(200).json({
+        accessToken: newAccessToken,
+      });
+    });
+    }catch(error){
+      res.status(401).json(
+        "Your token is Invalid or expired "
+      );
+    }
+  },
 
 
   login: async (req, res, next) => {
     try {
       const { email, password } = req.body;
-      const salt = await bcrypt.genSalt(10);
-      const hashed = await bcrypt.hash(password, salt);
       const user = await userModel.findOne({ email });
 
       if (!user) {
@@ -110,16 +99,16 @@ const authController = {
           message: 'User not found',
         });
       }
-      const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res.status(400).json({
           success: false,
           message: 'Incorrect',
         });
       }
-      const accessToken = await authController.generateAuthToken(user);
-      const refreshToken = await authController.generateRefreshToken(user);
-      authController.saveRefreshToken(user._id,refreshToken)
+      const accessToken =  authController.generateAuthToken(user);
+      const refreshToken =  authController.generateRefreshToken(user);
+       authController.saveRefreshToken(user._id,refreshToken)
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure:false,
@@ -129,8 +118,7 @@ const authController = {
       return res.status(200).json({
         success: true,
         data: user,
-        accessToken: accessToken,
-        refreshToken: refreshToken
+        accessToken: accessToken
       });
     } catch (error) {
       return res.status(500).json({
@@ -181,8 +169,8 @@ const authController = {
       const { displayName, email, photoURL} = req.body;
       const existingUser = await userModel.findOne({ email: email });
       if(existingUser){
-        const accessToken = await authController.generateAuthToken(existingUser);
-        const refreshToken = await authController.generateRefreshToken(existingUser);
+        const accessToken =  authController.generateAuthToken(existingUser);
+        const refreshToken =  authController.generateRefreshToken(existingUser);
         authController.saveRefreshToken(existingUser._id,refreshToken)
         res.cookie("refreshToken", refreshToken, {
           httpOnly: true,
@@ -193,15 +181,14 @@ const authController = {
   
         return res.status(200).json({
             success: true,
-            data: createuser,
             accessToken: accessToken,
             refreshToken: refreshToken
         });
       }
-      const createuser = await userModel.create({ username: displayName,email: email,avatar:photoURL});
-      const accessToken = await authController.generateAuthToken(createuser);
-      const refreshToken = await authController.generateRefreshToken(createuser);
-      authController.saveRefreshToken(createuser._id,refreshToken)
+      const createuser = await userModel.create({ fullName: displayName,email: email,avatar:photoURL});
+      const accessToken =  authController.generateAuthToken(createuser);
+      const refreshToken =  authController.generateRefreshToken(createuser);
+      await authController.saveRefreshToken(createuser._id,refreshToken)
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure:false,
@@ -224,7 +211,7 @@ const authController = {
   },
 
   logout: async (req, res, next) => {
-        revokeRefreshToken( req.user._id,req.cookies.refreshToken)
+        authController.revokeRefreshToken( req.user._id,req.cookies.refreshToken)
         res.clearCookie("refreshToken");
         res.status(200).json("Logged out successfully!");
   },

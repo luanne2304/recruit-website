@@ -5,24 +5,39 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
+import { useNavigate } from "react-router-dom";
 import COsummary from "../../components/COsummary/COsummary";
+import COService from "../../services/COService";
 import "./ListCO.css";
 
 const ListCO = () => {
-
+  const navigate = useNavigate();
   const [fetchData,setFetchData]=React.useState([])
+  const [ownershipID,setOwnershipID]=React.useState()
 
   React.useEffect(() => {
 
-    const getALLjob = async () => {
+    const getALLCO = async () => {
       try {
-        const response  = await axios.get(`http://localhost:4000/api/CO/getALL`);
-        setFetchData(response.data.data)
+        const res  = await COService.getAll()
+        setFetchData(res.data)
       } catch(error) {
         console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
       }
     };
-    getALLjob();
+    getALLCO();
+    const getCObyUserID = async () => {
+      try {
+        const res  = await COService.getCObyuserID()
+        if(res){
+          setOwnershipID(res.data._id)
+          console.log(res.data._id)
+        }
+      } catch(error) {
+        console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+      }
+    };
+    getCObyUserID();
   },[])
 
   return (
@@ -52,16 +67,20 @@ const ListCO = () => {
                 <SearchIcon></SearchIcon> Tìm kiếm
               </Button>
             </Box>
-            <Button
-              variant="contained"
-              color="error"
-              sx={{
-                fontSize: "14px",
-                padding: "10px 30px",
-              }}
-            >
-              Công ty của tôi
-            </Button>
+            {ownershipID &&
+                <Button
+                variant="contained"
+                color="error"
+                sx={{
+                  fontSize: "14px",
+                  padding: "10px 30px",
+                }}
+                onClick={() => navigate(`/home/DetailCO/${ownershipID}`)}
+              >
+                Công ty của tôi
+                
+              </Button>
+            }
           </Box>
           <Box sx={{ mt: 5 }}>
             <Typography

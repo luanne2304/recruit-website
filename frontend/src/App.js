@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect, useState} from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./pages/login/login";
 import Register from "./pages/register/register";
@@ -16,12 +16,20 @@ import DetailJob from "./pages/DetailJob/DetailJob";
 import CVapplied from "./pages/CVapplied/CVapplied";
 import UserManager from "./pages/UserManager/UserManager";
 import ReportManager from "./pages/ReportManager/ReportManager";
+import COManager from "./pages/COManager/COManager";
 import CrudCO from "./pages/CrudCO/CrudCO";
 import Adminlayout from "./layouts/adminlayout";
+import ProtectedRoute from "./utils/ProtectedRoute"; 
+import userService from "./services/userService";
+import { AuthProvider } from "./utils/authUtils";
 import Test from "./pages/test";
 
 function App() {
+   
+
+  
   return (
+    <AuthProvider>
     <Router>
       <Routes>
         <Route path="/home/" element={<Homelayout />}>
@@ -43,17 +51,20 @@ function App() {
           <Route path="/log/Register" element={<Register />} />
           <Route path="/log/Forget" element={<Forget />} />
         </Route>
-        <Route path="/admin/" element={<Adminlayout/>}>
+        <Route path="/admin/" element={<ProtectedRoute />}>
+          <Route element={<Adminlayout />}>
           <Route index element={<ReportManager/>} />
           <Route path="/admin/ReportPosts" element={<ReportManager />} />
           <Route path="/admin/UserManager" element={<UserManager />} />
-          <Route path="/admin/COManager" />
+          <Route path="/admin/COManager" element={<COManager/>} />
           <Route path="/admin/CrudCO" element={<CrudCO />} />
           <Route path="/admin/CrudCO/:idCO" element={<CrudCO />} />
           <Route path="/admin/test" element={<Test />} />
+          </Route>
       </Route>
       </Routes>
     </Router>
+    </AuthProvider>
   );
 }
 

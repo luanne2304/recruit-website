@@ -12,14 +12,20 @@ import MapIcon from '@mui/icons-material/Map';
 import media from '../../assets/images/backgroundLog.jpg'
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from '../../utils/authUtils';
+import COService from "../../services/COService";
+import postService from "../../services/postService";
 import "./DetailCO.css";
 import CO from "../../components/CO/CO";
 import COjob from "../../components/COjob/COjob";
 
 const DetailCO = () => {
   const { idCO } = useParams();
+  const { accessToken } = useAuth()
   const [fetchco,setFetchco] =useState()
   const [fetchpost,setFetchpost] =useState()
+  const [owner,setOwner]=useState(false)
 
   const navigate = useNavigate();
 
@@ -32,10 +38,13 @@ const DetailCO = () => {
 
     const getALLjob = async () => {
       try {
-        const response  = await axios.get(`http://localhost:4000/api/CO/getCObyID/${idCO}`);
-        setFetchco(response.data.data)
-        const response2  = await axios.get(`http://localhost:4000/api/post/getALLJobbyCO/${idCO}`);
-        setFetchpost(response2.data.data)
+        const res  = await COService.getByID(idCO)
+        setFetchco(res.data)
+        if(jwtDecode(accessToken)._id==res.data.idaccount_manager){
+          console.log("ok")
+        }
+        const res2  = await postService.getALLJobByCO(idCO)
+        setFetchpost(res2.data)
       } catch(error) {
         console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
       }

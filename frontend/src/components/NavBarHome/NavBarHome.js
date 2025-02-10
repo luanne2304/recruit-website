@@ -12,9 +12,25 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { useNavigate } from "react-router-dom";
+import { useActionData, useNavigate } from "react-router-dom";
+import { useAuth } from '../../utils/authUtils';
+import userService from "../../services/userService";
 
 function NavBarHome() {
+  const navigate = useNavigate();
+  const { accessToken } = useAuth()
+  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const handleLogout = async () => {
+    try {
+      await userService.logout(accessToken); 
+      navigate("/Admin"); 
+    } catch (error) {
+      console.error("Lỗi khi đăng xuất:", error);
+    }
+  };
+
   const pages = [
     { name: "Tìm việc", link: "/home/FindJob" },
     { name: "Nhà tuyển dụng", link: "/home/ListCO" },
@@ -23,11 +39,9 @@ function NavBarHome() {
   const settings = [
     { name: "Hồ sơ", link: "/home/Myprofile" },
     { name: "Đổi mật khẩu", link: "/home/ChangePass" },
-    { name: "Đăng xuất", link: "" },
+    { name: "Đăng xuất", action: handleLogout  },
   ];
-  const navigate = useNavigate();
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -43,6 +57,8 @@ function NavBarHome() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+
 
   return (
     <AppBar position="static">
@@ -157,7 +173,7 @@ function NavBarHome() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting, index) => (
-                <MenuItem key={index} onClick={() => navigate(setting.link)}>
+                <MenuItem key={index}  onClick={setting.action || (() => navigate(setting.link))}>
                   <Typography textAlign="center" >{setting.name}</Typography>
                 </MenuItem>
               ))}

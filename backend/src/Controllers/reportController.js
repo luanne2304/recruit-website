@@ -1,15 +1,14 @@
-const ReportModel = require("../Models/reportModel");
+const reportModel = require("../Models/reportModel");
 
 const reportController = {
   create: async (req, res, next) => {
     try {
-      const { title, description, from } = req.body;
-      const newReport = new ReportModel({
-        title: title,
-        description: description,
-        from: from,
+      const { idpost, reason } = req.body;
+      const createReport = await reportModel.create({
+        idpost:idpost,
+        description: reason,
+        from: req.user._id,
       });
-      const createReport = await ReportModel.create(newReport);
       return res.status(200).json({
         success: true,
         data: createReport,
@@ -17,14 +16,36 @@ const reportController = {
     } catch (error) {
       return res.status(500).json({
         success: false,
-        message: error.message,
+        message: error,
       });
     }
   },
 
-  getALLreport: async (req, res, next) => {
+  getALL: async (req, res, next) => {
     try {
-      const getReport = await ReportModel.find({}).sort({ createdAt: -1 });
+      const getReport = await reportModel
+      .find({ status: "pending" })
+      .populate({
+        path: "idpost",  
+        select: "title status CO", 
+        populate: {
+          path: "CO", 
+          select: "name logo ",
+        },
+      })
+      .populate({
+        path: "from",
+        select: "email", // Lấy thông tin user
+      })
+      .sort({ createdAt: -1 });
+
+      if (!getReport || getReport.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Không có báo cáo nào đang chờ xử lý.",
+          data: [],
+        });
+      }
       return res.status(200).json({
         success: true,
         data: getReport,
@@ -40,7 +61,7 @@ const reportController = {
   getReportById: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const getReport = await ReportModel.findById(id);
+      const getReport = await reportModel.findById(id);
       return res.status(200).json({
         success: true,
         data: getReport,
@@ -56,7 +77,7 @@ const reportController = {
   getReportByStatus: async (req, res, next) => {
     try {
       const { status } = req.params;
-      const getReport = await ReportModel.find({ status: status });
+      const getReport = await reportModel.find({ status: status });
       return res.status(200).json({
         success: true,
         data: getReport,
@@ -69,15 +90,21 @@ const reportController = {
     }
   },
 
-  update: async (req, res, next) => {
+  updateStatusMultiple: async (req, res, next) => {
     try {
-      const { id } = req.params;
-      const { status } = req.body;
-      const updateReport = await ReportModel.findByIdAndUpdate(
-        id,
-        { status: status },
-        { new: true }
+      const { ids } = req.body; 
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Danh sách  ko hợp lệ",
+        });
+      }
+
+      const updateReport = await reportModel.updateMany(
+        { _id: { $in: ids } }, 
+        { $set: { status:"Seen" } } 
       );
+
       return res.status(200).json({
         success: true,
         data: updateReport,

@@ -1,7 +1,7 @@
 
 const userModel = require("../Models/userModel");
 const mongoose = require("mongoose");
-const {ref,uploadBytesResumable,getDownloadURL} =require("firebase/storage")
+const {ref,uploadBytesResumable,getDownloadURL,deleteObject } =require("firebase/storage")
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 const {v4} =require("uuid");
@@ -10,184 +10,7 @@ const client = redis.createClient();
 const { auth,storage } = require('../config/index')
 
 const userController = {
-  generateAuthToken : async (user) => {
-    const token = jwt.sign({ _id: user._id , isAdmin: user.isAdmin,}, process.env.JWT_KEY,{ expiresIn: "10s" });
-    
-    return token;
-  },
-
-  generateRefreshToken : async (user) => {
-    const token = jwt.sign({ _id: user._id , isAdmin: user.isAdmin,}, process.env.JWT_REFRESH_KEY,{ expiresIn: "7d" });
-    
-    return token;
-  },
-
-  saveRefreshToken : async (userId, refreshToken, ttl = 604800) => { // TTL mặc định: 7 ngày
-    const key = `refreshToken:${userId}:${refreshToken}`;
-    client.SETEX(key, ttl, "valid", (err, reply) => {
-        if (err) {
-            console.error("Error saving refresh token:", err);
-        } else {
-            console.log("Refresh token saved:", reply);
-        }
-    });
-  },
-
-  verifyRefreshToken : async (refreshToken) => {
-    return new Promise((resolve, reject) => {
-      const key = `refreshToken:${userId}:${refreshToken}`;
-      client.get(key, (err, reply) => {
-          if (err) {
-              console.error("Error verifying refresh token:", err);
-              reject("Internal server error");
-          } else if (!reply) {
-              reject("Invalid or expired refresh token");
-          } else {
-              resolve("Valid refresh token");
-          }
-      });
-  });
-  },
-
-  revokeRefreshToken : async (userId, refreshToken) => {
-    const key = `refreshToken:${userId}:${refreshToken}`;
-    client.del(key, (err, reply) => {
-        if (err) {
-            console.error("Error revoking refresh token:", err);
-        } else {
-            console.log("Refresh token revoked:", reply);
-        }
-    });
-  },
-
-  login: async (req, res, next) => {
-    try {
-      const { email, password } = req.body;
-      const salt = await bcrypt.genSalt(10);
-      const hashedpassword = await bcrypt.hash(password, salt);
-      const user = await userModel.findOne({ email, hashedpassword });
-
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found',
-        });
-      }
-
-      
-      const accessToken = await userController.generateAuthToken(user);
-      const refreshToken = await userController.generateRefreshToken(user);
-      userController.saveRefreshToken(user._id,refreshToken)
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure:false,
-        path: "/",
-        sameSite: "strict",
-      });
-      return res.status(200).json({
-        success: true,
-        data: user,
-        accessToken: accessToken,
-        refreshToken: refreshToken
-      });
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  },
-
-  signup: async (req, res, next) => {
-    try {
-      const { fullName, email, password } = req.body;
-      const existingUser = await userModel.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({
-          success: false,
-          message: 'Email already in use',
-        });
-      }
-      const salt = await bcrypt.genSalt(10);
-      const hashed = await bcrypt.hash(password, salt);
-      const newUser = await userModel.create({ fullName, email, password: hashed });
-      const accessToken = await userController.generateAuthToken(newUser);
-      const refreshToken = await userController.generateRefreshToken(newUser);
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure:false,
-        path: "/",
-        sameSite: "strict",
-      });
-      userController.saveRefreshToken(newUser._id,refreshToken)
-      return res.status(200).json({
-        success: true,
-        data: newUser,
-        accessToken: accessToken,
-        refreshToken: refreshToken
-      });
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  },
-
-  signinnwithGmail: async  (req, res, next) => {
-    try {
-      const { displayName, email, photoURL} = req.body;
-      const existingUser = await userModel.findOne({ email: email });
-      if(existingUser){
-        const accessToken = await userController.generateAuthToken(existingUser);
-        const refreshToken = await userController.generateRefreshToken(existingUser);
-        userController.saveRefreshToken(existingUser._id,refreshToken)
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure:false,
-          path: "/",
-          sameSite: "strict",
-        });
   
-        return res.status(200).json({
-            success: true,
-            data: createuser,
-            accessToken: accessToken,
-            refreshToken: refreshToken
-        });
-      }
-      const createuser = await userModel.create({ username: displayName,email: email,avatar:photoURL});
-      const accessToken = await userController.generateAuthToken(createuser);
-      const refreshToken = await userController.generateRefreshToken(createuser);
-      userController.saveRefreshToken(createuser._id,refreshToken)
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure:false,
-        path: "/",
-        sameSite: "strict",
-      });
-
-      return res.status(200).json({
-        success: true,
-        data: createuser,
-        accessToken: accessToken,
-        refreshToken: refreshToken
-      });
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  },
-
-  logout: async (req, res, next) => {
-        revokeRefreshToken( req.user._id,req.cookies.refreshToken)
-        res.clearCookie("refreshToken");
-        res.status(200).json("Logged out successfully!");
-  },
-
-
   grantPermission: async (req, res, next) => {
     try {
       const { id } = req.params;
@@ -222,7 +45,7 @@ const userController = {
 
 getUserById: async (req, res, next) => {
     try {
-      const id = req.params.id;
+      const id = req.user._id;
       const getUser = await userModel.findById(id);
         
         return res.status(200).json({
@@ -239,35 +62,56 @@ getUserById: async (req, res, next) => {
     }
 },
 
-// delete = update status to disable
-deleteUser: async (req, res, next) => {
-    try {
-        const { id } = req.params;
-        const deleteUser = await userModel.findByIdAndUpdate(
-            id,
-            { status: 'disable' },
-            { new: true }
-        );
-        return res.status(200).json({
-            success: true,
-            data: deleteUser,
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message,
-        });
+updateStatusMultipleUser: async (req, res, next) => {
+  try {
+    const { ids, status,reason } = req.body; 
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Danh sách acc ko hợp lệ",
+      });
     }
+
+     await userModel.updateMany(
+      { _id: { $in: ids } }, 
+      { $set: { status } } 
+    );
+    return res.status(200).json({
+      success: true,
+      message: `Cập nhật trạng thái thành công `,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 },
 
 resetPassword: async (req, res, next) => {
   try {
-      const { id } = req.params;
-      const newPassword = req.body.password;
-      const resetPassword = await userModel.findByIdAndUpdate( id, { password : newPassword }, { new: true });
+      const id=req.user._id
+      const { oldPassword, newPassword } = req.body;
+      console.log(id,req.body)
+      const user = await userModel.findById(id);
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User không tồn tại!" });
+      }
+      console.log(user.password)
+      if (user.password)
+      {
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+          return res.status(400).json({ success: false, message: "Mật khẩu cũ không đúng!" });
+      }
+      }
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+      user.password = hashedPassword;
+      await user.save();
       return res.status(200).json({
           success: true,
-          data: resetPassword,
       });
   } catch (error) {
       return res.status(500).json({
@@ -279,12 +123,49 @@ resetPassword: async (req, res, next) => {
 
 updateUser: async (req, res, next) => {
   try {
-      const id = req.params;
-      const data = req.body;
-      const updateUser = await userModel.findByIdAndUpdate( id, data, { new: true });
+      const id = req.user._id;
+      const {fullName,phone} = req.body;
+
+      let user = await userModel.findById(id);
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User không tồn tại!" });
+      }
+      let avatarPath = user.avatar; // Mặc định giữ nguyên avatar cũ
+      if (req.file) { // Nếu có file avatar mới được upload
+        const file = {
+          type: req.file.mimetype,
+          buffer: req.file.buffer,
+          filename: req.file.originalname,
+        }
+        const metadata = {
+          contentType: file.type,
+        }
+        const imgref =  ref(storage,`avatar/${v4()}_${file.filename}`)
+        const snapshot =await uploadBytesResumable(imgref, file.buffer, metadata);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        avatarPath = downloadURL
+
+        if (user.avatar && user.avatar.includes("firebasestorage.googleapis.com")) {
+          try {
+            // Tách path file từ URL
+            const oldAvatarPath = decodeURIComponent(user.avatar.split("/o/")[1].split("?")[0]);
+            const oldAvatarRef = ref(storage, oldAvatarPath);
+            await deleteObject(oldAvatarRef);
+            console.log(" Ảnh cũ đã bị xóa khỏi Firebase");
+          } catch (err) {
+            console.error(" Lỗi khi xóa ảnh cũ:", err.message);
+          }
+        }
+      }
+      const updatedUser = await userModel.findByIdAndUpdate(
+        id,
+        { fullName, sdt:phone, avatar: avatarPath },
+        { new: true, runValidators: true } 
+      );
       return res.status(200).json({
           success: true,
-          data: updateUser,
+          data: updatedUser,
+
       });
   } catch (error) {
       return res.status(500).json({

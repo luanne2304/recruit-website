@@ -17,10 +17,14 @@ import Logocty from "../../assets/images/logocty.jpg";
 import COjob from "../../components/COjob/COjob";
 import ReportformDialog from "../../components/ReportformDialog/ReportformDialog";
 import DialogApplyCV from "../../components/DialogApplyCV/DialogApplyCV";
+import ReportService from "../../services/ReportService";
+import postService from "../../services/postService";
+import { useAuth  } from "../../utils/authUtils";
 import { useParams } from "react-router-dom";
 import "./DetailJob.css";
 
 const DetailJob = () => {
+  const { accessToken,setAccessToken } = useAuth()
   const [openApply, setOpenApply] = useState(false);
   const [openReport, setOpenReport] = useState(false);
   const [fetchpost, setFetchpost] = useState(null);
@@ -35,13 +39,20 @@ const DetailJob = () => {
     setOpenReport(true);
   };
 
+  const handleSubmit = async (reason) => {
+    try {
+      const res = await ReportService.create(idjob,reason,accessToken);  
+      console.log(res)
+    } catch (error) {
+      console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
+    }
+  };
+
   useEffect(() => {
     const getALLjob = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/get/getDetailjob/${idjob}`
-        );
-        setFetchpost(response.data.data);
+        const res = await postService.getJobbyID(idjob)
+        setFetchpost(res.data);
       } catch (error) {
         console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
       }
@@ -52,7 +63,7 @@ const DetailJob = () => {
 
   return (
     <>
-      <ReportformDialog setOpen={setOpenReport} open={openReport} idpost={idjob}></ReportformDialog>
+      <ReportformDialog setOpen={setOpenReport} open={openReport} onSubmit={handleSubmit}></ReportformDialog>
       <DialogApplyCV setOpen={setOpenApply} open={openApply}></DialogApplyCV>
       <Box>
         <Box className="main">
