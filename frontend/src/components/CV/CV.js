@@ -7,7 +7,7 @@ import DeleteIcon from "@mui/icons-material/Delete"; // Icon Xóa
 import CVService from "../../services/CVService";
 import { useAuth }  from '../../utils/authUtils';
 
-const CV = ({title,link,id}) => {
+const CV = ({title,link,id ,owner}) => {
   const { accessToken } = useAuth()
 
   const handleClickCV = (event) => {
@@ -26,9 +26,10 @@ const CV = ({title,link,id}) => {
       <Typography sx={{ flexGrow: 1, fontWeight: 500 }} onClick={handleClickCV} >{title}</Typography>
 
       {/* Icon Xóa */}
-      <IconButton  sx={{ color: "gray", "&:hover": { color: "red" } } } onClick={handleDelCV}>
-        <DeleteIcon />
-      </IconButton>
+      {owner===true &&
+            <IconButton  sx={{ color: "gray", "&:hover": { color: "red" } } } onClick={handleDelCV}>
+            <DeleteIcon />
+          </IconButton>}
     </Card>
   );
 };

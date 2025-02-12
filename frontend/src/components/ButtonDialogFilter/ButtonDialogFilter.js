@@ -15,13 +15,14 @@ import Autocomplete from "@mui/material/Autocomplete";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import { workingform, levelskill, skills } from "../../utils/constants";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const minDistance = 500;
 
-export default function ButtonDialogFilter({setFilter}) {
+export default function ButtonDialogFilter({setFilter,handleFilter}) {
 
   const [open, setOpen] = React.useState(false);
 
@@ -125,49 +126,7 @@ export default function ButtonDialogFilter({setFilter}) {
     },
   ];
 
-  const workingform = [
-    { title: "Tại văn phòng" },
-    { title: "Làm từ xa" },
-    { title: "Linh hoạt" },
-  ];
-  const levelskill = [
-    { title: "Intern" },
-    { title: "Fresher" },
-    { title: "Juinor" },
-    { title: "Senior" },
-    { title: "Manager" },
-  ];
-  const skills = [
-    { title: "HTML" },
-    { title: "CSS" },
-    { title: "WORDPRESS" },
-    { title: "C" },
-    { title: "C++" },
-    { title: "C#" },
-    { title: "Javasript" },
-    { title: "PHP" },
-    { title: "Java" },
-    { title: "Python" },
-    { title: "RUBY" },
-    { title: "SQLserver" },
-    { title: "MySQL" },
-    { title: "ORACLE" },
-    { title: "AWS" },
-    { title: "DOCKER" },
-    { title: "Angular" },
-    { title: "VUE" },
-    { title: "REACT" },
-    { title: "NEXTJS" },
-    { title: "SPRING" },
-    { title: "NODEJS" },
-    { title: "GOLANG" },
-    { title: ".NET" },
-    { title: "LAVAREL" },
-    { title: "RAILS" },
-    { title: "Fluter" },
-    { title: "React Native" },
-  ];
-  
+
   const test =async()=>{
     if(skillObj.length>0){
       formData.skill=await skillObj.map(skill => skill.title)
@@ -182,6 +141,7 @@ export default function ButtonDialogFilter({setFilter}) {
     }
     else{formData.form=[] }
     setFilter(formData)
+    handleFilter(formData)
   }
 
   return (

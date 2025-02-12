@@ -4,6 +4,7 @@ import ButtonDialogFilter from "../../components/ButtonDialogFilter/ButtonDialog
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import SearchIcon from '@mui/icons-material/Search';
+import Pagination from "@mui/material/Pagination";
 import JobSummary from "../../components/JobSummary/JobSummary";
 import DetailJobswift from "../../components/DetailJobswift/DetailJobswift";
 import Banner from "../../components/Banner/Banner";
@@ -14,7 +15,7 @@ import "./FindJob.css";
 
 const FindJob = () => {
   
-  const { accessToken,setAccessToken } = useAuth()
+  const { accessToken } = useAuth()
 
   const test= async ()=>{
       try{
@@ -24,32 +25,56 @@ const FindJob = () => {
       }
     }
 
+  const [page, setPage] = useState(1);
+  const limit = 1;
+  const [totalPages, setTotalPages] = useState(1);
   const [listjobs, setListjobs] =useState([])
   const [active,setActive] = useState(0)
+  const [filter,setFilter]=useState([])
+  const [statusFilter,setStatusFilter]= useState(false);
+  const [search,setSearch]= useState("");
   
   const showjobswift = (i)=>{
     setActive(i)
   }
 
-  const getFilterjob = async (filter) => {
+  const getFilterjob = async (data,p) => {
     try {
-      const res  = await postService.getFilterjob(filter)
+      if(p===undefined)
+        p=1
+      const res  = await postService.getFilterjob(data,p,limit)
       setListjobs(res.data)
+      setTotalPages(res.totalPages)
+      setPage(p)
+      setStatusFilter(true)
     } catch(error) {
       console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
     }
   };
 
+  const getSearchjob = async (s,p) => {
+    try {
+      const res  = await postService.getSearchjob(s,p,limit)
+      setListjobs(res.data)
+      setTotalPages(res.totalPages)
+      setPage(p)
+      setStatusFilter(false)
+    } catch(error) {
+      console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+    }
+  };
+  useEffect(() => {    
+
+    if(statusFilter){
+      getFilterjob(filter,page)
+    }
+    else{
+      getSearchjob(search,page)
+    }
+}, [page])
+
   useEffect(() => {
-    const getALLjob = async () => {
-      try {
-        const res  = await postService.getAll();
-        setListjobs(res.data)
-      } catch(error) {
-        console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
-      }
-    };
-    getALLjob();
+    getSearchjob("",1)
   },[])
 
 
@@ -64,6 +89,8 @@ const FindJob = () => {
           >
             <Box sx={{alignItems:"center",display: "flex"}}>
               <input 
+                value={search}
+                 onChange={(event) => setSearch(event.target.value) }
                 id="basicInputSearch"
                 placeholder="Nhập từ khóa Tên công ty, kỹ năng, chức vụ... "
               ></input>
@@ -73,6 +100,7 @@ const FindJob = () => {
                   fontSize: "20px",
                   padding: "10px 30px",
                 }}
+                onClick={() => getSearchjob(search, 1)}
               >
                 <SearchIcon></SearchIcon> Tìm kiếm
               </Button>
@@ -96,7 +124,7 @@ const FindJob = () => {
                 TestAdmin
               </Button>
             </Box>
-            <ButtonDialogFilter setFilter={getFilterjob}></ButtonDialogFilter>
+            <ButtonDialogFilter setFilter={setFilter} handleFilter={getFilterjob}></ButtonDialogFilter>
           </Box>
           <Box sx={{ mt: 3 }} display={"flex"}>
             <Box className="content-listjobs">
@@ -113,6 +141,12 @@ const FindJob = () => {
             </Box>
           </Box>
         </Box>
+        <Pagination
+        count={totalPages} // Tổng số trang
+        page={page} // Trang hiện tại
+        onChange={(event, value) => setPage(value) }
+        color="primary"
+      />
       </Box>
     </Box>
   );

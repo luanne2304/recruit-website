@@ -10,8 +10,26 @@ import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import PlaceIcon from "@mui/icons-material/Place";
 import LogoCty from "../../assets/images/logocty.jpg";
 import "./COjob.css";
+import { useNavigate } from "react-router-dom";
 
-const COjob = ({data}) => {
+const COjob = ({data,owner}) => {
+
+  const navigate = useNavigate();
+  const handleEditClick=()=>{
+    navigate(`/home/EditPost/${data.CO._id}/${data._id}`)
+  }
+
+  const handleCVreview=()=>{
+    navigate(`/home/CVreview/${data._id}`)
+  }
+
+  const handleClickPost=()=>{
+    navigate(`/home/DetailJob/${data._id}`)
+  }
+
+  const handleClickCO=()=>{
+    navigate(`/home/DetailCO/${data.CO._id}`)
+  }
 
 
   const timecalculator =()=>{
@@ -46,18 +64,18 @@ const COjob = ({data}) => {
               {timecalculator()}
             </Typography>
             <Box display="flex" alignItems="center">
-              <img className="COjob-logo" src={data.CO.logo}></img>
+              <img onClick={handleClickCO} className="COjob-logo" src={data.CO.logo}></img>
               <Box sx={{ ml: 3 }}>
-                <Typography variant="h5" component="div">
+                <Typography variant="h5" component="div" onClick={handleClickPost}>
                   {data.title}
                 </Typography>
-                <Typography color="text.secondary">{data.CO.name}</Typography>
+                <Typography color="text.secondary" onClick={handleClickCO}>{data.CO.name}</Typography>
               </Box>
             </Box>
             <Box display="flex" alignItems="center" sx={{ mt: 1 }}>
               <PaidIcon></PaidIcon>
               <Typography variant="body2" sx={{ ml: 1, fontSize: 25 }}>
-              {data.salaryfrom} - {data.salaryto} USD
+              {data.salaryfrom} - {data.salaryto} USD 
               </Typography>
             </Box>
             <Box sx={{display:"flex", alignItems:"center" , justifyContent:"space-between", mt: 1 }}>
@@ -71,15 +89,17 @@ const COjob = ({data}) => {
                 {data.address.city}
                 </Typography>
               </Box>
-              <Button variant="contained" color="success">
+              {owner==false &&<Button variant="contained" color="success">
                 Ứng tuyển
-              </Button>
-              <Button variant="contained" color="success">
-                Cập nhật
-              </Button>
-              <Button variant="contained" color="success">
-                Duyệt hồ sơ
-              </Button>
+              </Button>}
+              {owner==true && 
+        <><Button variant="contained" color="success" onClick={handleEditClick}>
+        Cập nhật
+      </Button>
+      <Button variant="contained" color="success" onClick={handleCVreview}>
+        Duyệt hồ sơ
+      </Button></>
+              }
             </Box>
             <Box display="flex" alignItems="center" sx={{ mt: 1 }}></Box>
             <Box sx={{ mt: 1 }}>

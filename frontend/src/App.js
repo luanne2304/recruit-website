@@ -37,9 +37,9 @@ function App() {
           <Route path="/home/FindJob" element={<FindJob />} />
           <Route path="/home/ChangePass" element={<ChangePass />} />
           <Route path="/home/ListCO" element={<ListCO />}/>
-          <Route path="/home/DetailCO/CurdPost/:idCO" element={<CurdPost />}/>
-          <Route path="/home/DetailCO/CurdPost/:idCO/:idjob" element={<CurdPost />}/>
-          <Route path="/home/DetailCO/CVreview/:idjob" element={<CVreview />}/>
+          <Route path="/home/CreatePost/:idCO" element={<CurdPost />}/>
+          <Route path="/home/EditPost/:idCO/:idjob" element={<CurdPost />}/>
+          <Route path="/home/CVreview/:idjob" element={<CVreview />}/>
           <Route path="/home/Myprofile" element={<Myprofile />}/>
           <Route path="/home/DetailCO/:idCO" element={<DetailCO />}/>
           <Route path="/home/DetailJob/:idjob" element={<DetailJob />}/>

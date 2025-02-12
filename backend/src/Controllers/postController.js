@@ -69,32 +69,109 @@ const postController = {
         }
       },
 
-      getFilterjob: async  (req, res, next) => {
+      getFilterjob: async (req, res, next) => {
         try {
-          const { city, salary, skill, exp, form } = req.query;
-          const currentDate =new Date()  
-
-          const getPost = await postModel.find({status:true, duration: { $gte: currentDate }}).populate('CO').sort({ createdAt: -1 });
-          const filteredPosts = getPost.filter(post => { 
-            let cityFilter;
-            if (city === "Tất cả mọi nơi") {
-              cityFilter = true; 
-            } else if (city === "Khác") {
-              cityFilter = !["Hồ Chí Minh", "Hà Nội","Đà Nẵng"].includes(post.address.city);
+          let { city, salary, skill, exp, form, page, limit } = req.query;
+          console.log(req.query)
+          page = parseInt(page) 
+          limit = parseInt(limit) 
+          const currentDate = new Date();
+      
+          let query = {
+            status: true,
+            duration: { $gte: currentDate },
+          };
+      
+          if (city && city !== "Tất cả mọi nơi") {
+            if (city === "Khác") {
+              query["address.city"] = { $nin: ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng"] };
             } else {
-              cityFilter = post.address.city === city;
-            }         
-            const salaryFilter = post.salaryfrom <= salary[1] && salary[0] <= post.salaryto 
-            const skillFilter = skill===undefined|| skill.some(s => post.tag.skill.includes(s)) 
-            const expFilter = exp===undefined|| exp.some(s => post.tag.exp.includes(s))
-            const formFilter = form===undefined|| form.some(f => post.form.includes(f))
-            return salaryFilter && skillFilter && expFilter && formFilter  && cityFilter
+              query["address.city"] = city;
+            }
+          }
+      
+          if (salary && salary.length === 2) {
+            query.$and = [
+              { salaryfrom: { $lte: salary[1] } },
+              { salaryto: { $gte: salary[0] } },
+            ];
+          }
+      
+          if (skill) {
+            query["tag.skill"] = { $in: skill };
+          }
+      
+          if (exp) {
+            query["tag.exp"] = { $in: exp };
+          }
+      
+          if (form) {
+            query.form = { $in: form };
+          }
+      
+          let getPostQuery = postModel.find(query).populate("CO").sort({ createdAt: -1 });
 
+          // 🔥 Nếu có page và limit thì phân trang
+          if (!isNaN(page) && !isNaN(limit)) {
+            getPostQuery = getPostQuery.skip((page - 1) * limit).limit(limit);
+          }
+      
+          const getPost = await getPostQuery;
+          const totalItems = await postModel.countDocuments(query);
+          const totalPages = limit ? Math.ceil(totalItems / limit) : 1;
+      
+          return res.status(200).json({
+            success: true,
+            data: getPost,
+            totalPages: totalPages,
+            totalItems: totalItems,
+            currentPage: page,
           });
+        } catch (error) {
+          return res.status(500).json({
+            success: false,
+            message: error.message,
+          });
+        }
+      },
+
+      getSearchjob: async (req, res, next) => {
+        try {
+          console.log(req.query)
+          let { search, page, limit } = req.query;
+          console.log(search+"a")
+          page = parseInt(page) 
+          limit = parseInt(limit) 
+          const currentDate = new Date();
+      
+          let query = {
+            status: true,
+            duration: { $gte: currentDate },
+          };
+
+          if (search) {
+            query.$or = [
+              { title: { $regex: search, $options: "i" } }, // Tìm theo tên bài đăng
+              { "CO.name": { $regex: search, $options: "i" } }, // Tìm theo tên công ty
+              { "tag.skill": { $regex: search, $options: "i" } }, // Tìm theo kỹ năng
+            ];
+          }
+      
+          let getPostQuery = postModel.find(query).populate("CO").sort({ createdAt: -1 });
+
+          // 🔥 Nếu có page và limit thì phân trang
+          if (!isNaN(page) && !isNaN(limit)) {
+            getPostQuery = getPostQuery.skip((page - 1) * limit).limit(limit);
+          }
+      
+          const getPost = await getPostQuery;
+          const totalItems = await postModel.countDocuments(query);
+          const totalPages = limit ? Math.ceil(totalItems / limit) : 1;
 
           return res.status(200).json({
             success: true,
-            data: filteredPosts,
+            data: getPost,
+            totalPages: totalPages
           });
         } catch (error) {
           return res.status(500).json({

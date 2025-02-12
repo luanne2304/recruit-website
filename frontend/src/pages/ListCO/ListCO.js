@@ -1,37 +1,46 @@
-import React from "react";
+import React,{useEffect, useState} from "react";
 import axios from "axios";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
+import Pagination from "@mui/material/Pagination";
 import { useNavigate } from "react-router-dom";
 import COsummary from "../../components/COsummary/COsummary";
 import COService from "../../services/COService";
 import "./ListCO.css";
+import { useAuth  } from '../../utils/authUtils';
 
 const ListCO = () => {
   const navigate = useNavigate();
+  const { accessToken } = useAuth()
+  const [page, setPage] = useState(1);
+  const limit = 1;
+  const [totalPages, setTotalPages] = useState(1);
   const [fetchData,setFetchData]=React.useState([])
   const [ownershipID,setOwnershipID]=React.useState()
+  const [search,setSearch]= useState("");
+
+  const getSearchCO = async (s,p) => {
+    try {
+      const res  = await COService.getAll(s,p,limit)
+      setFetchData(res.data)
+      setTotalPages(res.totalPages)
+      setPage(p)
+    } catch(error) {
+      console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+    }
+  };
+
 
   React.useEffect(() => {
-
-    const getALLCO = async () => {
-      try {
-        const res  = await COService.getAll()
-        setFetchData(res.data)
-      } catch(error) {
-        console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
-      }
-    };
-    getALLCO();
+    getSearchCO("",1)
     const getCObyUserID = async () => {
       try {
-        const res  = await COService.getCObyuserID()
+        const res  = await COService.getCObyuserID(accessToken)
         if(res){
           setOwnershipID(res.data._id)
-          console.log(res.data._id)
         }
       } catch(error) {
         console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
@@ -54,6 +63,8 @@ const ListCO = () => {
           >
             <Box sx={{ alignItems: "center", display: "flex" }}>
               <input
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value) }
                 id="basicInputSearch"
                 placeholder="Nhập từ khóa Tên công ty, Mã số thuế "
               ></input>
@@ -63,6 +74,7 @@ const ListCO = () => {
                   fontSize: "16px",
                   padding: "10px 30px",
                 }}
+                onClick={() => getSearchCO(search, 1)}
               >
                 <SearchIcon></SearchIcon> Tìm kiếm
               </Button>
@@ -104,6 +116,12 @@ const ListCO = () => {
             </Grid>
           </Box>
         </Box>
+                <Pagination
+                count={totalPages} // Tổng số trang
+                page={page} // Trang hiện tại
+                onChange={(event, value) => getSearchCO(search, value)}
+                color="primary"
+              />
       </Box>
     </Box>
   );

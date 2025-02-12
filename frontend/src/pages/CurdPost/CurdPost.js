@@ -26,16 +26,19 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import EditorField from "../../components/EditorField/EditorField";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from '../../utils/authUtils';
+import postService from "../../services/postService";
 import dayjs from 'dayjs';
 import CO from "../../components/CO/CO";
 import "./CurdPost.css";
+import COService from "../../services/COService";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const CurdPost = () => {
   const { idCO ,idjob} = useParams();
-
+  const { accessToken } = useAuth()
   const [fetchco, setFetchco] = useState();
 
   const [loadjob, setLoadjob] = useState(false);
@@ -146,7 +149,7 @@ const CurdPost = () => {
       console.log("loi~");
     }
     try {
-      await axios.post(`http://localhost:4000/api/post/create`, formData);
+      await postService.create(formData,accessToken)
     } catch (error) {
       console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
     }
@@ -175,41 +178,24 @@ const CurdPost = () => {
     const getjob= async () => {
       try {
         if (idjob) {
-          const response  = await axios.get(`http://localhost:4000/api/get/getDetailjob/${idjob}`);
-          console.log(response.data.data)
-          // const [formData, setFormData] = useState({
-          //   title: "",
-          //   des: "",
-          //   require: "",
-          //   benefit: "",
-          //   address: null,
-          //   form: "",
-          //   salaryto: "",
-          //   salaryfrom: "",
-          //   duration: null,
-          //   skill: [],
-          //   skillformat: [],
-          //   exp: [],
-          //   expformat: [],
-          //   CO: idCO,
-          // });
+          const res  = await postService.getJobbyID(idjob)
           setFormData({
-            title:response.data.data.title,
-            des:response.data.data.des,
-            require:response.data.data.require,
-            benefit:response.data.data.benefit,
-            address:response.data.data.address,
-            skill:response.data.data.tag.skill,
-            exp:response.data.data.tag.exp,
-            duration:response.data.data.duration,
-            form:response.data.data.form,
-            salaryfrom:response.data.data.salaryfrom,
-            salaryto:response.data.data.salaryto,
+            title:res.data.title,
+            des:res.data.des,
+            require:res.data.require,
+            benefit:res.data.benefit,
+            address:res.data.address,
+            skill:res.data.tag.skill,
+            exp:res.data.tag.exp,
+            duration:res.data.duration,
+            form:res.data.form,
+            salaryfrom:res.data.salaryfrom,
+            salaryto:res.data.salaryto,
 
           })
 
           setLoadjob(true)
-          setAddressDefault(response.data.data.address)
+          setAddressDefault(res.data.address)
           setSelectDefault(0)
           // setFetchco(response.data.data)
           // console.log(response.data.data)
@@ -249,11 +235,8 @@ const CurdPost = () => {
   useEffect(() => {
     const getCO = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:4000/api/CO/getCObyID/${idCO}`
-        );
-        console.log(response.data.data)
-        setFetchco(response.data.data);
+        const res = await COService.getByID(idCO)
+        setFetchco(res.data);
       } catch (error) {
         console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
       }
@@ -304,23 +287,6 @@ const CurdPost = () => {
                   <Typography className="label-form" component="div">
                     Lương:
                   </Typography>
-                  {/* <FormControl>
-                    <RadioGroup
-                      row
-                      aria-labelledby="demo-row-radio-buttons-group-label"
-                    >
-                      <FormControlLabel
-                        value="Salary"
-                        control={<Radio />}
-                        label="Lương"
-                      />
-                      <FormControlLabel
-                        value="Unknow"
-                        control={<Radio />}
-                        label="Thỏa thuận"
-                      />
-                    </RadioGroup>
-                  </FormControl> */}
                   <FormControl sx={{ m: 1 }} variant="filled">
                     <InputLabel htmlFor="filled-adornment-amount">
                       Từ

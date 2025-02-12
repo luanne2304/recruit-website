@@ -16,6 +16,35 @@ const ApplicationsService = {
         return res.data;
     },
 
+    getByIDpostandStatus: async (id,status,accessToken) => {
+        const res = await api.get(`/Applications/getApplyPostByStatus/${id}`,  {
+            params: { status: status }, 
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            }
+        });
+        return res.data;
+    },
+
+    updateStatusApply: async (id,selectedIds,status,accessToken) => {
+        const res = await api.put(`/Applications/updateStatusApply/${id}`,{selectedIds,status}, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,  
+          }
+        });
+        return res.data;
+    },
+
+    getCVsAppliedbyUser: async (accessToken,page,limit) => {
+        const res = await api.get(`/Applications/getCVsAppliedbyUser`, {
+            params: {page, limit },
+            headers: {
+                Authorization: `Bearer ${accessToken}`,  
+          }
+        });
+        return res.data;
+    },
+
 
 };
 

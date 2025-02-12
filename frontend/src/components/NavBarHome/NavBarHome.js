@@ -25,7 +25,7 @@ function NavBarHome() {
   const handleLogout = async () => {
     try {
       await userService.logout(accessToken); 
-      navigate("/Admin"); 
+      navigate("/log"); 
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
     }

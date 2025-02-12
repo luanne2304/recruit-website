@@ -11,7 +11,7 @@ const ProtectedRoute =  () => {
   try {
     const decodedToken =  jwtDecode(accessToken);
     
-    if (decodedToken.isAdmin) {
+    if (decodedToken.isAdmin == true) {
         return <Outlet />; // Cho phép truy cập
       } else {
         return <Navigate to="/unauthorized" replace />; // Không có quyền

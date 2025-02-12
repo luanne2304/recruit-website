@@ -30,7 +30,7 @@ const DetailCO = () => {
   const navigate = useNavigate();
 
   const handleClick=()=>{
-    navigate(`/home/DetailCO/CURDpost`)
+    navigate(`/home/CreatePost/${idCO}`)
   }
 
 
@@ -41,7 +41,7 @@ const DetailCO = () => {
         const res  = await COService.getByID(idCO)
         setFetchco(res.data)
         if(jwtDecode(accessToken)._id==res.data.idaccount_manager){
-          console.log("ok")
+          setOwner(true)
         }
         const res2  = await postService.getALLJobByCO(idCO)
         setFetchpost(res2.data)
@@ -89,12 +89,12 @@ const DetailCO = () => {
                     alt="green iguana"
                   />
                   <CardContent>
-                  <Button variant="contained" color="success" onClick={handleClick}>
+                {owner==true &&  <Button variant="contained" color="success" onClick={handleClick}>
                     Tạo bài đăng
-                  </Button>
+                  </Button>}
                   {fetchpost && fetchpost.map((item, index)=>(
                     <Box key={index} sx={{mt:2}} >
-                      <COjob data={item} ></COjob>
+                      <COjob data={item} owner={owner}></COjob>
                     </Box>
                   ))}
                   </CardContent>
@@ -136,13 +136,6 @@ const DetailCO = () => {
                 </CardActionArea>
               </Card></Box>
           </Box>
-          {/* <Typography
-          
-              variant="h6"
-              component="div"
-            >
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, quibusdam quis. Nihil saepe, omnis repellendus sequi illo laudantium necessitatibus excepturi repellat alias nostrum. Praesentium voluptas doloremque debitis voluptatum voluptates corporis voluptatem suscipit optio rerum ipsa illo at, corrupti consequatur. Minus cumque rem qui explicabo nobis, perspiciatis, vitae ratione deleniti, distinctio doloremque sapiente accusantium quam. Quam nam inventore nobis magnam corporis exercitationem aut quaerat non culpa nostrum eaque hic sapiente tempore ex voluptatum rerum quae est voluptates numquam deserunt dolor quasi repellat, porro repellendus! Accusamus sequi explicabo illum enim totam sit laborum incidunt aut beatae, sapiente provident porro vero hic fuga.
-        </Typography> */}
         </Box>
       </Box>
     </Box>

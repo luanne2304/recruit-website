@@ -2,8 +2,13 @@ import cf_axios from "./cf_axios";
 import api from "./interceptorAPI";
 
 const postService = {
-    getFilterjob: async (params) => {
-        const res = await cf_axios.get("/post/getFilterjob",{params:params});
+    getFilterjob: async (params,page,limit) => {
+        const res = await cf_axios.get("/post/getFilterjob",{params: { ...params, page, limit }});
+        return res.data;
+    },
+
+    getSearchjob: async (search,page,limit) => {
+        const res = await cf_axios.get("/post/getSearchjob",{params: {search , page, limit }});
         return res.data;
     },
 
@@ -22,6 +27,17 @@ const postService = {
         return res.data;
     },
 
+    create: async (formData,accessToken) => {
+        const res = await api.post(`/post/create`,formData,
+            {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+          });
+        return res.data;
+    },
+
+    
 
 };
 

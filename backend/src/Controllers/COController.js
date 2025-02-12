@@ -66,14 +66,40 @@ const COController = {
     }
   },
 
-  getAll: async  (req, res, next) => {
+  getAll: async (req, res, next) => {
     try {
-      const getCO = await COModel.find()
+      let { search, page, limit } = req.query;
+      page = parseInt(page);
+      limit = parseInt(limit);
+  
+      let query = {};
+  
+      if (search) {
+        query.$or = [
+          { name: { $regex: search, $options: "i" } },
+        ];
+        if (!isNaN(search)) {
+          query.$or.push({ taxcode: parseInt(search) });
+        }
+      }
+  
+      let getCOQuery = COModel.find(query).sort({ createdAt: -1 });
+  
+      if (!isNaN(page) && !isNaN(limit)) {
+        getCOQuery = getCOQuery.skip((page - 1) * limit).limit(limit);
+      }
+  
+      const getCO = await getCOQuery;
+      const totalItems = await COModel.countDocuments(query);
+      const totalPages = limit ? Math.ceil(totalItems / limit) : 1;
+  
       return res.status(200).json({
         success: true,
         data: getCO,
+        totalPages: totalPages,
       });
     } catch (error) {
+      console.log(error)
       return res.status(500).json({
         success: false,
         message: error.message,

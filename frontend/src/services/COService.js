@@ -2,8 +2,8 @@ import cf_axios from "./cf_axios";
 import api from "./interceptorAPI";
 
 const COService = {
-    getAll: async () => {
-        const res = await cf_axios.get("/CO/getALL");
+    getAll: async (search,page,limit) => {
+        const res = await cf_axios.get("/CO/getALL",{params:{ search, page, limit }});
         return res.data;
     },
 
