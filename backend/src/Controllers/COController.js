@@ -66,6 +66,84 @@ const COController = {
     }
   },
 
+  update: async (req, res, next) => {
+    try {
+      const iduser= req.user._id;
+      const idCO= req.params.idCO;
+      console.log(idCO)
+      const {nameCO,desCO,linkCO,scaleto,scalefrom,listaddress }= req.body
+      if (!idCO) {
+        return res.status(400).json({
+          success: false,
+          message: 'Thiếu idCO, không thể cập nhật công ty.',
+        });
+      }
+  
+      // Tìm công ty trong database
+      const existingCO = await COModel.find({_id:idCO,idaccount_manager:iduser});
+      if (!existingCO) {
+        return res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy công ty.',
+        });
+      }
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: 'No file uploaded.',
+        });
+      }  
+        const file = {
+          type: req.file.mimetype,
+          buffer: req.file.buffer,
+          filename: req.file.originalname,
+        }
+        const metadata = {
+          contentType: file.type,
+        }
+        const formatListaddress=[]
+        const temp = JSON.parse(listaddress)
+        temp.map((i)=>{
+        formatListaddress.push({
+          city:i.city.label,
+          city_code:i.city.code,
+          district:i.district.label,
+          district_code:i.district.code,
+          ward:i.ward.label,
+          ward_code:i.ward.code,
+          streetnumber:i.streetnumber,
+        })
+      })
+        const imgref =  ref(storage,`logos/${file.filename}.${v4()}`)
+        const snapshot =await uploadBytesResumable(imgref, file.buffer, metadata);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        const updatedCO = await COModel.findByIdAndUpdate(
+          idCO,
+          {
+            name: nameCO,
+            logo: downloadURL,
+            des: desCO,
+            scaleto,
+            scalefrom,
+            link: linkCO,
+            address: formatListaddress,
+          },
+          { new: true } // Trả về bản ghi mới sau khi cập nhật
+        );
+
+      return res.status(200).json({
+        success: true,
+        data:updatedCO
+      });
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
   getAll: async (req, res, next) => {
     try {
       let { search, page, limit } = req.query;

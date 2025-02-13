@@ -44,6 +44,7 @@ function App() {
           <Route path="/home/DetailCO/:idCO" element={<DetailCO />}/>
           <Route path="/home/DetailJob/:idjob" element={<DetailJob />}/>
           <Route path="/home/CVapplied/" element={<CVapplied />}/>
+          <Route path="/home/EditMyCO/:idCO" element={<CrudCO />} />
         </Route>
         <Route path="/log/" element={<Loglayout />}>
           <Route index element={<Login />} />
@@ -57,8 +58,7 @@ function App() {
           <Route path="/admin/ReportPosts" element={<ReportManager />} />
           <Route path="/admin/UserManager" element={<UserManager />} />
           <Route path="/admin/COManager" element={<COManager/>} />
-          <Route path="/admin/CrudCO" element={<CrudCO />} />
-          <Route path="/admin/CrudCO/:idCO" element={<CrudCO />} />
+          <Route path="/admin/CreateCO" element={<CrudCO />} />
           <Route path="/admin/test" element={<Test />} />
           </Route>
       </Route>

@@ -20,6 +20,10 @@ import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import CloudUploadIcon  from "@mui/icons-material/CloudUpload";
 import CropEasy from "../../components/Crop/CropEasy";
 import FormAddress from "../../components/FormAddress/FormAddress";
+import Avatar from "../../assets/images/logocty.jpg";
+
+import { useAuth  } from '../../utils/authUtils';
+import COService from "../../services/COService";
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -34,11 +38,12 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const CrudCO = () => {
-
+  const { accessToken } = useAuth()
   const { idCO } = useParams();
   const [fetchco,setFetchco] =useState()
 
   const [fileLOGO, setFileLOGO] = useState(null);
+  const [photoURLCrop, setPhotoURLCrop] = useState("");
   const [photoURL, setPhotoURL] = useState("");
   const [openCropLOGO, setOpenCropLOGO] = useState(false);
   const [aspect,setAspect]=useState();
@@ -50,7 +55,7 @@ const CrudCO = () => {
     if (fileLOGO) {
       setFileLOGO(fileLOGO);
       setFormData({ ...formData, image : fileLOGO });
-      setPhotoURL(URL.createObjectURL(fileLOGO));
+      setPhotoURLCrop(URL.createObjectURL(fileLOGO));
       setOpenCropLOGO(true);
       setAspect(1)
     }
@@ -84,6 +89,13 @@ const CrudCO = () => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
+  const handleNumberChange = (e) => {
+    const value = e.target.value;
+    if (/^\d*\.?\d*$/.test(value) || value === "") {
+      setFormData({ ...formData,  [e.target.name]: value });
+    }
+  };
+
   const submitForm=async (e)=> {
     e.preventDefault();
     let allFieldsChanged = true;
@@ -93,6 +105,8 @@ const CrudCO = () => {
       if(checkscalefrom>=checkscaleto){
         allFieldsChanged = false;
       }
+    }else{
+      allFieldsChanged = false;
     }
     for (let key in formData) {
       if (key === 'CO' || key === 'salaryto'|| key === 'salaryfrom') continue;
@@ -102,24 +116,32 @@ const CrudCO = () => {
       }
     }
     if(allFieldsChanged) {
-      console.log("hoan tat");
+      if(idCO){
+        try{
+          const res =await COService.update(accessToken,formData,idCO)
+          console.log(res)
+        } catch(error){
+          console.log("aa")
+          console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+        } 
+
+    }else{
+      try{
+        const res =await COService.create(accessToken,formData)
+        console.log(res)
+      } catch(error){
+        console.log("bb")
+        console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+      } 
+    }
     }
     else{
       console.log("loi~");
     }
-  //   try{
-  //     console.log("aa")
-  //   const res =await axios.post("http://localhost:4000/api/CO/create",formData,{
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data'
-  //     }
-  //   }
-  // )
-  //   } catch(error){
-  //     console.log("bb")
-  //     console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
-  //   } 
   }
+  useEffect(() => {
+    setFormData({ ...formData, image:fileLOGO});
+  }, [fileLOGO]);
 
   useEffect(() => {
     setFormData({ ...formData, listaddress:  JSON.stringify(listaddress)});
@@ -148,15 +170,7 @@ const CrudCO = () => {
             streetnumber: address.streetnumber
           }));
           setListaddress(addressData)
-          // image: null,
-          // nameCO: "",
-          // desCO: "",
-          // linkCO: "",
-          // scaleto: "",
-          // scalefrom: "",
-          // taxcode: "",
-          // iDusermanager: "",
-          // listaddress: [],
+          setPhotoURL(response.data.data.logo)
         }
       } catch (error) {
         console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
@@ -187,7 +201,7 @@ const CrudCO = () => {
                 variant="h4"
                 component="div"
               >
-                Thêm Công ty 
+                {idCO ? "Chỉnh sửa công ty" : "Thêm công ty"}
               </Typography>
               <Typography className="form-item">
                 <Typography className="label-form" component="div">
@@ -246,7 +260,7 @@ const CrudCO = () => {
                     id="filled-adornment-amount"
                     value={formData.scalefrom}
                     name="scalefrom"
-                    onChange={handleChange}
+                    onChange={handleNumberChange}
                     startAdornment={
                       <InputAdornment position="start">
                         <SupervisedUserCircleIcon />
@@ -261,7 +275,7 @@ const CrudCO = () => {
                     id="filled-adornment-amount"
                     value={formData.scaleto}
                     name="scaleto"
-                    onChange={handleChange}
+                    onChange={handleNumberChange}
                     startAdornment={
                       <InputAdornment position="start">
                         <SupervisedUserCircleIcon />
@@ -281,7 +295,7 @@ const CrudCO = () => {
                   variant="outlined"
                   value={formData.taxcode}
                   name="taxcode"
-                  onChange={handleChange}
+                  onChange={handleNumberChange}
                 />
               </Typography>
               <Typography className="form-item">
@@ -312,6 +326,7 @@ const CrudCO = () => {
                   Upload file
                   <VisuallyHiddenInput type="file"   onChange={handleChangeLOGO} />
                 </Button>
+                  <img src={photoURL || Avatar} style={{ width: 250 }} />
               </Typography>
             </CardContent>
             <Stack
@@ -331,11 +346,11 @@ const CrudCO = () => {
       </Box>
       {openCropLOGO && (
         <CropEasy
-          photoURL={photoURL}
-          setOpenCrop={setOpenCropLOGO}
-          setPhotoURL={setPhotoURL}
-          setFile={setFileLOGO}
-          aspect={aspect}
+        photoURL={photoURLCrop}
+        setOpenCrop={setOpenCropLOGO}
+        setPhotoURL={setPhotoURL}
+        setFile={setFileLOGO}
+        aspect={aspect}
         />
       )}
     </Box> 

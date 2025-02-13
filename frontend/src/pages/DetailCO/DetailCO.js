@@ -56,7 +56,7 @@ const DetailCO = () => {
     <Box>
       <Box className="main">
         <Box className="icontainer" sx={{ width: "1170px", mt: 8 }}>
-          <CO data={fetchco}></CO>
+          <CO data={fetchco} owner={owner}></CO>
           <Box sx={{ display: "flex", justifyContent: "space-between" , mt:5 }}>
             <Box className="main-content-wrap-CO">
               <Card sx={{ width: "100%" }} className="card-desCO">

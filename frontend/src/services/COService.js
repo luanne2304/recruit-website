@@ -7,6 +7,27 @@ const COService = {
         return res.data;
     },
 
+    create: async (accessToken, formData) => {
+        const res = await api.post(`/CO/create`,formData,{
+            headers: {
+              'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${accessToken}`
+            }
+          });
+        return res.data;
+    },
+
+    update: async (accessToken, formData,idCO) => {
+        const res = await api.put(`/CO/update/${idCO}`,formData,{
+            headers: {
+              'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${accessToken}`
+            }
+          });
+        return res.data;
+    },
+
+
     getByID: async (id) => {
         const res = await cf_axios.get(`/CO/getCObyID/${id}`);
         return res.data;

@@ -83,7 +83,7 @@ const FormAddress = ({ listaddress, setListaddress}) => {
           tempQH.push({ label, code, parent_code });
         }
       }
-      setAddress({ district: null, ward: null, city: value });
+      setAddress({...address, district: null, ward: null, city: value });
       setFetchQH(tempQH);
     }
   };

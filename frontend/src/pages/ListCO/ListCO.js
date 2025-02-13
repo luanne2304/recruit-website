@@ -34,7 +34,7 @@ const ListCO = () => {
   };
 
 
-  React.useEffect(() => {
+  useEffect(() => {
     getSearchCO("",1)
     const getCObyUserID = async () => {
       try {

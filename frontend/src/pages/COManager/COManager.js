@@ -1,8 +1,10 @@
 import React,{useEffect, useState} from "react";
+import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
+
 import userService from "../../services/userService";
 import COService from "../../services/COService";
-import { setAccessTokenUtil, getAccessTokenUtil } from "../../utils/authUtils";
+import { useAuth} from "../../utils/authUtils";
 import AdminReasonDialog from "../../components/AdminReasonDialog/AdminReasonDialog";
 import AdminUpdateCODialog from "../../components/AdminUpdateCODialog/AdminUpdateCODialog";
 import Button from "@mui/material/Button";
@@ -27,7 +29,7 @@ const columns = [
 
 
 export default function COManager() {
-
+  const navigate = useNavigate();
 const [rows, setRows] = useState([]);
 const [selectedIds, setSelectedIds] = useState();
 const [status, setStatus] = useState(true);
@@ -66,34 +68,35 @@ const [isOpenDialogUpdateIDacc, SetIsOpenDialogUpdateIDacc] = useState(false);
     }
   };
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-        try {
-            const res = await COService.getAll();
-            if (res && Array.isArray(res.data)) {
-            // Chuyển đổi dữ liệu nếu cần
-              const formattedData = res.data.map((CO) => ({
-                id: CO._id ,
-                NameCO: CO.name || "Unknown",
-                Logo: CO.logo || "No Logo",
-                TaxCode: CO.taxcode || "N/A",
-                Companysize: CO.scalefrom +" - "+ CO.scaleto + " nhân viên" || "N/A",
-                idaccount_manager: CO.idaccount_manager  || "N/A",
-                Status: CO.status ,
-              }));
-              console.log(res.data)
-              setRows(formattedData); 
-            }
-          } catch (error) {
-            console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
-          }
+  const fetchCO = async () => {
+    try {
+        const res = await COService.getAll();
+        if (res && Array.isArray(res.data)) {
+        // Chuyển đổi dữ liệu nếu cần
+          const formattedData = res.data.map((CO) => ({
+            id: CO._id ,
+            NameCO: CO.name || "Unknown",
+            Logo: CO.logo || "No Logo",
+            TaxCode: CO.taxcode || "N/A",
+            Companysize: CO.scalefrom +" - "+ CO.scaleto + " nhân viên" || "N/A",
+            idaccount_manager: CO.idaccount_manager  || "N/A",
+            Status: CO.status ,
+          }));
+          setRows(formattedData); 
         }
-        fetchUsers();
+      } catch (error) {
+        console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
+      }
+    }
+
+  useEffect(() => {
+      fetchCO();
     },[]);
   return (
     <div style={{  width: "100%" }}>
         <AdminUpdateCODialog setOpen={SetIsOpenDialogUpdateIDacc} open={isOpenDialogUpdateIDacc}  onSubmit={handleSubmitIdacc}></AdminUpdateCODialog>
         <AdminReasonDialog setOpen={SetIsOpenDialogStatus} open={isOpenDialogStatus}  onSubmit={handleSubmitStatus}></AdminReasonDialog>
+      
       <Button
         variant="contained"
         sx={{
@@ -123,6 +126,16 @@ const [isOpenDialogUpdateIDacc, SetIsOpenDialogUpdateIDacc] = useState(false);
         onClick={handleUpdateIDacc}
       >
         Cập nhật lại tài khoản quản lý
+      </Button>
+      <Button
+        variant="contained"
+        sx={{
+          fontSize: "20px",
+          padding: "10px 30px",
+        }}
+        onClick={() => navigate(`/admin/CreateCO`)}
+      >
+        Thêm công ty
       </Button>
       <DataGrid
         rows={rows}
