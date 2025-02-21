@@ -6,6 +6,6 @@ const Authorization =require("../middleware/userAuth")
 
 reportRouter.post("/api/report/create",Authorization.authenticateUser, reportController.create);
 reportRouter.get("/api/report/getAll", reportController.getALL);
-reportRouter.put("/api/report/update-Status", reportController.updateStatusMultiple);
+reportRouter.put("/api/report/update-Status",Authorization.authenticateUser, reportController.updateStatusMultiple);
 
 module.exports = reportRouter;

@@ -4,8 +4,9 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
-import PaidIcon from "@mui/icons-material/Paid";
-import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import LanTwoToneIcon from '@mui/icons-material/LanTwoTone';
+import PinDropOutlinedIcon from '@mui/icons-material/PinDropOutlined';
 import PlaceIcon from "@mui/icons-material/Place";
 import LogoCty from "../../assets/images/logocty.jpg";
 import { useNavigate } from "react-router-dom";
@@ -28,10 +29,8 @@ export default function JobSummary({job}) {
           return Math.floor(difference/3600) +" giờ trước";
         case difference<604800:
           return Math.floor(difference/86400) +" ngày trước";
-        case difference<4579200:
-          return Math.floor(difference/604800) +" tuần trước";
           default:
-            return "Không xác định";
+        return Math.floor(difference / 604800) + " tuần trước";
       }
     }
 
@@ -42,9 +41,8 @@ export default function JobSummary({job}) {
 
   return (
     // <div onClick={handleClickSwift(key)}>
-    <Box sx={{ minWidth: 275 , mr: 2,mb:2 }}  >
+    <Box sx={{ minWidth: 275  }}  >
       <Card variant="outlined" style={{ position: 'relative',borderRadius: 16 }}>
-        <Box position="absolute"  top={0} right={0} sx={{ margin: 2}}>HOT</Box>
         <React.Fragment>
           <CardContent>
             <Typography
@@ -54,7 +52,7 @@ export default function JobSummary({job}) {
             >
               {timecalculator()}
             </Typography>
-            <Typography variant="h5" component="div" onClick={handleClick}>
+            <Typography component="div" sx={{fontSize: "1.27rem", fontWeight: "bold"}} onClick={handleClick}>
               {job.title}
             </Typography>
             <Box display="flex" alignItems="center">
@@ -62,16 +60,22 @@ export default function JobSummary({job}) {
               <Typography color="text.secondary" sx={{ml: 1}}>{job.CO? job.CO.name : "ko co ten"}</Typography>
             </Box>
             <Box display="flex" alignItems="center" sx={{mt: 1}}>
-              <PaidIcon></PaidIcon>
+              <AttachMoneyIcon></AttachMoneyIcon>
               <Typography variant="body2" sx={{ml: 1, fontSize: 25}}>{job.salaryfrom} - {job.salaryto} </Typography>
             </Box>
             <Box display="flex" alignItems="center"  sx={{mt: 1}}>
-              <WorkOutlineIcon></WorkOutlineIcon>
-              <Typography variant="body2" sx={{ml: 1}}>{job.form}</Typography>
+              <LanTwoToneIcon></LanTwoToneIcon>
+              <Typography variant="body2" sx={{ml: 1}}>  {job.form === "flex"
+    ? "Linh hoạt"
+    : job.form === "home"
+    ? "Tại nhà"
+    : job.form === "office"
+    ? "Văn phòng"
+    : job.form}</Typography>
             </Box>
             <Box display="flex" alignItems="center"  sx={{mt: 1}}>
-              <PlaceIcon></PlaceIcon>
-              <Typography variant="body2" sx={{ml: 1}}>{job.address.city}</Typography>
+              <PinDropOutlinedIcon></PinDropOutlinedIcon>
+              <Typography variant="body2" sx={{ml: 1}}>{job.address.district+" , "+job.address.city}</Typography>
             </Box>
             <Box  sx={{mt: 1}}>
               {job.tag.skill.map((skill) => (

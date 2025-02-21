@@ -8,26 +8,10 @@ const {v4} =require("uuid");
 const redis = require("redis");
 const client = redis.createClient();
 const { auth,storage } = require('../config/index')
+const logAudit = require("../middleware/auditLog");
 
 const userController = {
   
-  grantPermission: async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      const updateUser = await userModel.findByIdAndUpdate( id, { isAdmin: true }, { new: true });
-      return res.status(200).json({
-        success: true,
-        data: updateUser,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  },
-
-
   getAllUser: async (req, res, next) => {
     try {
         const getUser = await userModel.find({});
@@ -64,19 +48,26 @@ getUserById: async (req, res, next) => {
 
 updateStatusMultipleUser: async (req, res, next) => {
   try {
-    const { ids, status,reason } = req.body; 
-
+    let { ids, status,reason } = req.body; 
+    if(status){
+      reason="Mở hoạt động vì "+reason;
+    }else{
+      reason="Khóa hoạt động vì "+reason;
+    }
     if (!Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: "Danh sách acc ko hợp lệ",
       });
     }
 
+
      await userModel.updateMany(
       { _id: { $in: ids } }, 
       { $set: { status } } 
     );
+
+    await logAudit(req, 'UPDATE', 'users', ids, null, null,reason);
     return res.status(200).json({
       success: true,
       message: `Cập nhật trạng thái thành công `,
@@ -110,6 +101,8 @@ resetPassword: async (req, res, next) => {
       const hashedPassword = await bcrypt.hash(newPassword, salt);
       user.password = hashedPassword;
       await user.save();
+      
+      await logAudit(req, 'UPDATE', 'users', [id], null, null,"người dùng thay đổi MK");
       return res.status(200).json({
           success: true,
       });
@@ -157,11 +150,16 @@ updateUser: async (req, res, next) => {
           }
         }
       }
+      const oldData = { fullName: user.fullName, sdt: user.sdt, avatar: user.avatar };
+      const newData = { fullName, sdt:phone, avatar: avatarPath };
       const updatedUser = await userModel.findByIdAndUpdate(
         id,
         { fullName, sdt:phone, avatar: avatarPath },
         { new: true, runValidators: true } 
       );
+
+      await logAudit(req, 'UPDATE', 'users', id, oldData, newData, "Cập nhật thông tin cá nhân");
+      
       return res.status(200).json({
           success: true,
           data: updatedUser,

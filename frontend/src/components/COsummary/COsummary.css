@@ -1,11 +1,16 @@
 .logo-COsummary{
-    width: 70px;
+    width: 80px;
     position: absolute;
     z-index: 1;
-    top:100px;
+    top:110px;
     left: 20px;
+    border-radius: 10px; /* Bo tròn logo */
+    object-fit: cover;
+
+    border: 1px solid #a5a4a4; /* Viền màu xám nhạt */
 }
 
 .card-COsummary{
     position: relative;
+    border-radius: 10px !important;
 }

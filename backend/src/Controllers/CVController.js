@@ -1,8 +1,10 @@
 
 const CVModel = require("../Models/CVModel");
+const ApplicationsModel = require("../Models/ApplicationsModel");
 const {ref,uploadBytesResumable,getDownloadURL,deleteObject } =require("firebase/storage")
 const {v4} =require("uuid")
 const { auth,storage } = require('../config/index')
+const logAudit = require("../middleware/auditLog");
 
 
 const CVController = {
@@ -12,9 +14,9 @@ const CVController = {
           const { filetitle } = req.body
 
         // Kiểm tra số lượng CV của người dùng
-        const cvCount = await CVModel.countDocuments({ idUser: id });
+        const cvCount = await CVModel.countDocuments({ idUser: id,status:true });
         if (cvCount >= 5) {
-            return res.status(400).json({
+            return res.status(403).json({
                 success: false,
                 message: "Bạn đã đạt giới hạn tối đa 5 CV, không thể upload thêm.",
             });
@@ -42,10 +44,11 @@ const CVController = {
             linkfile: downloadURL,
             filetitle: filetitle,
           };
-          const updatedUser = await CVModel.create(newCV)
+          const createCV = await CVModel.create(newCV)
+          await logAudit(req, "CREATE", "CVs", [createCV._id], null, createCV, "Người dùng tải lên CV");
           return res.status(200).json({
               success: true,
-              data: updatedUser,
+              data: createCV,
           });
       } catch (error) {
           return res.status(500).json({
@@ -57,7 +60,7 @@ const CVController = {
     getCVByIduser: async (req, res, next) => {
       try {
         const id = req.user._id;
-        const getCV = await CVModel.find({idUser:id});
+        const getCV = await CVModel.find({idUser:id,status:true});
           return res.status(200).json({
               success: true,
               data: getCV,
@@ -91,21 +94,24 @@ const CVController = {
                   message: "Không tìm thấy file để xóa.",
               });
           }
-
+          const checkCV= await ApplicationsModel.findOne({cvId:cv._id})
+    
+          if(!checkCV){
           // Lấy đường dẫn file trong Firebase Storage
           const filePath = fileUrl.split("CVs%2F")[1].split("?alt=")[0]; // Lấy tên file
           const fileRef = ref(storage, `CVs/${decodeURIComponent(filePath)}`); // Giải mã tên file
 
           // Xóa file trên Firebase Storage
           await deleteObject(fileRef);
-
           // Xóa CV trong database
-          await CVModel.deleteOne({ _id: cvId });
-
+          }
+          await CVModel.findByIdAndUpdate(cvId,{status:false})
+          await logAudit(req, "DELETE", "CVs", [cvId], null, null, "Người dùng xóa CV");
           return res.status(200).json({
-              success: true,
-              message: "CV đã được xóa thành công.",
-          });
+            success: true,
+            message: "CV đã được xóa thành công.",
+        });
+
       } catch (error) {
           return res.status(500).json({
               success: false,

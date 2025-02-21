@@ -2,7 +2,7 @@
     width: 170px;
     position: absolute;
     z-index: 1;
-    top: 110px;
+    top: 170px;
     left: 50px;
     border-radius: 15px;
 }
@@ -10,3 +10,4 @@
 .card-CO{
     position: relative;
 }
+

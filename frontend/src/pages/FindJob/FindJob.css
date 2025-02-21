@@ -15,13 +15,5 @@
     top:0px;
 }
 
-#basicInputSearch{
-    width: 650px; /* Chiều rộng của thẻ input */
-    height: 40px; /* Chiều cao của thẻ input */
-    border: 2px solid #9e9e9e; /* Khung viền với màu sắc */
-    border-radius: 5px; /* Bạn có thể thêm border-radius nếu muốn các góc được bo tròn */
-    padding: 8px; /* Khoảng cách từ viền đến nội dung bên trong thẻ input */
-    font-size:large;
-    margin-right: 30px;
-}
+
 

@@ -16,7 +16,7 @@ const ListCO = () => {
   const navigate = useNavigate();
   const { accessToken } = useAuth()
   const [page, setPage] = useState(1);
-  const limit = 1;
+  const limit = 9;
   const [totalPages, setTotalPages] = useState(1);
   const [fetchData,setFetchData]=React.useState([])
   const [ownershipID,setOwnershipID]=React.useState()
@@ -35,7 +35,7 @@ const ListCO = () => {
 
 
   useEffect(() => {
-    getSearchCO("",1)
+    getSearchCO("",1,limit)
     const getCObyUserID = async () => {
       try {
         const res  = await COService.getCObyuserID(accessToken)
@@ -98,7 +98,7 @@ const ListCO = () => {
             <Typography
               textAlign="center"
               gutterBottom
-              variant="h3"
+              sx={{fontSize: "1.5rem", fontWeight: "bold"}}
               component="div"
             >
               Danh sách công ty nổi bật
@@ -116,12 +116,29 @@ const ListCO = () => {
             </Grid>
           </Box>
         </Box>
-                <Pagination
-                count={totalPages} // Tổng số trang
-                page={page} // Trang hiện tại
-                onChange={(event, value) => getSearchCO(search, value)}
-                color="primary"
-              />
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 2 }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(event, value) => getSearchCO(search, value)}
+            color="primary"
+            size="large" // Tăng kích thước
+            sx={{
+              "& .MuiPaginationItem-root": {
+                fontSize: "1.2rem", // Chỉnh size chữ
+                fontWeight: "bold", // Làm đậm số trang
+                borderRadius: "8px", // Bo góc
+              },
+              "& .MuiPaginationItem-page.Mui-selected": {
+                backgroundColor: "#1976d2", // Màu nền khi được chọn
+                color: "white", // Màu chữ
+                "&:hover": {
+                  backgroundColor: "#1565c0",
+                },
+              },
+            }}
+          />
+        </Box>
       </Box>
     </Box>
   );

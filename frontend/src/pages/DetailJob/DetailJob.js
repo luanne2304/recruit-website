@@ -5,9 +5,9 @@ import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
-import PaidIcon from "@mui/icons-material/Paid";
-import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
-import PlaceIcon from "@mui/icons-material/Place";
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import LanTwoToneIcon from '@mui/icons-material/LanTwoTone';
+import PinDropOutlinedIcon from '@mui/icons-material/PinDropOutlined';
 import SendIcon from "@mui/icons-material/Send";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
@@ -51,6 +51,7 @@ const DetailJob = () => {
     const getALLjob = async () => {
       try {
         const res = await postService.getJobbyID(idjob)
+        console.log(res.data)
         setFetchpost(res.data);
       } catch (error) {
         console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
@@ -61,9 +62,10 @@ const DetailJob = () => {
   }, []);
 
   return (
+    fetchpost!==null && (
     <>
       <ReportformDialog setOpen={setOpenReport} open={openReport} onSubmit={handleSubmit}></ReportformDialog>
-      <DialogApplyCV setOpen={setOpenApply} open={openApply}></DialogApplyCV>
+      <DialogApplyCV setOpen={setOpenApply} open={openApply} idpost={idjob}></DialogApplyCV>
       <Box>
         <Box className="main">
           <Box className="icontainer" sx={{ width: "1170px", mt: 8 }}>
@@ -78,38 +80,44 @@ const DetailJob = () => {
                         gap: 3,
                       }}
                     >
-                      <Typography variant="h6">
-                        {fetchpost && fetchpost.title}
+                      <Typography sx={{fontSize: "1.27rem", fontWeight: "bold"}}>
+                        { fetchpost.title}
                       </Typography>
                       <Box sx={{ display: "flex", gap: 10 }}>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <PaidIcon sx={{ fontSize: "40px", mr: 2 }}></PaidIcon>
+                          <AttachMoneyIcon sx={{ fontSize: "40px", mr: 2 }}></AttachMoneyIcon>
                           <Box>
                             <Typography variant="body2">Mức lương</Typography>
                             <Typography variant="body2">
-                              {fetchpost && fetchpost.salaryfrom} -{" "}
-                              {fetchpost && fetchpost.salaryto} USD
+                              { fetchpost.salaryfrom} -{" "}
+                              { fetchpost.salaryto} USD
                             </Typography>
                           </Box>
                         </Box>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <WorkOutlineIcon
+                          <LanTwoToneIcon
                             sx={{ fontSize: "40px", mr: 2 }}
-                          ></WorkOutlineIcon>
+                          ></LanTwoToneIcon>
                           <Box>
                             <Typography variant="body2">Hình thức</Typography>
                             <Typography variant="body2">
-                              {fetchpost && fetchpost.form}
+                            { fetchpost.form === "flex"
+                              ? "Linh hoạt"
+                              : fetchpost.form === "home"
+                              ? "Tại nhà"
+                              : fetchpost.form === "office"
+                              ? "Văn phòng"
+                              : fetchpost.form}
                             </Typography>
                           </Box>
                         </Box>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <PlaceIcon
+                          <PinDropOutlinedIcon
                             sx={{ fontSize: "40px", mr: 2 }}
-                          ></PlaceIcon>
+                          ></PinDropOutlinedIcon>
                           <Box>
                             <Typography variant="body2">Địa điểm</Typography>
-                            <Typography variant="body2">{fetchpost && fetchpost.address.city}</Typography>
+                            <Typography variant="body2">{ fetchpost.address.city}</Typography>
                           </Box>
                         </Box>
                       </Box>
@@ -133,8 +141,8 @@ const DetailJob = () => {
                           variant="body2"
                           sx={{ display: "flex", alignItems: "center" }}
                         >
-                          <AccessTimeIcon></AccessTimeIcon>Thời hạn nộp :
-                          {fetchpost && moment(fetchpost.duration).format('DD/MM/YYYY')}
+                          <AccessTimeIcon></AccessTimeIcon>Thời hạn:
+                          { moment(fetchpost.duration).format('DD/MM/YYYY')}
                         </Typography>
                       </Box>
                     </CardContent>
@@ -146,14 +154,14 @@ const DetailJob = () => {
                       sx={{
                         display: "flex",
                         flexDirection: "column",
-                        gap: 3,
+                        gap: 2,
                       }}
                     >
-                      <Typography variant="h6">Chi tiết tuyển dụng</Typography>
+                      <Typography sx={{ fontSize: "1.3rem", fontWeight: "bold"}}>Chi tiết tuyển dụng</Typography>
                       <Box>
-                        <Typography variant="h6">Mô tả công việc</Typography>
-                        <Typography>
-                          {fetchpost && (
+                        <Typography sx={{ fontSize: "1.1rem", fontWeight: "bold",color: "var(--red-color)" }}>Mô tả công việc</Typography>
+                        <Typography sx={{ fontSize: "0.9rem" }}>
+                          { (
                             <div
                               dangerouslySetInnerHTML={{
                                 __html: fetchpost.des,
@@ -163,9 +171,9 @@ const DetailJob = () => {
                         </Typography>
                       </Box>
                       <Box>
-                        <Typography variant="h6">Yêu cầu ứng viên</Typography>
-                        <Typography>
-                          {fetchpost && (
+                        <Typography sx={{ fontSize: "1.1rem", fontWeight: "bold",color: "var(--red-color)" }}>Yêu cầu ứng viên</Typography>
+                        <Typography sx={{ fontSize: "0.9rem" }}>
+                          { (
                             <div
                               dangerouslySetInnerHTML={{
                                 __html: fetchpost.require,
@@ -175,9 +183,9 @@ const DetailJob = () => {
                         </Typography>
                       </Box>
                       <Box>
-                        <Typography variant="h6">Quyền lợi</Typography>
-                        <Typography>
-                          {fetchpost && (
+                        <Typography sx={{ fontSize: "1.1rem", fontWeight: "bold",color: "var(--red-color)" }}>Quyền lợi</Typography>
+                        <Typography sx={{ fontSize: "0.9rem" }}> 
+                          { (
                             <div
                               dangerouslySetInnerHTML={{
                                 __html: fetchpost.benefit,
@@ -187,9 +195,9 @@ const DetailJob = () => {
                         </Typography>
                       </Box>
                       <Box>
-                        <Typography variant="h6">Địa chỉ làm việc</Typography>
-                        <Typography>
-                          {fetchpost && fetchpost.address.streetnumber +", "+fetchpost.address.ward +", "+fetchpost.address.district +", "+fetchpost.address.city}
+                        <Typography sx={{ fontSize: "1.1rem", fontWeight: "bold",color: "var(--red-color)" }}>Địa chỉ làm việc</Typography>
+                        <Typography sx={{ fontSize: "0.9rem" }}>
+                          { fetchpost.address.streetnumber +", "+fetchpost.address.ward +", "+fetchpost.address.district +", "+fetchpost.address.city}
                         </Typography>
                       </Box>
                       <Box
@@ -218,11 +226,6 @@ const DetailJob = () => {
                           Ứng tuyển
                         </Button>
                       </Box>
-
-                      <Typography variant="h6">
-                        Các công việc liên quan
-                      </Typography>
-                      {/* <COjob></COjob> */}
                     </CardContent>
                   </Card>
                 </Box>
@@ -240,21 +243,21 @@ const DetailJob = () => {
                       <Box
                         sx={{ display: "flex", alignItems: "center", gap: 1 }}
                       >
-                        <img src={fetchpost && fetchpost.CO.logo} className="logoCO-DetailJob" />
-                        <Typography variant="h5">{fetchpost && fetchpost.CO.name}</Typography>
+                        <img src={ fetchpost.CO.logo} className="logoCO-DetailJob" />
+                        <Typography sx={{fontSize: "1.27rem", fontWeight: "bold"}}>{ fetchpost.CO.name}</Typography>
                       </Box>
-                      <Box sx={{ display: "flex", gap: 1 }}>
+                      <Box  sx={{ display: "flex", gap: 1 }}>
                         <SupervisedUserCircleIcon></SupervisedUserCircleIcon>
-                        <Typography > Quy mô:</Typography>
-                        <Typography>{fetchpost && fetchpost.CO.scalefrom}-{fetchpost && fetchpost.CO.scaleto} nhân viên</Typography>
+                        <Typography variant="body2"> Quy mô:</Typography>
+                        <Typography variant="body2">{ fetchpost.CO.scalefrom}-{ fetchpost.CO.scaleto} nhân viên</Typography>
                       </Box>
                       <Box sx={{ display: "flex", gap: 1 }}>
-                        <PlaceIcon></PlaceIcon>
-                        <Typography sx={{ width: "110px" }}>
+                        <PinDropOutlinedIcon></PinDropOutlinedIcon>
+                        <Typography variant="body2" sx={{ width: "35%" }}>
                           Địa chỉ:
                         </Typography>
-                        <Typography>
-                          {fetchpost && fetchpost.CO.address.map((i, index)=>(
+                        <Typography variant="body2">
+                          { fetchpost.CO.address.map((i, index)=>(
                             <Box key={index} sx={{mb:1}} >
                             Cơ sở {index+1}: {i.streetnumber}, {i.ward}, {i.district}, {i.city} 
                             </Box>
@@ -273,12 +276,12 @@ const DetailJob = () => {
                         gap: 3,
                       }}
                     >
-                      <Typography variant="h5">Thông tin chung</Typography>
+                      <Typography sx={{fontSize: "1.27rem", fontWeight: "bold"}}>Thông tin chung</Typography>
                       <Box sx={{ display: "flex", gap: 1 }}>
-                        <SupervisedUserCircleIcon></SupervisedUserCircleIcon>
-                        <Typography> Kinh nghiệm:</Typography>
-                        <Typography>
-                          {fetchpost &&
+                   
+                        <Typography variant="body2"> Kinh nghiệm:</Typography>
+                        <Typography variant="body2">
+                          {
                             fetchpost.tag.exp.map((exp, index) =>
                               index === fetchpost.tag.exp.length - 1
                                 ? exp
@@ -287,15 +290,21 @@ const DetailJob = () => {
                         </Typography>
                       </Box>
                       <Box sx={{ display: "flex", gap: 1 }}>
-                        <SupervisedUserCircleIcon></SupervisedUserCircleIcon>
-                        <Typography> Hình thức làm việc:</Typography>
-                        <Typography> {fetchpost && fetchpost.form}</Typography>
+                     
+                        <Typography variant="body2"> Hình thức làm việc:</Typography>
+                        <Typography variant="body2"> { fetchpost.form === "flex"
+    ? "Linh hoạt"
+    : fetchpost.form === "home"
+    ? "Tại nhà"
+    : fetchpost.form === "office"
+    ? "Văn phòng"
+    : fetchpost.form}</Typography>
                       </Box>
                       <Box sx={{ display: "flex", gap: 1 }}>
-                        <SupervisedUserCircleIcon></SupervisedUserCircleIcon>
-                        <Typography> Kĩ năng:</Typography>
-                        <Typography>
-                          {fetchpost &&
+          
+                        <Typography variant="body2"> Kĩ năng:</Typography>
+                        <Typography variant="body2">
+                          {
                             fetchpost.tag.skill.map((skill, index) =>
                               index === fetchpost.tag.skill.length - 1
                                 ? skill
@@ -311,7 +320,7 @@ const DetailJob = () => {
           </Box>
         </Box>
       </Box>
-    </>
+    </> )
   );
 };
 

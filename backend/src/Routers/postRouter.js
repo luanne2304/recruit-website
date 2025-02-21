@@ -1,9 +1,11 @@
 const express = require("express");
 const postRouter = express.Router();
 const postController = require("../Controllers/postController");
+const Authorization = require("../middleware/userAuth");
 
 
-postRouter.post("/api/post/create", postController.create);
+postRouter.post("/api/post/create",Authorization.authenticateUser, postController.create);
+postRouter.put("/api/post/update/:id",Authorization.authenticateUser, postController.update);
 postRouter.get("/api/post/getALLjob", postController.getALLjob);
 postRouter.get("/api/post/getFilterjob", postController.getFilterjob);
 postRouter.get("/api/post/getbyID/:id", postController.getDetailjob);

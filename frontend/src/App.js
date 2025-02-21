@@ -14,13 +14,13 @@ import CVreview from "./pages/CVreview/CVreview";
 import CurdPost from "./pages/CurdPost/CurdPost";
 import DetailJob from "./pages/DetailJob/DetailJob";
 import CVapplied from "./pages/CVapplied/CVapplied";
+import AuditLogs from "./pages/Auditlog/Auditlogs";
 import UserManager from "./pages/UserManager/UserManager";
 import ReportManager from "./pages/ReportManager/ReportManager";
 import COManager from "./pages/COManager/COManager";
 import CrudCO from "./pages/CrudCO/CrudCO";
 import Adminlayout from "./layouts/adminlayout";
 import ProtectedRoute from "./utils/ProtectedRoute"; 
-import userService from "./services/userService";
 import { AuthProvider } from "./utils/authUtils";
 import Test from "./pages/test";
 
@@ -59,7 +59,7 @@ function App() {
           <Route path="/admin/UserManager" element={<UserManager />} />
           <Route path="/admin/COManager" element={<COManager/>} />
           <Route path="/admin/CreateCO" element={<CrudCO />} />
-          <Route path="/admin/test" element={<Test />} />
+          <Route path="/admin/Auditlogs" element={<AuditLogs />} />
           </Route>
       </Route>
       </Routes>

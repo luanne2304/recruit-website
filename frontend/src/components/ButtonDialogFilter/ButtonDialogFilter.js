@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
+import Typography from "@mui/material/Typography";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
@@ -127,27 +128,29 @@ export default function ButtonDialogFilter({setFilter,handleFilter}) {
   ];
 
 
-  const test =async()=>{
+  const submitForm =async()=>{
     if(skillObj.length>0){
-      formData.skill=await skillObj.map(skill => skill.title)
+      formData.skill= skillObj.map(skill => skill.title)
     }
     else{formData.skill=[] }
     if(expObj.length>0){
-      formData.exp=await expObj.map(exp => exp.title)
+      formData.exp= expObj.map(exp => exp.title)
     }
     else{formData.exp=[] }
     if(formObj.length>0){
-      formData.form=await formObj.map(form => form.title)
+      formData.form= formObj.map(form => form.title)
     }
     else{formData.form=[] }
     setFilter(formData)
     handleFilter(formData)
+    handleClose()
   }
 
   return (
     <React.Fragment>
       <Button
-        sx={{ fontSize: "15", padding: "10px 30px" }}
+
+        sx={{ fontSize: "0.8rem", fontWeight: "bold", padding: "10px 30px" }}
         variant="outlined"
         color="error"
         onClick={handleClickOpen}
@@ -160,14 +163,14 @@ export default function ButtonDialogFilter({setFilter,handleFilter}) {
         onClose={handleClose}
         aria-labelledby="responsive-dialog-title"
       >
-        <DialogTitle id="responsive-dialog-title">{"Bộ lọc"}</DialogTitle>
+        <DialogTitle sx={{fontSize: "1.27rem", fontWeight: "bold"}} id="responsive-dialog-title">{"Bộ lọc"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
             <TextField
               sx={{ mt: "20px" }}
               id="outlined-select-currency-native"
               select
-              label="Native select"
+              label="Chọn thành phố"
               name="city"
               value={formData.city}
               onChange={handleChangeFormData}
@@ -241,10 +244,9 @@ export default function ButtonDialogFilter({setFilter,handleFilter}) {
                 />
               )}
             />
-            <Box>Mức lương</Box>
-            <Box>
-              {formData.salary[0]}$ - {formData.salary[1]}$
-            </Box>
+            <Box  sx={{ mt: "20px" }} >Mức lương: {formData.salary[0]}$ - {formData.salary[1]}$</Box>
+
+ 
             <Slider
               getAriaLabel={() => "Minimum distance"}
               value={formData.salary}
@@ -290,7 +292,7 @@ export default function ButtonDialogFilter({setFilter,handleFilter}) {
         <Button onClick={handleresetFilter} autoFocus>
             Xóa bộ lọc
           </Button>
-          <Button onClick={test} autoFocus>
+          <Button onClick={submitForm} autoFocus>
             Áp dụng
           </Button>
         </DialogActions>

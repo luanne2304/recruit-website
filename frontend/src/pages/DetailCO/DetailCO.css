@@ -24,7 +24,7 @@
 .title-card-desCO{
     position: absolute;
     z-index: 1;
-    top: 11px;
+    top: 12px;
     left: 30px;
     border-radius: 10px;
 }
@@ -33,3 +33,7 @@
     border-radius: 15px;
     position: relative;
 }
+
+.whitespace-preline {
+    white-space: pre-line;
+  }

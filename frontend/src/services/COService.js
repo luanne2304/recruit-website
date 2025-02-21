@@ -27,19 +27,37 @@ const COService = {
         return res.data;
     },
 
+    updateCoverImg: async (accessToken, formData,idCO) => {
+        const res = await api.put(`/CO/updateCoverImg/${idCO}`,formData,{
+            headers: {
+              'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${accessToken}`
+            }
+          });
+        return res.data;
+    },
+
 
     getByID: async (id) => {
         const res = await cf_axios.get(`/CO/getCObyID/${id}`);
         return res.data;
     },
 
-    updateStatus: async (id, newStatus,reason) => {
-        const res = await cf_axios.put(`/CO/update-status/${id}`, { status: newStatus,reason:reason });
+    updateStatus: async (id, newStatus,reason,accessToken) => {
+        const res = await api.put(`/CO/update-status/${id}`, { status: newStatus,reason:reason },{
+          headers: {
+              Authorization: `Bearer ${accessToken}`
+          }
+        });
         return res;
     },
 
-    updateIdaccountCO: async (idCO,idacc) => {
-        const res = await cf_axios.put(`/CO/update-idacc/${idCO}`, { idaccount_manager:idacc });
+    updateIdaccountCO: async (idCO,idacc,accessToken) => {
+        const res = await api.put(`/CO/update-idacc/${idCO}`, { idaccount_manager:idacc },{
+          headers: {
+              Authorization: `Bearer ${accessToken}`
+          }
+        });
         return res;
     },
 

@@ -30,6 +30,7 @@ const columns = [
 
 export default function COManager() {
   const navigate = useNavigate();
+    const { accessToken } = useAuth();
 const [rows, setRows] = useState([]);
 const [selectedIds, setSelectedIds] = useState();
 const [status, setStatus] = useState(true);
@@ -52,7 +53,7 @@ const [isOpenDialogUpdateIDacc, SetIsOpenDialogUpdateIDacc] = useState(false);
 
   const handleSubmitIdacc = async (idacc) => {
     try {
-      const res = await COService.updateIdaccountCO(selectedIds,idacc);  
+      const res = await COService.updateIdaccountCO(selectedIds,idacc,accessToken);  
         console.log(res)
     } catch (error) {
       console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
@@ -61,7 +62,7 @@ const [isOpenDialogUpdateIDacc, SetIsOpenDialogUpdateIDacc] = useState(false);
 
   const handleSubmitStatus = async (reason) => {
     try {
-      const res = await COService.updateStatus(selectedIds,status,reason);  
+      const res = await COService.updateStatus(selectedIds,status,reason,accessToken);  
         console.log(res)
     } catch (error) {
       console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
@@ -140,6 +141,23 @@ const [isOpenDialogUpdateIDacc, SetIsOpenDialogUpdateIDacc] = useState(false);
       <DataGrid
         rows={rows}
         columns={columns}
+        sx={{
+          backgroundColor: "white", // Màu nền trắng
+          color: "black", // Màu chữ đen
+          "& .MuiDataGrid-cell": {
+            color: "black", // Màu chữ trong ô
+          },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: "#f5f5f5", // Màu nền tiêu đề cột
+            color: "black",
+          },
+          "& .MuiDataGrid-row": {
+            backgroundColor: "white", // Màu nền hàng
+            "&:hover": {
+              backgroundColor: "#f0f0f0", // Màu khi hover
+            },
+          }
+        }}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 8 },

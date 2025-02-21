@@ -12,7 +12,6 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import "./Myprofile.css";
 import Avatar from "../../assets/images/logocty.jpg";
 import CropEasy from "../../components/Crop/CropEasy";
-
 import userService from "../../services/userService";
 import ButtonDialogFormPDF from "../../components/ButtonDialogFormPDF/ButtonDialogFormPDF";
 import { useAuth  } from '../../utils/authUtils';
@@ -87,8 +86,6 @@ const Myprofile = () => {
   const handleImageChange = (e) => {
     const fileLOGO = e.target.files[0]; 
     if (fileLOGO) {
-      setFileLOGO(fileLOGO);
-      setUserData({ ...userData, ava : fileLOGO });
       setPhotoURLCrop(URL.createObjectURL(fileLOGO));
       setOpenCropLOGO(true);
       setAspect(1);
@@ -101,8 +98,8 @@ const Myprofile = () => {
     formData.append("fullName", userData.fullName);
     formData.append("phone", userData.phone);
   
-    if (fileLOGO) {
-      formData.append("image", fileLOGO); 
+    if (userData.ava) {
+      formData.append("image", userData.ava); 
     }
 
     userService.updateUser(formData,accessToken).then((res) => {
@@ -113,6 +110,10 @@ const Myprofile = () => {
     
     });
   }
+  
+  useEffect(() => {
+    setUserData({ ...userData, ava : fileLOGO });
+  }, [fileLOGO]);
 
   return (
     <Box>
@@ -120,13 +121,25 @@ const Myprofile = () => {
         <Box className="icontainer">
           <Box className="container-profile">
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Typography variant="h4" component="div" sx={{ m: "auto", mb: 5 }}>
+            <Typography  component="div" sx={{ m: "auto", mb: 5 ,fontSize: "1.6rem", fontWeight: "bold"}}>
               Hồ sơ
             </Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <img src={photoURL || Avatar} style={{ width: 250 }} />
+            <Box
+  component="img"
+  src={photoURL || Avatar}
+  sx={{
+    width: 250,
+    border: "2px solid #ddd",  // Viền xám nhạt
+    borderRadius: "12px",      // Bo góc ảnh
+    padding: "4px",            // Khoảng cách giữa ảnh và viền
+    backgroundColor: "#fff",   // Nền trắng để làm nổi ảnh
+    display: "block"           // Để ảnh không bị lỗi bố cục
+  }}
+/>
+
               <Box textAlign="center">
                 <Button
                   component="label"
@@ -135,7 +148,7 @@ const Myprofile = () => {
                   tabIndex={-1}
                   startIcon={<CloudUploadIcon />}
                 >
-                  Upload file
+                  Chọn ảnh
                   <VisuallyHiddenInput type="file" onChange={handleImageChange} />
                 </Button>
               </Box>
@@ -144,7 +157,7 @@ const Myprofile = () => {
               sx={{ ml: 5, display: "flex", flexDirection: "column", gap: 2 }}
             >
               <Box>
-                <Typography sx={{ mb: 2 }} variant="h6" component="div">
+                <Typography sx={{ mb: 2 }} variant="body1" component="div">
                   Họ & Tên:
                 </Typography>
                 <TextField
@@ -158,7 +171,7 @@ const Myprofile = () => {
                 />
               </Box>
               <Box>
-                <Typography sx={{ mb: 2 }} variant="h6" component="div">
+                <Typography sx={{ mb: 2 }} variant="body1" component="div">
                   SDT:
                 </Typography>
                 <TextField
@@ -172,7 +185,7 @@ const Myprofile = () => {
                 />
               </Box>
               <Box>
-                <Typography sx={{ mb: 2 }} variant="h6" component="div">
+                <Typography sx={{ mb: 2 }} variant="body1" component="div">
                   Mail:
                 </Typography>
                 <TextField
@@ -182,16 +195,17 @@ const Myprofile = () => {
                   variant="outlined"
                   name="email"
                   value={userData.email}
+                  disabled
                 />
               </Box>
             </Box>
           </Box>
 
-          <Button sx={{ mt: 3, float: "right" }} variant="contained" onClick={() => handleChange()}>
+          <Button color="success" sx={{ mt: 3, float: "right" }} variant="contained" onClick={() => handleChange()}>
             Xác nhận
           </Button>
           <Box sx={{ mt: 7, display: "flex", gap: 4 }}>
-            <Typography variant="h5" component="div">
+            <Typography sx={{fontSize: "1.27rem", fontWeight: "bold"}} component="div">
               CV đã lưu:
             </Typography>
                 <ButtonDialogFormPDF></ButtonDialogFormPDF>
@@ -204,7 +218,7 @@ const Myprofile = () => {
             >
               {cv.map((item)=>(
                 <Grid item xs={6} >
-                  <CV title={item.filetitle} id={item._id} link={item.linkfile}></CV>
+                  <CV title={item.filetitle} id={item._id} link={item.linkfile} owner={true}></CV>
                 </Grid>
               ))}
             </Grid>

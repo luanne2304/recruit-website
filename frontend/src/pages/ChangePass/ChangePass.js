@@ -33,7 +33,7 @@ const ChangePass = () => {
         <Box className="icontainer">
           <Box className="container-changepass">
             <Box sx={{ display: "flex", justifyContent: "center" }}>
-              <Typography variant="h5" component="div" sx={{ m: "auto" }}>
+              <Typography component="div" sx={{ m: "auto",fontSize: "1.3rem", fontWeight: "bold" }}>
                 Cập nhật mật khẩu
               </Typography>
             </Box>
@@ -65,7 +65,7 @@ const ChangePass = () => {
                 variant="outlined"
               />
             </Box>
-            <Button sx={{ mt: 4, float: "right" }} variant="contained" onClick={handleChangePassword}>
+            <Button color="success" sx={{ mt: 4, float: "right" }} variant="contained" onClick={handleChangePassword}>
               Xác nhận
             </Button>
           </Box>

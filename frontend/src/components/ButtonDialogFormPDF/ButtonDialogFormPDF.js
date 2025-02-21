@@ -1,6 +1,8 @@
 import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
+import LoadingButton from '@mui/lab/LoadingButton';
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -8,9 +10,10 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
 import { useAuth }  from '../../utils/authUtils';
 import CVService from "../../services/CVService";
+
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -29,6 +32,7 @@ export default function ButtonDialogFormPDF() {
     const [open, setOpen] = React.useState(false);
     const [filepdf,setFilepdf]= React.useState(null);
     const [filetitle,setFiletitle]= React.useState(null);
+    const [isLoading, setIsLoading] = React.useState(false); 
 
 
   const handleClickOpen = () => {
@@ -39,6 +43,15 @@ export default function ButtonDialogFormPDF() {
     setOpen(false);
   };
 
+    const notify = (res) => {
+      
+      switch (res) {
+        case true:
+          return toast.success("Thêm thành công!");
+        default :
+          return toast.error("Lỗi mất rồi!");
+      }
+    }
 
   const addNewCV = (e) => {
     // open file selector select only pdf file
@@ -51,20 +64,26 @@ export default function ButtonDialogFormPDF() {
     setFilepdf(e.target.files[0])
   }
 
-  const test= async()=>{
+  const handleSubmit= async()=>{
     const formData = new FormData();
     formData.append('pdf', filepdf);
     formData.append('filetitle', filetitle);
+    setIsLoading(true)
     try{
-    await CVService.upload(formData,accessToken)
+    const res = await CVService.upload(formData,accessToken)
+    notify(res.success)
     setOpen(false)
+
     } catch(error){
+      notify(false)
       console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
-    } 
+    } finally {
+      setIsLoading(false); // ✅ Tắt trạng thái loading khi hoàn thành
+    }
 
   }
 
-  return (
+  return (<>    <ToastContainer />
     <React.Fragment>
       <Button variant="outlined" onClick={handleClickOpen}>
         Thêm CV
@@ -113,9 +132,10 @@ export default function ButtonDialogFormPDF() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} variant="outlined" color="error">Hủy</Button>
-          <Button onClick={test}  variant="contained"  color="success">Lưu</Button>
+          <LoadingButton onClick={handleSubmit} loading={isLoading}     endIcon={<SaveOutlinedIcon />}  loadingPosition="end"  variant="contained"  color="success">Lưu</LoadingButton>
         </DialogActions>
       </Dialog>
     </React.Fragment>
+    </>
   );
 }

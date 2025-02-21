@@ -1,4 +1,5 @@
 const reportModel = require("../Models/reportModel");
+const logAudit = require("../middleware/auditLog");
 
 const reportController = {
   create: async (req, res, next) => {
@@ -105,6 +106,8 @@ const reportController = {
         { $set: { status:"Seen" } } 
       );
 
+      await logAudit(req, 'UPDATE', 'reports', ids, null, null, "Đã xem báo cáo từ người dùng");
+      
       return res.status(200).json({
         success: true,
         data: updateReport,

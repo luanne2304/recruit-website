@@ -18,7 +18,7 @@ const CV = ({title,link,id ,owner}) => {
     await CVService.del(id,accessToken) 
   }
   return (
-    <Card sx={{ display: "flex", alignItems: "center", p: 2, boxShadow: 3, borderRadius: 2, maxWidth: 300 }}>
+    <Card sx={{ display: "flex", alignItems: "center", p: 2, boxShadow: 3, borderRadius: 2, width: 300 }}>
       {/* Icon PDF */}
       <PictureAsPdfIcon sx={{ fontSize: 40, color: "red", mr: 2 }} />
       

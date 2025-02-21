@@ -1,6 +1,5 @@
 import cf_axios from "./cf_axios";
 import api from "./interceptorAPI";
-import { useAuth  } from '../utils/authUtils';
 import axios from "axios";
 
 const userService = {
@@ -60,8 +59,12 @@ const userService = {
         return res.data;
     },
 
-    updateStatus: async (ids, newStatus,reason) => {
-        const res = await cf_axios.put(`/user/update-status`, {ids, status: newStatus,reason });
+    updateStatus: async (ids, newStatus,reason,accessToken) => {
+        const res = await api.put(`/user/update-status`, {ids, status: newStatus,reason }, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+        });
         return res;
     },
 

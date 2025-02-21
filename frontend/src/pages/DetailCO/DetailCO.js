@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import axios from "axios";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -16,11 +16,16 @@ import { jwtDecode } from "jwt-decode";
 import { useAuth } from '../../utils/authUtils';
 import COService from "../../services/COService";
 import postService from "../../services/postService";
+import Pagination from "@mui/material/Pagination";
 import "./DetailCO.css";
 import CO from "../../components/CO/CO";
 import COjob from "../../components/COjob/COjob";
 
 const DetailCO = () => {
+
+    const [page, setPage] = useState(1);
+  const limit=2;
+    const [totalPages, setTotalPages] = useState(1);
   const { idCO } = useParams();
   const { accessToken } = useAuth()
   const [fetchco,setFetchco] =useState()
@@ -33,23 +38,36 @@ const DetailCO = () => {
     navigate(`/home/CreatePost/${idCO}`)
   }
 
+  const getALLjob = async (p) => {
+    try {
+      const res  = await postService.getALLJobByCO(idCO,p,limit)
+      setFetchpost(res.data)
+      setTotalPages(res.totalPages);
+      setPage(p);
+    } catch(error) {
+      console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+    }
+  };
 
-  React.useEffect(() => {
-
-    const getALLjob = async () => {
-      try {
-        const res  = await COService.getByID(idCO)
-        setFetchco(res.data)
-        if(jwtDecode(accessToken)._id==res.data.idaccount_manager){
-          setOwner(true)
-        }
-        const res2  = await postService.getALLJobByCO(idCO)
-        setFetchpost(res2.data)
-      } catch(error) {
-        console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+  const checkowner = async () => {
+    try {
+      const res  = await COService.getByID(idCO)
+      setFetchco(res.data)
+      if(jwtDecode(accessToken)._id==res.data.idaccount_manager){
+        setOwner(true)
       }
-    };
-    getALLjob();
+    } catch(error) {
+      console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
+    }
+  };
+
+  useEffect(() => {
+      getALLjob(page);
+  }, [page]);
+
+  useEffect(() => {
+    checkowner();
+    getALLjob(1);
   },[])
 
   return (
@@ -60,34 +78,36 @@ const DetailCO = () => {
           <Box sx={{ display: "flex", justifyContent: "space-between" , mt:5 }}>
             <Box className="main-content-wrap-CO">
               <Card sx={{ width: "100%" }} className="card-desCO">
-                <Typography variant="h5" className="title-card-desCO">
+                <Typography sx={{ fontSize: "1rem", fontWeight: "bold"}} className="title-card-desCO">
                   Mô tả về công ty
                 </Typography>
                 <CardActionArea>
-                  <CardMedia
-                    component="img"
-                    height="50"
-                    image={media}
-                    alt="green iguana"
-                  />
+                <Box
+                  sx={{
+                    height: 50, 
+                    width: "100%", 
+                    background: "linear-gradient(to right,rgb(224, 35, 22),rgb(226, 61, 39),rgb(241, 130, 122))", 
+                  }}
+                />
                   <CardContent>
-                    <Typography>
+                    <Typography variant="body2"  className="whitespace-preline">
                       {fetchco && fetchco.des}
                     </Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>
               <Card sx={{ width: "100%" , mt:4}} className="card-desCO">
-                <Typography variant="h5" className="title-card-desCO">
+                <Typography sx={{fontSize: "1rem", fontWeight: "bold"}} className="title-card-desCO">
                   Tuyển dụng
                 </Typography>
                 <CardActionArea>
-                  <CardMedia
-                    component="img"
-                    height="50"
-                    image={media}
-                    alt="green iguana"
-                  />
+                <Box
+                  sx={{
+                    height: 50, 
+                    width: "100%", 
+                    background: "linear-gradient(to right,rgb(224, 35, 22),rgb(226, 61, 39),rgb(241, 130, 122))", 
+                  }}
+                />
                   <CardContent>
                 {owner==true &&  <Button variant="contained" color="success" onClick={handleClick}>
                     Tạo bài đăng
@@ -102,16 +122,17 @@ const DetailCO = () => {
               </Card>
             </Box>
             <Box className="extra-content-wrap-CO"><Card sx={{ width: "100%" }} className="card-desCO">
-                <Typography variant="h5" className="title-card-desCO">
+                <Typography sx={{fontSize: "1rem", fontWeight: "bold"}} className="title-card-desCO">
                   Thông tin liên hệ
                 </Typography>
                 <CardActionArea>
-                  <CardMedia
-                    component="img"
-                    height="50"
-                    image={media}
-                    alt="green iguana"
-                  />
+                <Box
+                  sx={{
+                    height: 50, 
+                    width: "100%", 
+                    background: "linear-gradient(to right,rgb(224, 35, 22),rgb(226, 61, 39),rgb(241, 130, 122))", 
+                  }}
+                />
                   <CardContent>
                     <Typography sx={{display:"flex" ,alignItems:"center"}} component="div" >
                     <PlaceIcon></PlaceIcon>
@@ -126,16 +147,33 @@ const DetailCO = () => {
                       </Box>
                       ))}
                     </Typography>
-                    <Typography sx={{display:"flex",alignItems:"center", mt:5}} component="div" >
-                    <MapIcon></MapIcon>
-                      <Typography  sx={{ ml: 1 }}>
-                        Xem bản đồ
-                      </Typography>
-                    </Typography>
                   </CardContent>
                 </CardActionArea>
               </Card></Box>
           </Box>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 2 }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(event, value) => setPage(value)}
+            color="primary"
+            size="large" // Tăng kích thước
+            sx={{
+              "& .MuiPaginationItem-root": {
+                fontSize: "1.2rem", // Chỉnh size chữ
+                fontWeight: "bold", // Làm đậm số trang
+                borderRadius: "8px", // Bo góc
+              },
+              "& .MuiPaginationItem-page.Mui-selected": {
+                backgroundColor: "#1976d2", // Màu nền khi được chọn
+                color: "white", // Màu chữ
+                "&:hover": {
+                  backgroundColor: "#1565c0",
+                },
+              },
+            }}
+          />
+        </Box>
         </Box>
       </Box>
     </Box>

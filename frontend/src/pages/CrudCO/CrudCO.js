@@ -121,7 +121,6 @@ const CrudCO = () => {
           const res =await COService.update(accessToken,formData,idCO)
           console.log(res)
         } catch(error){
-          console.log("aa")
           console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
         } 
 
@@ -130,7 +129,6 @@ const CrudCO = () => {
         const res =await COService.create(accessToken,formData)
         console.log(res)
       } catch(error){
-        console.log("bb")
         console.error('Đã xảy ra lỗi khi gửi yêu cầu:', error);
       } 
     }

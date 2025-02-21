@@ -4,7 +4,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import thumbnail from "../../assets/images/logo.jpg";
-import { CardActionArea } from "@mui/material";
+import { CardActionArea} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import "./COsummary.css";
 
@@ -17,23 +17,23 @@ const COsummary = ({ CO }) => {
   }
 
   return (
-    <Card  className="card-COsummary" sx={{ width: "100" }}>
+    <Card  className="card-COsummary" sx={{ width: "100%" }}>
       <img src={CO.logo} className="logo-COsummary" />
       <CardActionArea onClick={handleClick}>
         <CardMedia
           component="img"
-          height="140"
+          height="160"
           image={CO.coverimg ? CO.coverimg : thumbnail}
           alt="green iguana"
         />
         <CardContent sx={{ mt: 4 }}>
-          <Typography gutterBottom variant="h5" component="div">
+          <Typography gutterBottom sx={{fontSize: "1.1rem", fontWeight: "bold"}} component="div">
             {CO.name}
           </Typography>
           <Typography
-            variant="body2"
             color="text.secondary"
             sx={{
+              fontSize: "0.8rem",
               height:"6em",
               display: "-webkit-box",
               WebkitBoxOrient: "vertical",

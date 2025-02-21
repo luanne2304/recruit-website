@@ -16,8 +16,13 @@ const ReportService = {
           });
         return res;
     },
-    updateStatus: async (ids) => {
-        const res = await api.put(`/report/update-Status`, { ids });
+    updateStatus: async (ids,accessToken) => {
+        const res = await api.put(`/report/update-Status`, { ids },
+            {
+            headers: {
+                Authorization: `Bearer ${accessToken}` // Gắn token vào header
+            }
+          });
         return res;
     },
 

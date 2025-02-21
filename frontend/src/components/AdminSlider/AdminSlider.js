@@ -10,8 +10,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import LibraryBooksOutlinedIcon from '@mui/icons-material/LibraryBooksOutlined';
+import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
+import FlagCircleOutlinedIcon from '@mui/icons-material/FlagCircleOutlined';
+import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -84,34 +86,27 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function AdminSlider({open}) {
   const theme = useTheme();
   const navigate = useNavigate();
-  const menu = [
-    {name: "Report Posts", link: "/admin/ReportPosts"},
-    {name: "User Manager", link: "/admin/UserManager"},
-    {name: "Company Manager", link: "/admin/COManager"},
-  ]
 
 //= ==========================================================================
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
-       
       </AppBar>
       <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-         
+        <DrawerHeader> 
         </DrawerHeader>
         <Divider />
         <List>
-          {menu.map((text, index) => (
-            <ListItem key={text.name} disablePadding sx={{ display: 'block' }}>
+
+            <ListItem disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
                   px: 2.5,
                 }}
-                onClick={() => navigate(text.link)} 
+                onClick={() => navigate("/admin/ReportPosts")} 
               >
                 <ListItemIcon
                   sx={{
@@ -120,15 +115,85 @@ export default function AdminSlider({open}) {
                     justifyContent: 'center',
                     
                   }}
-                  onClick={() => navigate(text.link)} 
+                  onClick={() => navigate("/admin/ReportPosts")} 
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  <FlagCircleOutlinedIcon />
                 </ListItemIcon>
-                <ListItemText primary={text.name} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={"Báo cáo"} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? 'initial' : 'center',
+                  px: 2.5,
+                }}
+                onClick={() => navigate("/admin/UserManager")} 
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : 'auto',
+                    justifyContent: 'center',
+                    
+                  }}
+                  onClick={() => navigate("/admin/UserManager")} 
+                >
+                  <ManageAccountsOutlinedIcon/>
+                </ListItemIcon>
+                <ListItemText primary={"Quản lý User"} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? 'initial' : 'center',
+                  px: 2.5,
+                }}
+                onClick={() => navigate("/admin/COManager")} 
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : 'auto',
+                    justifyContent: 'center',
+                    
+                  }}
+                  onClick={() => navigate("/admin/COManager")} 
+                >
+                  <BusinessOutlinedIcon/>
+                </ListItemIcon>
+                <ListItemText primary={"Quản lý CO"} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
             
-          ))}
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? 'initial' : 'center',
+                  px: 2.5,
+                }}
+                onClick={() => navigate("/admin/Auditlogs")} 
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : 'auto',
+                    justifyContent: 'center',
+                    
+                  }}
+                  onClick={() => navigate("/admin/Auditlogs")} 
+                >
+                  <LibraryBooksOutlinedIcon/>
+                </ListItemIcon>
+                <ListItemText primary={"Audit logs"} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
         </List>
       </Drawer>
       <DrawerHeader />

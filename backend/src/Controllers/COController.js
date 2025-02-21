@@ -3,6 +3,7 @@ const COModel = require("../Models/COModel");
 const {ref,uploadBytesResumable,getDownloadURL} =require("firebase/storage")
 const {v4} =require("uuid")
 const { auth,storage } = require('../config/index')
+const logAudit = require("../middleware/auditLog");
 
 
 
@@ -53,6 +54,7 @@ const COController = {
           address:formatListaddress
         })
         const createCO = await COModel.create(newCO);
+        await logAudit(req, 'CREATE', 'COs', [createCO._id], null, createCO, "Tạo công ty");
       return res.status(200).json({
         success: true,
         data:createCO
@@ -70,8 +72,8 @@ const COController = {
     try {
       const iduser= req.user._id;
       const idCO= req.params.idCO;
-      console.log(idCO)
       const {nameCO,desCO,linkCO,scaleto,scalefrom,listaddress }= req.body
+      let coverimg;
       if (!idCO) {
         return res.status(400).json({
           success: false,
@@ -87,6 +89,81 @@ const COController = {
           message: 'Không tìm thấy công ty.',
         });
       }
+      if (req.file) {
+        const file = {
+          type: req.file.mimetype,
+          buffer: req.file.buffer,
+          filename: req.file.originalname,
+        }
+        const metadata = {
+          contentType: file.type,
+        }
+        const imgref =  ref(storage,`logos/${file.filename}.${v4()}`)
+        const snapshot =await uploadBytesResumable(imgref, file.buffer, metadata);
+        coverimg = await getDownloadURL(snapshot.ref);
+      }  
+
+        const formatListaddress=[]
+        const temp = JSON.parse(listaddress)
+        temp.map((i)=>{
+        formatListaddress.push({
+          city:i.city.label,
+          city_code:i.city.code,
+          district:i.district.label,
+          district_code:i.district.code,
+          ward:i.ward.label,
+          ward_code:i.ward.code,
+          streetnumber:i.streetnumber,
+        })
+      })
+        const updatedCO = await COModel.findByIdAndUpdate(
+          idCO,
+          {
+            name: nameCO,
+            coverimg: coverimg,
+            des: desCO,
+            scaleto,
+            scalefrom,
+            link: linkCO,
+            address: formatListaddress,
+          },
+          { new: true } // Trả về bản ghi mới sau khi cập nhật
+        );
+      await logAudit(req, 'UPDATE', 'COs', [idCO], {...existingCO._doc}, updatedCO, "Cập nhật thông tin công ty");
+      return res.status(200).json({
+        success: true,
+        data:updatedCO
+      });
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  updateCoverImg: async (req, res, next) => {
+    try {
+      const iduser= req.user._id;
+      const idCO= req.params.idCO;
+      console.log(idCO)
+      if (!idCO) {
+        return res.status(400).json({
+          success: false,
+          message: 'Thiếu idCO, không thể cập nhật công ty.',
+        });
+      }
+  
+      // Tìm công ty trong database
+      const existingCO = await COModel.find({_id:idCO,idaccount_manager:iduser});
+      if (!existingCO) {
+        return res.status(403).json({
+          success: false,
+          message: 'ko du quyen han',
+        });
+      }
+
       if (!req.file) {
         return res.status(400).json({
           success: false,
@@ -101,32 +178,13 @@ const COController = {
         const metadata = {
           contentType: file.type,
         }
-        const formatListaddress=[]
-        const temp = JSON.parse(listaddress)
-        temp.map((i)=>{
-        formatListaddress.push({
-          city:i.city.label,
-          city_code:i.city.code,
-          district:i.district.label,
-          district_code:i.district.code,
-          ward:i.ward.label,
-          ward_code:i.ward.code,
-          streetnumber:i.streetnumber,
-        })
-      })
-        const imgref =  ref(storage,`logos/${file.filename}.${v4()}`)
+        const imgref =  ref(storage,`coverimg/${file.filename}.${v4()}`)
         const snapshot =await uploadBytesResumable(imgref, file.buffer, metadata);
         const downloadURL = await getDownloadURL(snapshot.ref);
         const updatedCO = await COModel.findByIdAndUpdate(
           idCO,
           {
-            name: nameCO,
-            logo: downloadURL,
-            des: desCO,
-            scaleto,
-            scalefrom,
-            link: linkCO,
-            address: formatListaddress,
+            coverimg: downloadURL,
           },
           { new: true } // Trả về bản ghi mới sau khi cập nhật
         );
@@ -223,8 +281,13 @@ const COController = {
   updateStatus: async (req, res, next) => {
     try {
       const { id } = req.params; // Lấy ID công ty từ URL
-      const { status ,reason} = req.body; // Lấy status mới từ request body
-  
+      let { status ,reason} = req.body; // Lấy status mới từ request body
+      if(status){
+        reason="Mở hoạt động vì "+reason
+      }
+      else{
+        reason="Khóa hoạt động vì "+reason
+      }
       // Kiểm tra xem công ty có tồn tại không
       const existingCO = await COModel.findById(id);
       if (!existingCO) {
@@ -234,10 +297,10 @@ const COController = {
         });
       }
   
-      // Cập nhật status
       existingCO.status = status;
       await existingCO.save();
-      console.log(req.body)
+
+      await logAudit(req, 'UPDATE', 'COs', [id], null, null, reason);
       return res.status(200).json({
         success: true,
         message: "Cập nhật trạng thái thành công",
@@ -264,11 +327,9 @@ const COController = {
           message: "Không tìm thấy công ty",
         });
       }
-
+      await logAudit(req, 'UPDATE', 'COs', [id], {idaccount_manager:existingCO.idaccount_manager}, { idaccount_manager }, "Cập nhật người quản lý công ty");
       existingCO.idaccount_manager = idaccount_manager;
-
       await existingCO.save();
-      
       return res.status(200).json({
         success: true,
         message: "Cập nhật thành công",

@@ -22,8 +22,8 @@ const postService = {
         return res.data;
     },
 
-    getALLJobByCO: async (idCO) => {
-        const res = await cf_axios.get(`/post/getALLJobbyCO/${idCO}`);
+    getALLJobByCO: async (idCO,page,limit) => {
+        const res = await cf_axios.get(`/post/getALLJobbyCO/${idCO}`,{params: { page, limit }});
         return res.data;
     },
 
@@ -37,6 +37,15 @@ const postService = {
         return res.data;
     },
 
+    update: async (formData,accessToken,idjob) => {
+        const res = await api.put(`/post/update/${idjob}`,formData,
+            {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+          });
+        return res.data;
+    },
     
 
 };

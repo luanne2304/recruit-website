@@ -3,6 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import userService from "../../services/userService";
 import AdminReasonDialog from "../../components/AdminReasonDialog/AdminReasonDialog";
 import Button from "@mui/material/Button";
+import { useAuth  } from '../../utils/authUtils';
 
 const columns = [
   { field: "UserName", headerName: "Tên người dùng", width: 300 },
@@ -14,7 +15,7 @@ const columns = [
 
 
 export default function UserManager() {
-
+ const { accessToken } = useAuth();
 const [rows, setRows] = useState([]);
 const [selectedIds, setSelectedIds] = useState([]);
 const [status, setStatus] = useState(true);
@@ -33,7 +34,7 @@ const handleEnable = async () => {
 const handleSubmit = async (reason) => {
   console.log(selectedIds)
   try {
-    const res = await userService.updateStatus(selectedIds,status,reason);  
+    const res = await userService.updateStatus(selectedIds,status,reason,accessToken);  
       console.log(res)
   } catch (error) {
     console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
@@ -89,6 +90,23 @@ const handleSubmit = async (reason) => {
       <DataGrid
         rows={rows}
         columns={columns}
+        sx={{
+          backgroundColor: "white", // Màu nền trắng
+          color: "black", // Màu chữ đen
+          "& .MuiDataGrid-cell": {
+            color: "black", // Màu chữ trong ô
+          },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: "#f5f5f5", // Màu nền tiêu đề cột
+            color: "black",
+          },
+          "& .MuiDataGrid-row": {
+            backgroundColor: "white", // Màu nền hàng
+            "&:hover": {
+              backgroundColor: "#f0f0f0", // Màu khi hover
+            },
+          }
+        }}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 8 },

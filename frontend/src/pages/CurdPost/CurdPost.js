@@ -92,6 +92,13 @@ const CurdPost = () => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
+  const handleNumberChange = (e) => {
+    const value = e.target.value;
+    if (/^\d*\.?\d*$/.test(value) || value === "") {
+      setFormData({ ...formData,  [e.target.name]: value });
+    }
+  };
+
   const handleAddressChange = (event) => {
     // setFormData({ ...formData, [fieldName]: event.target.value });
     const foundFetchco = fetchco.address.find(item => item._id === event.target.value );
@@ -134,6 +141,8 @@ const CurdPost = () => {
       if(checksalaryfrom>=checksalaryto){
         allFieldsChanged = false;
       }
+    }else{
+      allFieldsChanged = false;
     }
     for (let key in formData) {
       if (key === 'CO' || key === 'salaryto'|| key === 'salaryfrom') continue;
@@ -143,15 +152,23 @@ const CurdPost = () => {
       }
     }
     if(allFieldsChanged) {
-      console.log("hoan tat");
+      if(idjob){
+        try {
+          await postService.update(formData,accessToken,idjob)
+        } catch (error) {
+          console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
+        }
+
+    }else{
+      try {
+        await postService.create(formData,accessToken)
+      } catch (error) {
+        console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
+      }
+    }
     }
     else{
       console.log("loi~");
-    }
-    try {
-      await postService.create(formData,accessToken)
-    } catch (error) {
-      console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
     }
   };
 
@@ -266,7 +283,7 @@ const CurdPost = () => {
                   variant="h4"
                   component="div"
                 >
-                  Tạo bài đăng
+                    {idjob ? "Sửa bài đăng" : "tạo bài đăng"}
                 </Typography>
 
                 <Typography className="form-item">
@@ -295,7 +312,7 @@ const CurdPost = () => {
                       type="number"
                       name="salaryfrom"
                       value={formData.salaryfrom}
-                      onChange={handleChange}
+                      onChange={handleNumberChange}
                       id="filled-adornment-amount"
                       startAdornment={
                         <InputAdornment position="start">$</InputAdornment>
@@ -311,7 +328,7 @@ const CurdPost = () => {
                       type="number"
                       name="salaryto"
                       value={formData.salaryto}
-                      onChange={handleChange}
+                      onChange={handleNumberChange}
                       id="filled-adornment-amount"
                       startAdornment={
                         <InputAdornment position="start">$</InputAdornment>

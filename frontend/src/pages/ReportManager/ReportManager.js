@@ -6,6 +6,7 @@ import ReportService from "../../services/ReportService";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Tooltip, Snackbar, Alert, Avatar } from "@mui/material";
+import { useAuth } from '../../utils/authUtils';
 
 
 
@@ -15,10 +16,9 @@ const formatDate = (dateString) => {
 };
 
 export default function ReportManager() {
+      const { accessToken } = useAuth();
   const [rows, setRows] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
-  const [isOpenDialog, SetIsOpenDialog] = useState(false);
-
 
   const columns = [
     {
@@ -36,7 +36,7 @@ export default function ReportManager() {
           <Tooltip title="Copy ID">
             <ContentCopyIcon 
               style={{ marginLeft: 10, color: "#1976d2", cursor: "pointer" }} 
-              onClick={() => handleCopy(params.row.coID)}
+              onClick={() => handleCopy(params.row.id)}
             />
           </Tooltip>
         </div>
@@ -72,7 +72,7 @@ const handleCopy = (text) => {
 
   const handleSubmit = async () => {
     try {
-      const res = await ReportService.updateStatus(selectedIds);
+      const res = await ReportService.updateStatus(selectedIds,accessToken);
     } catch (error) {
       console.error("Đã xảy ra lỗi khi gửi yêu cầu:", error);
     }
@@ -121,6 +121,23 @@ const handleCopy = (text) => {
       <DataGrid
         rows={rows}
         columns={columns}
+        sx={{
+          backgroundColor: "white", // Màu nền trắng
+          color: "black", // Màu chữ đen
+          "& .MuiDataGrid-cell": {
+            color: "black", // Màu chữ trong ô
+          },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: "#f5f5f5", // Màu nền tiêu đề cột
+            color: "black",
+          },
+          "& .MuiDataGrid-row": {
+            backgroundColor: "white", // Màu nền hàng
+            "&:hover": {
+              backgroundColor: "#f0f0f0", // Màu khi hover
+            },
+          }
+        }}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 8 },
